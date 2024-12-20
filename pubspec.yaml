@@ -1,0 +1,24 @@
+name: action
+description: "Action: Organize your life!"
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints_y:
+    git:
+      url: https://github.com/Yogi-7y/Project-Y
+      path: packages/lints
+      ref: main
+
+flutter:
+  uses-material-design: true
