@@ -1,0 +1,16 @@
+.claudesync/
+.dart_tool/
+.fvm/
+.idea/
+android/
+build/
+ios/
+linux/
+macos/
+web/
+windows/
+.metadata
+action.iml
+analysis_options.yaml
+pubspec.lock
+

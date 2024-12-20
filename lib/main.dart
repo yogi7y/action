@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 
-Future<void> main() async {}
+import 'src/app.dart';
 
-class MyWidget extends StatelessWidget {
-  final String hello;
-
-  const MyWidget({super.key, required this.hello});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const App());
 }
