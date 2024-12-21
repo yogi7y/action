@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'design_system/typography/mobile_fonts.dart';
 import 'modules/dashboard/presentation/dashboard_screen.dart';
 
 @immutable
@@ -8,8 +9,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: DashboardScreen(),
+    return MaterialApp(
+      home: const DashboardScreen(),
+      theme: ThemeData(
+        fontFamily: interFontFamily,
+      ),
     );
   }
 }
