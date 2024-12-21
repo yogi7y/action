@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import 'src/app.dart';
+import 'src/core/env/env.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,8 @@ Future<void> main() async {
     if (stack is Chain) return stack.toTrace().vmTrace;
     return stack;
   };
+
+  print(Env.supabaseUrl);
 
   runApp(const ProviderScope(child: App()));
 }
