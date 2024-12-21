@@ -1,17 +1,20 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../../../colors/primitive_tokens.dart';
 import '../../base/semantics/surface.dart';
 
 @immutable
-class DarkSurface extends SurfaceTokens {
-  DarkSurface(this._tokens)
-      : super(
-          background: _tokens.neutral.shade900,
-          backgroundContrast: _tokens.dark,
-          modals: _tokens.neutral.shade800,
-        );
+class DarkSurface implements SurfaceTokens {
+  const DarkSurface(this._tokens);
 
-  // ignore: unused_field
   final PrimitiveColorTokens _tokens;
+
+  @override
+  Color get background => _tokens.neutral.shade900;
+
+  @override
+  Color get backgroundContrast => _tokens.dark;
+
+  @override
+  Color get modals => _tokens.neutral.shade800;
 }

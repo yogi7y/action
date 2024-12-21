@@ -1,17 +1,20 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../../../colors/primitive_tokens.dart';
 import '../../base/semantics/text.dart';
 
 @immutable
-class DarkTextTokens extends TextTokens {
-  DarkTextTokens(this._tokens)
-      : super(
-          primary: _tokens.neutral.shade100,
-          secondary: _tokens.neutral.shade400,
-          tertiary: _tokens.neutral.shade500,
-        );
+class DarkTextTokens implements TextTokens {
+  const DarkTextTokens(this._tokens);
 
-  // ignore: unused_field
   final PrimitiveColorTokens _tokens;
+
+  @override
+  Color get primary => _tokens.neutral.shade100;
+
+  @override
+  Color get secondary => _tokens.neutral.shade400;
+
+  @override
+  Color get tertiary => _tokens.neutral.shade500;
 }
