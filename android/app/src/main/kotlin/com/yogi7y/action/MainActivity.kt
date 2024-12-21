@@ -1,4 +1,4 @@
-package com.yogi7y.action.action
+package com.yogi7y.action
 
 import io.flutter.embedding.android.FlutterActivity
 
