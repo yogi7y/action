@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
 
+import '../themes/base/theme.dart';
 import 'typography.dart';
 
 const interFontFamily = 'Inter';
 
 @immutable
 class MobileFonts implements Fonts {
-  const MobileFonts({
+  MobileFonts({
+    required this.colors,
     this.fontFamily = interFontFamily,
-  });
+  })  : text = MobileTextSize(colors: colors, fontFamily: fontFamily),
+        headline = MobileHeadlineSize(colors: colors, fontFamily: fontFamily);
 
   @override
   final String fontFamily;
 
-  @override
-  TextSize get text => MobileTextSize();
+  final ComponentThemes colors;
 
   @override
-  HeadlineSize get headline => MobileHeadlineSize();
+  final TextSize text;
+  @override
+  final HeadlineSize headline;
 }
 
-class MobileTextSize extends MobileFonts implements TextSize {
+class MobileTextSize implements TextSize {
   MobileTextSize({
-    super.fontFamily,
-  })  : lg = TextLarge(),
-        md = TextMedium(),
-        sm = TextSmall(),
-        xs = TextXSmall();
+    required this.colors,
+    required this.fontFamily,
+  })  : lg = TextLarge(colors: colors, fontFamily: fontFamily),
+        md = TextMedium(colors: colors, fontFamily: fontFamily),
+        sm = TextSmall(colors: colors, fontFamily: fontFamily),
+        xs = TextXSmall(colors: colors, fontFamily: fontFamily);
+
+  final ComponentThemes colors;
+  final String? fontFamily;
 
   @override
   final TextWeights lg;
@@ -42,27 +50,34 @@ class MobileTextSize extends MobileFonts implements TextSize {
 }
 
 @immutable
-class TextLarge extends MobileFonts implements TextWeights {
-  TextLarge({super.fontFamily})
-      : regular = TextStyle(
+class TextLarge implements TextWeights {
+  TextLarge({
+    required this.colors,
+    required this.fontFamily,
+  })  : regular = TextStyle(
           fontFamily: fontFamily,
           fontSize: 18,
           height: 28 / 18,
           fontWeight: FontWeight.w400,
+          color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 18,
           height: 28 / 18,
           fontWeight: FontWeight.w500,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 18,
           height: 28 / 18,
           fontWeight: FontWeight.w600,
+          color: colors.textTokens.primary,
         );
 
+  final ComponentThemes colors;
+  final String? fontFamily;
   @override
   final TextStyle regular;
 
@@ -74,27 +89,33 @@ class TextLarge extends MobileFonts implements TextWeights {
 }
 
 @immutable
-class TextMedium extends MobileFonts implements TextWeights {
-  TextMedium({super.fontFamily})
-      : regular = TextStyle(
+class TextMedium implements TextWeights {
+  TextMedium({
+    required this.colors,
+    required this.fontFamily,
+  })  : regular = TextStyle(
           fontFamily: fontFamily,
           fontSize: 16,
           height: 24 / 16,
           fontWeight: FontWeight.w400,
+          color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 16,
           height: 24 / 16,
           fontWeight: FontWeight.w500,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 16,
           height: 24 / 16,
           fontWeight: FontWeight.w600,
+          color: colors.textTokens.primary,
         );
-
+  final ComponentThemes colors;
+  final String? fontFamily;
   @override
   final TextStyle regular;
 
@@ -106,27 +127,33 @@ class TextMedium extends MobileFonts implements TextWeights {
 }
 
 @immutable
-class TextSmall extends MobileFonts implements TextWeights {
-  TextSmall({super.fontFamily})
-      : regular = TextStyle(
+class TextSmall implements TextWeights {
+  TextSmall({
+    required this.colors,
+    required this.fontFamily,
+  })  : regular = TextStyle(
           fontFamily: fontFamily,
           fontSize: 14,
           height: 20 / 14,
           fontWeight: FontWeight.w400,
+          color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 14,
           height: 20 / 14,
           fontWeight: FontWeight.w500,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 14,
           height: 20 / 14,
           fontWeight: FontWeight.w600,
+          color: colors.textTokens.primary,
         );
-
+  final ComponentThemes colors;
+  final String? fontFamily;
   @override
   final TextStyle regular;
 
@@ -138,27 +165,33 @@ class TextSmall extends MobileFonts implements TextWeights {
 }
 
 @immutable
-class TextXSmall extends MobileFonts implements TextWeights {
-  TextXSmall({super.fontFamily})
-      : regular = TextStyle(
+class TextXSmall implements TextWeights {
+  TextXSmall({
+    required this.colors,
+    required this.fontFamily,
+  })  : regular = TextStyle(
           fontFamily: fontFamily,
           fontSize: 12,
           height: 16 / 12,
           fontWeight: FontWeight.w400,
+          color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 12,
           height: 16 / 12,
           fontWeight: FontWeight.w500,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 12,
           height: 16 / 12,
           fontWeight: FontWeight.w600,
+          color: colors.textTokens.primary,
         );
-
+  final ComponentThemes colors;
+  final String? fontFamily;
   @override
   final TextStyle regular;
 
@@ -169,16 +202,19 @@ class TextXSmall extends MobileFonts implements TextWeights {
   final TextStyle semibold;
 }
 
-class MobileHeadlineSize extends MobileFonts implements HeadlineSize {
+class MobileHeadlineSize implements HeadlineSize {
   MobileHeadlineSize({
-    super.fontFamily,
-  })  : xxl = HeadlineXxl(),
-        xl = HeadlineXl(),
-        lg = HeadlineLg(),
-        md = HeadlineMd(),
-        sm = HeadlineSm(),
-        xs = HeadlineXs();
+    required this.colors,
+    required this.fontFamily,
+  })  : xxl = HeadlineXxl(colors: colors, fontFamily: fontFamily),
+        xl = HeadlineXl(colors: colors, fontFamily: fontFamily),
+        lg = HeadlineLg(colors: colors, fontFamily: fontFamily),
+        md = HeadlineMd(colors: colors, fontFamily: fontFamily),
+        sm = HeadlineSm(colors: colors, fontFamily: fontFamily),
+        xs = HeadlineXs(colors: colors, fontFamily: fontFamily);
 
+  final ComponentThemes colors;
+  final String? fontFamily;
   @override
   final HeadlineWeights xxl;
 
@@ -199,14 +235,17 @@ class MobileHeadlineSize extends MobileFonts implements HeadlineSize {
 }
 
 @immutable
-class HeadlineXxl extends MobileFonts implements HeadlineWeights {
-  HeadlineXxl({super.fontFamily})
-      : medium = TextStyle(
+class HeadlineXxl implements HeadlineWeights {
+  HeadlineXxl({
+    required this.colors,
+    required this.fontFamily,
+  })  : medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 36,
-          height: 44 / 36, // 44sp line height
+          height: 44 / 36,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
@@ -214,6 +253,7 @@ class HeadlineXxl extends MobileFonts implements HeadlineWeights {
           height: 44 / 36,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         bold = TextStyle(
           fontFamily: fontFamily,
@@ -221,7 +261,11 @@ class HeadlineXxl extends MobileFonts implements HeadlineWeights {
           height: 44 / 36,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         );
+
+  final ComponentThemes colors;
+  final String? fontFamily;
 
   @override
   final TextStyle medium;
@@ -234,14 +278,17 @@ class HeadlineXxl extends MobileFonts implements HeadlineWeights {
 }
 
 @immutable
-class HeadlineXl extends MobileFonts implements HeadlineWeights {
-  HeadlineXl({super.fontFamily})
-      : medium = TextStyle(
+class HeadlineXl implements HeadlineWeights {
+  HeadlineXl({
+    required this.colors,
+    required this.fontFamily,
+  })  : medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 32,
           height: 40 / 32,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
@@ -249,6 +296,7 @@ class HeadlineXl extends MobileFonts implements HeadlineWeights {
           height: 40 / 32,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         bold = TextStyle(
           fontFamily: fontFamily,
@@ -256,8 +304,10 @@ class HeadlineXl extends MobileFonts implements HeadlineWeights {
           height: 40 / 32,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         );
-
+  final ComponentThemes colors;
+  final String? fontFamily;
   @override
   final TextStyle medium;
 
@@ -269,14 +319,17 @@ class HeadlineXl extends MobileFonts implements HeadlineWeights {
 }
 
 @immutable
-class HeadlineLg extends MobileFonts implements HeadlineWeights {
-  HeadlineLg({super.fontFamily})
-      : medium = TextStyle(
+class HeadlineLg implements HeadlineWeights {
+  HeadlineLg({
+    required this.colors,
+    required this.fontFamily,
+  })  : medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 28,
           height: 36 / 28,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
@@ -284,6 +337,7 @@ class HeadlineLg extends MobileFonts implements HeadlineWeights {
           height: 36 / 28,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         bold = TextStyle(
           fontFamily: fontFamily,
@@ -291,7 +345,11 @@ class HeadlineLg extends MobileFonts implements HeadlineWeights {
           height: 36 / 28,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         );
+
+  final ComponentThemes colors;
+  final String? fontFamily;
 
   @override
   final TextStyle medium;
@@ -304,14 +362,17 @@ class HeadlineLg extends MobileFonts implements HeadlineWeights {
 }
 
 @immutable
-class HeadlineMd extends MobileFonts implements HeadlineWeights {
-  HeadlineMd({super.fontFamily})
-      : medium = TextStyle(
+class HeadlineMd implements HeadlineWeights {
+  HeadlineMd({
+    required this.colors,
+    required this.fontFamily,
+  })  : medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 24,
           height: 32 / 24,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
@@ -319,6 +380,7 @@ class HeadlineMd extends MobileFonts implements HeadlineWeights {
           height: 32 / 24,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         bold = TextStyle(
           fontFamily: fontFamily,
@@ -326,7 +388,11 @@ class HeadlineMd extends MobileFonts implements HeadlineWeights {
           height: 32 / 24,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         );
+
+  final ComponentThemes colors;
+  final String? fontFamily;
 
   @override
   final TextStyle medium;
@@ -339,14 +405,17 @@ class HeadlineMd extends MobileFonts implements HeadlineWeights {
 }
 
 @immutable
-class HeadlineSm extends MobileFonts implements HeadlineWeights {
-  HeadlineSm({super.fontFamily})
-      : medium = TextStyle(
+class HeadlineSm implements HeadlineWeights {
+  HeadlineSm({
+    required this.colors,
+    required this.fontFamily,
+  })  : medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 20,
           height: 28 / 20,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
@@ -354,6 +423,7 @@ class HeadlineSm extends MobileFonts implements HeadlineWeights {
           height: 28 / 20,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         bold = TextStyle(
           fontFamily: fontFamily,
@@ -361,7 +431,11 @@ class HeadlineSm extends MobileFonts implements HeadlineWeights {
           height: 28 / 20,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         );
+
+  final ComponentThemes colors;
+  final String? fontFamily;
 
   @override
   final TextStyle medium;
@@ -374,14 +448,17 @@ class HeadlineSm extends MobileFonts implements HeadlineWeights {
 }
 
 @immutable
-class HeadlineXs extends MobileFonts implements HeadlineWeights {
-  HeadlineXs({super.fontFamily})
-      : medium = TextStyle(
+class HeadlineXs implements HeadlineWeights {
+  HeadlineXs({
+    required this.colors,
+    required this.fontFamily,
+  })  : medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 18,
           height: 24 / 18,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
@@ -389,6 +466,7 @@ class HeadlineXs extends MobileFonts implements HeadlineWeights {
           height: 24 / 18,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         ),
         bold = TextStyle(
           fontFamily: fontFamily,
@@ -396,7 +474,11 @@ class HeadlineXs extends MobileFonts implements HeadlineWeights {
           height: 24 / 18,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.02,
+          color: colors.textTokens.primary,
         );
+
+  final ComponentThemes colors;
+  final String? fontFamily;
 
   @override
   final TextStyle medium;
