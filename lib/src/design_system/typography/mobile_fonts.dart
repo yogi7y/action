@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'typography.dart';
 
+const interFontFamily = 'Inter';
+
 @immutable
 class MobileFonts implements Fonts {
   const MobileFonts({
-    this.fontFamily = 'Inter',
+    this.fontFamily = interFontFamily,
   });
 
   @override
