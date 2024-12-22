@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,7 +7,9 @@ import '../../../../core/constants/assets.dart';
 import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/checkbox/checkbox.dart';
+import '../../../context/presentation/state/context_provider.dart';
 import '../../../dashboard/presentation/state/app_theme.dart';
+import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task.dart';
 import '../state/tasks_provider.dart';
 
@@ -45,31 +48,48 @@ class TaskTile extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: _spacing.xxs),
-                Row(
-                  spacing: _spacing.xs,
-                  children: [
-                    _TaskMetaData(
-                      iconPath: Assets.hardware,
-                      value: 'Project Name',
-                      onClick: () {},
-                    ),
-                    _TaskMetaData(
-                      iconPath: Assets.tag,
-                      value: 'Context Name',
-                      onClick: () {},
-                    ),
-                    _TaskMetaData(
-                      iconPath: Assets.calendarMonth,
-                      value: 'Tomorrow, 9:00 AM',
-                      onClick: () {},
-                    ),
-                  ],
-                )
+                const _TaskMetaDataRow(),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TaskMetaDataRow extends ConsumerWidget {
+  const _TaskMetaDataRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _spacing = ref.watch(spacingProvider);
+    final _task = ref.watch(scopedTaskProvider);
+
+    final _project = ref.watch(projectByIdProvider(_task.projectId ?? ''));
+    final _context = ref.watch(contextByIdProvider(_task.contextId ?? ''));
+
+    return Row(
+      spacing: _spacing.xs,
+      children: [
+        if (_project != null)
+          _TaskMetaData(
+            iconPath: Assets.hardware,
+            value: _project.name,
+            onClick: () {},
+          ),
+        if (_context != null)
+          _TaskMetaData(
+            iconPath: Assets.tag,
+            value: _context.name,
+            onClick: () {},
+          ),
+        _TaskMetaData(
+          iconPath: Assets.calendarMonth,
+          value: 'Tomorrow, 9:00 AM',
+          onClick: () {},
+        ),
+      ],
     );
   }
 }
