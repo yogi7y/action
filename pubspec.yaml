@@ -8,14 +8,23 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
+  auto_route: ^9.2.2
+  collection: ^1.19.0
+  core_y: ^0.3.1
   envied: ^1.0.0
+  figma_squircle_updated: ^1.0.1
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
+  flutter_svg: ^2.0.16
+  google_sign_in: ^6.2.2
+  rxdart: ^0.28.0
   stack_trace: ^1.12.1
   supabase_flutter: ^2.8.2
+  svg_flutter: ^0.0.1
 
 dev_dependencies:
+  auto_route_generator: ^9.0.0
   build_runner: ^2.4.14
   envied_generator: ^1.0.0
   lints_y:
@@ -32,3 +41,6 @@ flutter:
     - family: Inter
       fonts:
         - asset: assets/fonts/inter_variable.ttf
+
+  assets:
+    - assets/icons/

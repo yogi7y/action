@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'mobile_spacing.dart';
 
 @immutable
 abstract class Spacing {
@@ -18,3 +21,5 @@ abstract class Spacing {
 
   double get xxl;
 }
+
+final spacingProvider = Provider<Spacing>((ref) => const MobileSpacing());
