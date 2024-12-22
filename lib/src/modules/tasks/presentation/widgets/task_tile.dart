@@ -17,7 +17,6 @@ class TaskTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _task = ref.watch(scopedTaskProvider);
-    final _colors = ref.watch(appThemeProvider);
     final _spacing = ref.watch(spacingProvider);
     final _fonts = ref.watch(fontsProvider);
 
@@ -27,8 +26,11 @@ class TaskTile extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppCheckbox(
-            state: AppCheckboxState.fromTaskStatus(status: _task.status),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: AppCheckbox(
+              state: AppCheckboxState.fromTaskStatus(status: _task.status),
+            ),
           ),
           SizedBox(width: _spacing.xs),
           Expanded(
