@@ -2,6 +2,11 @@
 
 Things which require some action.
 
+## Definitions
+
+- Organized task: A task is organized if it has a (project and context) or is marked as done.
+- Unorganized: A task which does not have a project or context or is not marked as done.
+
 ### As a user, I should be able to:
 
 - quickly capture a task to let it out of my head.
