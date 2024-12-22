@@ -10,3 +10,5 @@ build
 
 *.keystore
 key.properties
+
+.DS_Store
