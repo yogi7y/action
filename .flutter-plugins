@@ -2,6 +2,10 @@
 app_links=/Users/yogi/.pub-cache/hosted/pub.dev/app_links-6.3.3/
 app_links_linux=/Users/yogi/.pub-cache/hosted/pub.dev/app_links_linux-1.0.3/
 app_links_web=/Users/yogi/.pub-cache/hosted/pub.dev/app_links_web-1.0.4/
+google_sign_in=/Users/yogi/.pub-cache/hosted/pub.dev/google_sign_in-6.2.2/
+google_sign_in_android=/Users/yogi/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.34/
+google_sign_in_ios=/Users/yogi/.pub-cache/hosted/pub.dev/google_sign_in_ios-5.7.8/
+google_sign_in_web=/Users/yogi/.pub-cache/hosted/pub.dev/google_sign_in_web-0.12.4+3/
 gtk=/Users/yogi/.pub-cache/hosted/pub.dev/gtk-2.1.0/
 path_provider=/Users/yogi/.pub-cache/hosted/pub.dev/path_provider-2.1.5/
 path_provider_android=/Users/yogi/.pub-cache/hosted/pub.dev/path_provider_android-2.2.15/

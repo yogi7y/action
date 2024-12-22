@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'core/router/app_router.dart';
 import 'design_system/typography/mobile_fonts.dart';
-import 'modules/authentication/presentation/splash_screen.dart';
 
 @immutable
 class App extends StatelessWidget {
@@ -9,8 +9,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const SplashScreen(),
+    final _router = AppRouter();
+
+    return MaterialApp.router(
+      routerConfig: _router.config(),
       theme: ThemeData(
         fontFamily: interFontFamily,
       ),
