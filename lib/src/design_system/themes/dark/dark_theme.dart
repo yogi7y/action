@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../colors/primitive_tokens.dart';
 import '../base/semantics/bottom_navigation_bar.dart';
@@ -14,6 +15,11 @@ import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
+
+final darkThemeColorsProvider = Provider<DarkTheme>((ref) {
+  final _primitiveTokens = ref.watch(primitiveTokensProvider);
+  return DarkTheme(primitiveTokens: _primitiveTokens);
+});
 
 @immutable
 class DarkBaseTheme implements BaseTheme {
@@ -36,7 +42,7 @@ class DarkBaseTheme implements BaseTheme {
 }
 
 @immutable
-class DarkTheme extends DarkBaseTheme implements ComponentThemes {
+class DarkTheme extends DarkBaseTheme implements AppTheme {
   DarkTheme({required super.primitiveTokens})
       : selectedBottomNavigationItem =
             DarkBottomNavigationSelectedTokens(primitiveTokens: primitiveTokens),

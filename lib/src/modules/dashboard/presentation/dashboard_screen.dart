@@ -7,8 +7,8 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../design_system/spacing/spacing.dart';
-import '../../../design_system/themes/base/theme.dart';
 import '../../../design_system/typography/typography.dart';
+import 'state/app_theme.dart';
 import 'state/bottom_nav_items_provider.dart';
 
 @RoutePage()
@@ -56,20 +56,20 @@ class _DashboardScreenScaffoldState extends ConsumerState<_DashboardScreenScaffo
   void initState() {
     super.initState();
 
-    // widget.controller.addListener(() {
-    //   final _index = widget.controller.page!.round();
-    //   final _items = ref.read(bottomNavItemsProvider);
-    //   final _newSelectedItem = _items[_index];
+    widget.controller.addListener(() {
+      final _index = widget.controller.page!.round();
+      final _items = ref.read(bottomNavItemsProvider);
+      final _newSelectedItem = _items[_index];
 
-    //   final _newSelectedItemWithIndex = (index: _index, item: _newSelectedItem);
+      final _newSelectedItemWithIndex = (index: _index, item: _newSelectedItem);
 
-    //   ref.read(selectedBottomNavProvider.notifier).update((e) => _newSelectedItemWithIndex);
-    // });
+      ref.read(selectedBottomNavProvider.notifier).update((e) => _newSelectedItemWithIndex);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final _colors = ref.watch(colorsProvider);
+    final _colors = ref.watch(appThemeProvider);
     final _items = ref.watch(bottomNavItemsProvider);
     final _selectedItem = ref.watch(selectedBottomNavProvider);
     final _tabRouter = AutoTabsRouter.of(context);
@@ -123,7 +123,7 @@ class BottomNavItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(colorsProvider);
+    final _colors = ref.watch(appThemeProvider);
     final _fonts = ref.watch(fontsProvider);
     final _spacing = ref.watch(spacingProvider);
 
@@ -151,7 +151,15 @@ class BottomNavItem extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          SvgPicture.asset(data.iconPath),
+          SvgPicture.asset(
+            data.iconPath,
+            colorFilter: ColorFilter.mode(
+              isSelected
+                  ? _colors.selectedBottomNavigationItem.text
+                  : _colors.unselectedBottomNavigationItem.text,
+              BlendMode.srcIn,
+            ),
+          ),
           SizedBox(height: _spacing.xxs),
           Text(
             data.label,

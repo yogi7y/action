@@ -2,8 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../design_system/themes/base/theme.dart';
-import '../../../../design_system/typography/typography.dart';
+import '../../../../shared/buttons/async_button.dart';
+import '../../../dashboard/presentation/state/app_theme.dart';
 
 @RoutePage()
 class ProfileScreen extends ConsumerWidget {
@@ -11,15 +11,14 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(colorsProvider);
-    final _fonts = ref.watch(fontsProvider);
+    final _colors = ref.watch(appThemeProvider);
 
     return Scaffold(
       backgroundColor: _colors.surface.background,
       body: Center(
-        child: Text(
-          'Profile Screen',
-          style: _fonts.headline.md.bold,
+        child: AsyncButton(
+          text: 'Change Theme',
+          onClick: () async => ref.read(appThemeProvider.notifier).toggle(),
         ),
       ),
     );

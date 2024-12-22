@@ -21,7 +21,7 @@ class HomeScreen extends ConsumerWidget {
             text: 'Go to Profile',
             onClick: () async {
               final _router = AutoRouter.of(context);
-              // unawaited(_router.push(const ProfileRoute()));
+              unawaited(_router.push(const ProfileRoute()));
             },
           ),
         ],

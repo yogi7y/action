@@ -6,6 +6,7 @@ import '../../modules/authentication/presentation/screens/splash_screen.dart';
 import '../../modules/dashboard/presentation/dashboard_screen.dart';
 import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
+import '../../modules/profile/presentation/screens/profile_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
 

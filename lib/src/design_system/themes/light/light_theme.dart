@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../colors/primitive_tokens.dart';
 import '../base/semantics/bottom_navigation_bar.dart';
@@ -14,6 +15,11 @@ import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
+
+final lightThemeColorsProvider = Provider<LightTheme>((ref) {
+  final _primitiveTokens = ref.watch(primitiveTokensProvider);
+  return LightTheme(primitiveTokens: _primitiveTokens);
+});
 
 @immutable
 class LightBaseTheme implements BaseTheme {
@@ -36,7 +42,7 @@ class LightBaseTheme implements BaseTheme {
 }
 
 @immutable
-class LightTheme extends LightBaseTheme implements ComponentThemes {
+class LightTheme extends LightBaseTheme implements AppTheme {
   LightTheme({required super.primitiveTokens})
       : selectedBottomNavigationItem =
             LightBottomNavigationSelectedTokens(primitiveTokens: primitiveTokens),

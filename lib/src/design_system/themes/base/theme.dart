@@ -10,19 +10,6 @@ import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
 
-final primitiveColorTokens = Provider((ref) => const PrimitiveColorTokens());
-
-final colorsProvider = StateProvider<ComponentThemes>((ref) {
-  try {
-    return DarkTheme(
-      primitiveTokens: ref.watch(primitiveColorTokens),
-    );
-  } catch (e) {
-    debugPrint(e.toString());
-    rethrow;
-  }
-});
-
 @immutable
 abstract class BaseTheme {
   const BaseTheme({
@@ -37,8 +24,8 @@ abstract class BaseTheme {
 }
 
 @immutable
-abstract class ComponentThemes extends BaseTheme {
-  const ComponentThemes({
+abstract class AppTheme extends BaseTheme {
+  const AppTheme({
     required super.primary,
     required super.surface,
     required super.textTokens,

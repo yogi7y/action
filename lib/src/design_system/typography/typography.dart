@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../themes/base/theme.dart';
+import '../../modules/dashboard/presentation/state/app_theme.dart';
 import 'mobile_fonts.dart';
 import 'weights.dart';
 
 final fontsProvider = Provider<Fonts>((ref) {
-  final _colors = ref.watch(colorsProvider);
+  final _colors = ref.watch(appThemeProvider);
   return MobileFonts(colors: _colors);
 });
 

@@ -8,7 +8,7 @@ class LightPrimaryButtonTokens extends LightBaseTheme implements ButtonTokens {
   LightPrimaryButtonTokens({required super.primitiveTokens});
 
   @override
-  Color get background => primitiveTokens.rose.shade300;
+  Color get background => primary;
 
   @override
   Color get text => primitiveTokens.white;

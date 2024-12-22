@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'shades/neutral_shades.dart';
 import 'shades/rose_shades.dart';
 import 'shades/shades.dart';
+
+final primitiveTokensProvider =
+    Provider<PrimitiveColorTokens>((ref) => const PrimitiveColorTokens());
 
 @immutable
 class PrimitiveColorTokens {

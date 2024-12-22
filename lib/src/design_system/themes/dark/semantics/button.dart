@@ -8,7 +8,7 @@ class DarkPrimaryButtonTokens extends DarkBaseTheme implements ButtonTokens {
   DarkPrimaryButtonTokens({required super.primitiveTokens});
 
   @override
-  Color get background => primitiveTokens.rose.shade500;
+  Color get background => primary;
 
   @override
   Color get text => primitiveTokens.white;

@@ -16,7 +16,7 @@ class MobileFonts implements Fonts {
   @override
   final String fontFamily;
 
-  final ComponentThemes colors;
+  final AppTheme colors;
 
   @override
   final TextSize text;
@@ -33,7 +33,7 @@ class MobileTextSize implements TextSize {
         sm = TextSmall(colors: colors, fontFamily: fontFamily),
         xs = TextXSmall(colors: colors, fontFamily: fontFamily);
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -76,7 +76,7 @@ class TextLarge implements TextWeights {
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -114,7 +114,7 @@ class TextMedium implements TextWeights {
           fontWeight: FontWeight.w600,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -152,7 +152,7 @@ class TextSmall implements TextWeights {
           fontWeight: FontWeight.w600,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -190,7 +190,7 @@ class TextXSmall implements TextWeights {
           fontWeight: FontWeight.w600,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -213,7 +213,7 @@ class MobileHeadlineSize implements HeadlineSize {
         sm = HeadlineSm(colors: colors, fontFamily: fontFamily),
         xs = HeadlineXs(colors: colors, fontFamily: fontFamily);
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final HeadlineWeights xxl;
@@ -264,7 +264,7 @@ class HeadlineXxl implements HeadlineWeights {
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -306,7 +306,7 @@ class HeadlineXl implements HeadlineWeights {
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle medium;
@@ -348,7 +348,7 @@ class HeadlineLg implements HeadlineWeights {
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -391,7 +391,7 @@ class HeadlineMd implements HeadlineWeights {
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -434,7 +434,7 @@ class HeadlineSm implements HeadlineWeights {
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -477,7 +477,7 @@ class HeadlineXs implements HeadlineWeights {
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
