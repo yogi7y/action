@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:ffi';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:figma_squircle_updated/figma_squircle.dart';
@@ -8,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../core/constants/assets.dart';
 import '../../../core/router/app_router.dart';
 import '../../../design_system/spacing/spacing.dart';
 import '../../../design_system/themes/base/theme.dart';
@@ -60,15 +56,15 @@ class _DashboardScreenScaffoldState extends ConsumerState<_DashboardScreenScaffo
   void initState() {
     super.initState();
 
-    widget.controller.addListener(() {
-      final _index = widget.controller.page!.round();
-      final _items = ref.read(bottomNavItemsProvider);
-      final _newSelectedItem = _items[_index];
+    // widget.controller.addListener(() {
+    //   final _index = widget.controller.page!.round();
+    //   final _items = ref.read(bottomNavItemsProvider);
+    //   final _newSelectedItem = _items[_index];
 
-      final _newSelectedItemWithIndex = (index: _index, item: _newSelectedItem);
+    //   final _newSelectedItemWithIndex = (index: _index, item: _newSelectedItem);
 
-      ref.read(selectedBottomNavProvider.notifier).update((e) => _newSelectedItemWithIndex);
-    });
+    //   ref.read(selectedBottomNavProvider.notifier).update((e) => _newSelectedItemWithIndex);
+    // });
   }
 
   @override

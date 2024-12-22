@@ -4,8 +4,8 @@ import '../../base/semantics/checkbox.dart';
 import '../dark_theme.dart';
 
 @immutable
-class DarkCheckboxUnselectedTokens extends DarkTheme implements CheckboxTokens {
-  const DarkCheckboxUnselectedTokens({required super.primitiveTokens});
+class DarkCheckboxUnselectedTokens extends DarkBaseTheme implements CheckboxTokens {
+  DarkCheckboxUnselectedTokens({required super.primitiveTokens});
 
   @override
   Color get background => primitiveTokens.neutral.shade500;
@@ -15,8 +15,8 @@ class DarkCheckboxUnselectedTokens extends DarkTheme implements CheckboxTokens {
 }
 
 @immutable
-class DarkCheckboxSelectedTokens extends DarkTheme implements CheckboxTokens {
-  const DarkCheckboxSelectedTokens({required super.primitiveTokens});
+class DarkCheckboxSelectedTokens extends DarkBaseTheme implements CheckboxTokens {
+  DarkCheckboxSelectedTokens({required super.primitiveTokens});
 
   @override
   Color get background => primary;
@@ -26,8 +26,8 @@ class DarkCheckboxSelectedTokens extends DarkTheme implements CheckboxTokens {
 }
 
 @immutable
-class DarkCheckboxIntermediateTokens extends DarkTheme implements CheckboxTokens {
-  const DarkCheckboxIntermediateTokens({required super.primitiveTokens});
+class DarkCheckboxIntermediateTokens extends DarkBaseTheme implements CheckboxTokens {
+  DarkCheckboxIntermediateTokens({required super.primitiveTokens});
 
   @override
   Color get background => primary;

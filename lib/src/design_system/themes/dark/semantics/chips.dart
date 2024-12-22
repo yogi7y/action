@@ -4,8 +4,8 @@ import '../../base/semantics/chips.dart';
 import '../dark_theme.dart';
 
 @immutable
-class DarkUnselectedChipsTokens extends DarkTheme implements ChipsTokens {
-  const DarkUnselectedChipsTokens({required super.primitiveTokens});
+class DarkUnselectedChipsTokens extends DarkBaseTheme implements ChipsTokens {
+  DarkUnselectedChipsTokens({required super.primitiveTokens});
 
   @override
   Color get background => primitiveTokens.neutral.shade800;
@@ -15,8 +15,8 @@ class DarkUnselectedChipsTokens extends DarkTheme implements ChipsTokens {
 }
 
 @immutable
-class DarkSelectedChipsTokens extends DarkTheme implements ChipsTokens {
-  const DarkSelectedChipsTokens({required super.primitiveTokens});
+class DarkSelectedChipsTokens extends DarkBaseTheme implements ChipsTokens {
+  DarkSelectedChipsTokens({required super.primitiveTokens});
 
   @override
   Color get background => primary;
@@ -26,8 +26,8 @@ class DarkSelectedChipsTokens extends DarkTheme implements ChipsTokens {
 }
 
 @immutable
-class DarkSelectableChipsSelectedTokens extends DarkTheme implements SelectableChipsTokens {
-  const DarkSelectableChipsSelectedTokens({required super.primitiveTokens});
+class DarkSelectableChipsSelectedTokens extends DarkBaseTheme implements SelectableChipsTokens {
+  DarkSelectableChipsSelectedTokens({required super.primitiveTokens});
 
   @override
   Color get border => primitiveTokens.neutral.shade700;
@@ -37,8 +37,8 @@ class DarkSelectableChipsSelectedTokens extends DarkTheme implements SelectableC
 }
 
 @immutable
-class DarkSelectableChipsUnselectedTokens extends DarkTheme implements SelectableChipsTokens {
-  const DarkSelectableChipsUnselectedTokens({required super.primitiveTokens});
+class DarkSelectableChipsUnselectedTokens extends DarkBaseTheme implements SelectableChipsTokens {
+  DarkSelectableChipsUnselectedTokens({required super.primitiveTokens});
 
   @override
   Color get border => primitiveTokens.neutral.shade700;

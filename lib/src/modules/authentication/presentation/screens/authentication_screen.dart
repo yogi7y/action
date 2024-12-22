@@ -22,7 +22,7 @@ class AuthenticationScreen extends ConsumerWidget {
           onPressed: () async {
             final _authUseCase = ref.read(authUseCaseProvider);
 
-            final _result = await _authUseCase.signInWithGoogle();
+            await _authUseCase.signInWithGoogle();
           },
           child: Text(
             'Sign in with Google',

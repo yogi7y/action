@@ -36,7 +36,7 @@ class SupabaseAuthRepository implements AuthRepository {
       );
     }
 
-    final _result = await _supabaseAuth.signInWithIdToken(
+    await _supabaseAuth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: _idToken,
       accessToken: _accessToken,

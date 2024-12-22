@@ -4,8 +4,8 @@ import '../../base/semantics/checkbox.dart';
 import '../light_theme.dart';
 
 @immutable
-class LightCheckboxUnselectedTokens extends LightTheme implements CheckboxTokens {
-  const LightCheckboxUnselectedTokens({required super.primitiveTokens});
+class LightCheckboxUnselectedTokens extends LightBaseTheme implements CheckboxTokens {
+  LightCheckboxUnselectedTokens({required super.primitiveTokens});
 
   @override
   Color get background => primitiveTokens.neutral.shade400;
@@ -15,8 +15,8 @@ class LightCheckboxUnselectedTokens extends LightTheme implements CheckboxTokens
 }
 
 @immutable
-class LightCheckboxSelectedTokens extends LightTheme implements CheckboxTokens {
-  const LightCheckboxSelectedTokens({required super.primitiveTokens});
+class LightCheckboxSelectedTokens extends LightBaseTheme implements CheckboxTokens {
+  LightCheckboxSelectedTokens({required super.primitiveTokens});
 
   @override
   Color get background => primary;
@@ -26,8 +26,8 @@ class LightCheckboxSelectedTokens extends LightTheme implements CheckboxTokens {
 }
 
 @immutable
-class LightCheckboxIntermediateTokens extends LightTheme implements CheckboxTokens {
-  const LightCheckboxIntermediateTokens({required super.primitiveTokens});
+class LightCheckboxIntermediateTokens extends LightBaseTheme implements CheckboxTokens {
+  LightCheckboxIntermediateTokens({required super.primitiveTokens});
 
   @override
   Color get background => primary;

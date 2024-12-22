@@ -12,9 +12,16 @@ import 'semantics/text.dart';
 
 final primitiveColorTokens = Provider((ref) => const PrimitiveColorTokens());
 
-final colorsProvider = StateProvider<ComponentThemes>((ref) => DarkTheme(
+final colorsProvider = StateProvider<ComponentThemes>((ref) {
+  try {
+    return DarkTheme(
       primitiveTokens: ref.watch(primitiveColorTokens),
-    ));
+    );
+  } catch (e) {
+    debugPrint(e.toString());
+    rethrow;
+  }
+});
 
 @immutable
 abstract class BaseTheme {
@@ -41,6 +48,7 @@ abstract class ComponentThemes extends BaseTheme {
     required this.unselectedCheckbox,
     required this.intermediateCheckbox,
     required this.primaryButton,
+    required this.secondaryButton,
     required this.unselectedChips,
     required this.selectedChips,
     required this.selectableChipsSelected,
@@ -54,6 +62,7 @@ abstract class ComponentThemes extends BaseTheme {
   final CheckboxTokens unselectedCheckbox;
   final CheckboxTokens intermediateCheckbox;
   final ButtonTokens primaryButton;
+  final ButtonTokens secondaryButton;
   final ChipsTokens unselectedChips;
   final ChipsTokens selectedChips;
   final SelectableChipsTokens selectableChipsSelected;
