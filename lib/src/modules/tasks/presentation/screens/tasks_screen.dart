@@ -9,6 +9,8 @@ import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/chips/chips.dart';
 import '../../../dashboard/presentation/state/app_theme.dart';
+import '../sections/tasks_list.dart';
+import '../state/tasks_provider.dart';
 
 @RoutePage()
 class TasksScreen extends ConsumerWidget {
@@ -63,7 +65,9 @@ class TasksScreen extends ConsumerWidget {
                 AppChips(label: 'Todo', iconPath: Assets.check),
               ],
             ),
-          )
+          ),
+          SizedBox(height: _spacing.xxl),
+          const Expanded(child: TasksList()),
         ],
       ),
     );
