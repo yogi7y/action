@@ -15,6 +15,7 @@ dependencies:
   figma_squircle_updated: ^1.0.1
   flutter:
     sdk: flutter
+  flutter_keyboard_visibility: ^6.0.0
   flutter_riverpod: ^2.6.1
   flutter_svg: ^2.0.16
   google_sign_in: ^6.2.2

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -12,6 +13,7 @@ import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
 import 'state/app_theme.dart';
 import 'state/bottom_nav_items_provider.dart';
+import 'state/keyboard_visibility_provider.dart';
 
 @RoutePage()
 class DashboardScreen extends ConsumerStatefulWidget {
