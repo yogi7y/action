@@ -84,6 +84,7 @@ class AppCheckbox extends ConsumerWidget {
               ? Center(
                   child: Container(
                     height: 3,
+                    margin: const EdgeInsets.symmetric(horizontal: 1),
                     decoration: ShapeDecoration(
                       color: _primitiveColors.neutral.shade100,
                       shape: SmoothRectangleBorder(

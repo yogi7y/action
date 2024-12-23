@@ -45,6 +45,7 @@ class AppChips extends ConsumerWidget {
             iconPath,
             height: 16,
             width: 16,
+            colorFilter: ColorFilter.mode(_chipsTheme.text, BlendMode.srcIn),
           ),
           Text(
             label,

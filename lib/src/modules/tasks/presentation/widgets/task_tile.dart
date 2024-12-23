@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/constants/assets.dart';
+import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/checkbox/checkbox.dart';
@@ -46,11 +47,19 @@ class TaskTile extends ConsumerWidget {
                       padding: const EdgeInsets.only(right: 60),
                       child: Text(
                         _task.name,
-                        style: _fonts.text.sm.medium,
+                        style: _fonts.text.sm.medium.copyWith(
+                          color: _colors.textTokens.primary,
+                          fontVariations: [
+                            const FontVariation('wght', 500),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: _spacing.xxs),
-                    const _TaskMetaDataRow(),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: _TaskMetaDataRow(),
+                    ),
                   ],
                 ),
               ),
@@ -84,8 +93,9 @@ class _TaskMetaDataRow extends ConsumerWidget {
 
     final _project = ref.watch(projectByIdProvider(_task.projectId ?? ''));
     final _context = ref.watch(contextByIdProvider(_task.contextId ?? ''));
+    final _dueDate = _task.dueDate;
 
-    return Row(
+    return Wrap(
       spacing: _spacing.xs,
       children: [
         if (_project != null)
@@ -100,11 +110,12 @@ class _TaskMetaDataRow extends ConsumerWidget {
             value: _context.name,
             onClick: () {},
           ),
-        _TaskMetaData(
-          iconPath: Assets.calendarMonth,
-          value: 'Tomorrow, 9:00 AM',
-          onClick: () {},
-        ),
+        if (_dueDate != null)
+          _TaskMetaData(
+            iconPath: Assets.calendarMonth,
+            value: _dueDate.relativeDate,
+            onClick: () {},
+          ),
       ],
     );
   }
@@ -125,12 +136,12 @@ class _TaskMetaData extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final _colors = ref.watch(appThemeProvider);
     final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onClick,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset(
             iconPath,
@@ -141,11 +152,12 @@ class _TaskMetaData extends ConsumerWidget {
               BlendMode.srcIn,
             ),
           ),
-          SizedBox(width: _spacing.xxs),
+          const SizedBox(width: 2),
           Text(
             value,
-            style: _fonts.text.xs.medium.copyWith(
+            style: _fonts.text.xs.regular.copyWith(
               color: _colors.textTokens.secondary,
+              fontVariations: [const FontVariation.weight(500)],
             ),
           )
         ],

@@ -9,6 +9,7 @@ import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/chips/chips.dart';
 import '../../../dashboard/presentation/state/app_theme.dart';
+import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/tasks_provider.dart';
 
@@ -46,26 +47,7 @@ class TasksScreen extends ConsumerWidget {
       body: Column(
         children: [
           SizedBox(height: _spacing.md),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.only(left: _spacing.lg),
-            child: Row(
-              spacing: _spacing.xs,
-              children: const [
-                AppChips(
-                  label: 'Inbox',
-                  iconPath: Assets.inbox,
-                  isSelected: true,
-                ),
-                AppChips(label: 'In Progress', iconPath: Assets.play),
-                AppChips(label: 'Todo', iconPath: Assets.check),
-                AppChips(label: 'Todo', iconPath: Assets.check),
-                AppChips(label: 'Todo', iconPath: Assets.check),
-                AppChips(label: 'Todo', iconPath: Assets.check),
-                AppChips(label: 'Todo', iconPath: Assets.check),
-              ],
-            ),
-          ),
+          const TasksFilters(),
           SizedBox(height: _spacing.xxl),
           const Expanded(child: TasksList()),
         ],
