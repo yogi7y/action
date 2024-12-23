@@ -15,7 +15,10 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<Result<UserEntity, AppException>> signInWithGoogle() async {
+    final iOSClientId = Env.googleIosClientId;
+
     final _googleSignIn = GoogleSignIn(
+      clientId: iOSClientId,
       serverClientId: Env.googleWebClientId,
     );
 

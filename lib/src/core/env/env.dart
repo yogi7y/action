@@ -14,4 +14,7 @@ abstract class Env {
 
   @EnviedField(varName: 'GOOGLE_WEB_CLIENT_ID')
   static final String googleWebClientId = _Env.googleWebClientId;
+
+  @EnviedField(varName: 'GOOGLE_IOS_CLIENT_ID')
+  static final String googleIosClientId = _Env.googleIosClientId;
 }
