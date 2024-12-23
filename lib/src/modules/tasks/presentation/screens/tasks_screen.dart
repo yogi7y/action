@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:smart_textfield/smart_textfield.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/assets.dart';
@@ -9,8 +11,10 @@ import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/chips/chips.dart';
 import '../../../dashboard/presentation/state/app_theme.dart';
+import '../sections/task_input_field.dart';
 import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
+import '../state/new_task_provider.dart';
 import '../state/tasks_provider.dart';
 
 @RoutePage()
@@ -52,14 +56,27 @@ class TasksScreen extends ConsumerWidget {
               SizedBox(width: _spacing.xs),
             ],
           ),
-          SliverToBoxAdapter(
-            child: SizedBox(height: _spacing.xxs),
-          ),
+          SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
           const SliverToBoxAdapter(child: TasksFilters()),
           SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+          const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
           const SliverTasksList(),
           SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value);
+        },
+        backgroundColor: _colors.primary,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
+        ),
+        child: SvgPicture.asset(
+          Assets.add,
+          height: 32,
+          width: 32,
+        ),
       ),
     );
   }
