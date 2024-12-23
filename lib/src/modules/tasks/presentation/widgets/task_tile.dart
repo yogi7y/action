@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:core_y/src/extensions/time_ago.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,7 +10,6 @@ import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../dashboard/presentation/state/app_theme.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
-import '../../domain/entity/task.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
@@ -22,38 +21,55 @@ class TaskTile extends ConsumerWidget {
     final _task = ref.watch(scopedTaskProvider);
     final _spacing = ref.watch(spacingProvider);
     final _fonts = ref.watch(fontsProvider);
+    final _colors = ref.watch(appThemeProvider);
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: _spacing.lg) +
-          EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: AppCheckbox(
-              state: AppCheckboxState.fromTaskStatus(status: _task.status),
-            ),
-          ),
-          SizedBox(width: _spacing.xs),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 60),
-                  child: Text(
-                    _task.name,
-                    style: _fonts.text.sm.medium,
-                  ),
+    return Stack(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: _spacing.lg) +
+              EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: AppCheckbox(
+                  state: AppCheckboxState.fromTaskStatus(status: _task.status),
                 ),
-                SizedBox(height: _spacing.xxs),
-                const _TaskMetaDataRow(),
-              ],
+              ),
+              SizedBox(width: _spacing.xs),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 60),
+                      child: Text(
+                        _task.name,
+                        style: _fonts.text.sm.medium,
+                      ),
+                    ),
+                    SizedBox(height: _spacing.xxs),
+                    const _TaskMetaDataRow(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: _spacing.xs,
+          right: _spacing.lg,
+          child: Text(
+            _task.createdAt.timeAgo,
+            style: _fonts.text.xs.regular.copyWith(
+              fontSize: 10,
+              height: 16 / 10,
+              color: _colors.textTokens.secondary,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
