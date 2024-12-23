@@ -4,16 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/tasks_provider.dart';
 import '../widgets/task_tile.dart';
 
-class TasksList extends ConsumerWidget {
-  const TasksList({super.key});
+class SliverTasksList extends ConsumerWidget {
+  const SliverTasksList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(tasksProvider).when(
-          data: (tasks) {
-            return ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
+          data: (tasks) => SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
                 final task = tasks[index];
                 return ProviderScope(
                   overrides: [
@@ -22,10 +21,12 @@ class TasksList extends ConsumerWidget {
                   child: const TaskTile(),
                 );
               },
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(child: Text(error.toString())),
+              childCount: tasks.length,
+            ),
+          ),
+          loading: () =>
+              const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+          error: (error, _) => SliverFillRemaining(child: Center(child: Text(error.toString()))),
         );
   }
 }

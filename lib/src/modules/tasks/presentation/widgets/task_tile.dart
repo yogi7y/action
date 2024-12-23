@@ -33,7 +33,7 @@ class TaskTile extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.only(top: 4),
                 child: AppCheckbox(
                   state: AppCheckboxState.fromTaskStatus(status: _task.status),
                 ),
@@ -47,10 +47,11 @@ class TaskTile extends ConsumerWidget {
                       padding: const EdgeInsets.only(right: 60),
                       child: Text(
                         _task.name,
-                        style: _fonts.text.sm.medium.copyWith(
+                        style: _fonts.text.md.regular.copyWith(
                           color: _colors.textTokens.primary,
+                          fontSize: 15,
                           fontVariations: [
-                            const FontVariation('wght', 500),
+                            const FontVariation.weight(450),
                           ],
                         ),
                       ),
@@ -155,9 +156,8 @@ class _TaskMetaData extends ConsumerWidget {
           const SizedBox(width: 2),
           Text(
             value,
-            style: _fonts.text.xs.regular.copyWith(
+            style: _fonts.text.xs.medium.copyWith(
               color: _colors.textTokens.secondary,
-              fontVariations: [const FontVariation.weight(500)],
             ),
           )
         ],

@@ -9,7 +9,7 @@ abstract class Assets {
   static const String alertTriangle = '$_iconsPath/alert_triangle.svg';
   static const String bookmarkAdd = '$_iconsPath/bookmark_add.svg';
   static const String calendarMonth = '$_iconsPath/calendar_month.svg';
-  static const String check = '$_iconsPath/check.svg';
+  static const String check = '$_iconsPath/check_bold.svg';
   static const String construction = '$_iconsPath/construction.svg';
   static const String explore = '$_iconsPath/explore.svg';
   static const String hardware = '$_iconsPath/hardware.svg';

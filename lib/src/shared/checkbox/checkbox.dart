@@ -62,7 +62,7 @@ class AppCheckbox extends ConsumerWidget {
     return Container(
       width: size,
       height: size,
-      padding: const EdgeInsets.all(2),
+      // padding: const EdgeInsets.all(2),
       decoration: ShapeDecoration(
         color: _isUnchecked ? null : _checkboxTheme.background,
         shape: SmoothRectangleBorder(
@@ -73,22 +73,38 @@ class AppCheckbox extends ConsumerWidget {
         ),
       ),
       child: _isChecked
-          ? SvgPicture.asset(
-              Assets.check,
-              colorFilter: ColorFilter.mode(
-                _primitiveColors.neutral.shade100,
-                BlendMode.srcIn,
-              ),
+          ? Stack(
+              alignment: Alignment.center,
+              children: [
+                SvgPicture.asset(
+                  Assets.check,
+                  colorFilter: ColorFilter.mode(
+                    _primitiveColors.neutral.shade100,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                // Slightly offset duplicate to create bold effect
+                Transform.translate(
+                  offset: const Offset(0.4, 0.4),
+                  child: SvgPicture.asset(
+                    Assets.check,
+                    colorFilter: ColorFilter.mode(
+                      _primitiveColors.neutral.shade100,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ],
             )
           : _isIntermediate
               ? Center(
                   child: Container(
-                    height: 3,
-                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                    height: 2.5,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
                     decoration: ShapeDecoration(
                       color: _primitiveColors.neutral.shade100,
                       shape: SmoothRectangleBorder(
-                        borderRadius: SmoothBorderRadius(cornerRadius: 2, cornerSmoothing: 1),
+                        borderRadius: SmoothBorderRadius(cornerRadius: 4, cornerSmoothing: 1),
                       ),
                     ),
                   ),

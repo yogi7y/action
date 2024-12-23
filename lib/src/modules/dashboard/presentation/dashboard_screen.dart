@@ -8,6 +8,8 @@ import 'package:flutter_svg/svg.dart';
 import '../../../core/router/app_router.dart';
 import '../../../design_system/spacing/spacing.dart';
 import '../../../design_system/typography/typography.dart';
+import '../../context/presentation/state/context_provider.dart';
+import '../../projects/presentation/state/projects_provider.dart';
 import 'state/app_theme.dart';
 import 'state/bottom_nav_items_provider.dart';
 
@@ -20,6 +22,15 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    ref
+      ..read(projectsProvider)
+      ..read(contextsProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AutoTabsRouter.pageView(

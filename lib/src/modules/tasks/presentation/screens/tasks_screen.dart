@@ -24,32 +24,41 @@ class TasksScreen extends ConsumerWidget {
     final _spacing = ref.watch(spacingProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _colors.surface.background,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Padding(
-          padding: EdgeInsets.only(left: _spacing.md),
-          child: Text(
-            'Tasks',
-            style: _fonts.headline.lg.semibold,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            leadingWidth: 0,
+            pinned: true,
+            elevation: 0,
+            titleSpacing: _spacing.lg,
+            shadowColor: Colors.transparent,
+            automaticallyImplyLeading: false,
+            toolbarHeight: kToolbarHeight + _spacing.md,
+            backgroundColor: _colors.surface.background,
+            title: Text(
+              'Tasks',
+              style: _fonts.headline.lg.semibold,
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: SvgPicture.asset(
+                  Assets.search,
+                  height: 24,
+                  width: 24,
+                  colorFilter: ColorFilter.mode(_colors.textTokens.primary, BlendMode.srcIn),
+                ),
+              ),
+              SizedBox(width: _spacing.xs),
+            ],
           ),
-        ),
-        actions: [
-          SvgPicture.asset(
-            Assets.search,
-            height: 24,
-            width: 24,
+          SliverToBoxAdapter(
+            child: SizedBox(height: _spacing.xxs),
           ),
-          SizedBox(width: _spacing.lg),
-        ],
-      ),
-      body: Column(
-        children: [
-          SizedBox(height: _spacing.md),
-          const TasksFilters(),
-          SizedBox(height: _spacing.xxl),
-          const Expanded(child: TasksList()),
+          const SliverToBoxAdapter(child: TasksFilters()),
+          SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+          const SliverTasksList(),
+          SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
         ],
       ),
     );
