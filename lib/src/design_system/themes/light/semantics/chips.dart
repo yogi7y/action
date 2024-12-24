@@ -30,10 +30,13 @@ class LightSelectableChipsSelectedTokens extends LightBaseTheme implements Selec
   LightSelectableChipsSelectedTokens({required super.primitiveTokens});
 
   @override
-  Color get border => primitiveTokens.neutral.shade200;
+  Color get border => primitiveTokens.neutral.shade500;
 
   @override
-  Color get foregroundColor => textTokens.secondary;
+  Color get foregroundColor => primitiveTokens.neutral.shade600;
+
+  @override
+  Color get fillColor => surface.background;
 }
 
 @immutable
@@ -41,8 +44,11 @@ class LightSelectableChipsUnselectedTokens extends LightBaseTheme implements Sel
   LightSelectableChipsUnselectedTokens({required super.primitiveTokens});
 
   @override
-  Color get border => primitiveTokens.neutral.shade200;
+  Color get border => primitiveTokens.neutral.shade300;
 
   @override
-  Color get foregroundColor => textTokens.tertiary;
+  Color get foregroundColor => primitiveTokens.neutral.shade500;
+
+  @override
+  Color get fillColor => surface.backgroundContrast;
 }

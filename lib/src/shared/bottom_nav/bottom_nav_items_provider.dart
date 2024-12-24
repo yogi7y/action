@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/assets.dart';
+import '../../design_system/design_system.dart';
 
 typedef BottomNavItemData = ({
   String iconPath,

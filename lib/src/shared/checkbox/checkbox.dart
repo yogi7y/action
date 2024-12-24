@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../core/constants/assets.dart';
-import '../../design_system/colors/primitive_tokens.dart';
-import '../../design_system/spacing/spacing.dart';
-import '../../modules/dashboard/presentation/state/app_theme.dart';
+import '../../design_system/design_system.dart';
 import '../../modules/tasks/domain/entity/task.dart';
 
 enum AppCheckboxState {

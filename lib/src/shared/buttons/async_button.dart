@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../design_system/spacing/spacing.dart';
-import '../../design_system/typography/typography.dart';
-import '../../modules/dashboard/presentation/state/app_theme.dart';
+import '../../design_system/design_system.dart';
 
 enum AsyncButtonType { primary, secondary }
 

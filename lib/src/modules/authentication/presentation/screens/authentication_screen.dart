@@ -2,8 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../design_system/typography/typography.dart';
-import '../../../dashboard/presentation/state/app_theme.dart';
+import '../../../../design_system/design_system.dart';
 import '../../domain/use_case/auth_use_case.dart';
 
 @RoutePage()

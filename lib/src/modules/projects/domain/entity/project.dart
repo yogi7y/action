@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:smart_textfield/smart_textfield.dart';
 
 @immutable
-class ProjectEntity {
+class ProjectEntity implements Searchable {
   const ProjectEntity({
     required this.id,
     required this.name,
@@ -43,4 +44,7 @@ class ProjectEntity {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode ^ createdAt.hashCode ^ updatedAt.hashCode;
+
+  @override
+  String get stringifiedValue => name;
 }

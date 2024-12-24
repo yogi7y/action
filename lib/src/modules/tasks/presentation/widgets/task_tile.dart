@@ -3,13 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/constants/assets.dart';
 import '../../../../core/extensions/date_time_extension.dart';
-import '../../../../design_system/spacing/spacing.dart';
-import '../../../../design_system/typography/typography.dart';
+import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
-import '../../../dashboard/presentation/state/app_theme.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../state/tasks_provider.dart';
 

@@ -1,11 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../dark/dark_theme.dart';
+import '../light/light_theme.dart';
 import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
+
+enum AppThemeType { light, dark }
+
+final appThemeProvider = NotifierProvider<AppThemeNotifier, AppTheme>(AppThemeNotifier.new);
+
+class AppThemeNotifier extends Notifier<AppTheme> {
+  @override
+  AppTheme build() {
+    final _darkTheme = ref.watch(darkThemeColorsProvider);
+    final _lightTheme = ref.watch(lightThemeColorsProvider);
+    return _lightTheme;
+  }
+
+  void toggle() {
+    final _darkTheme = ref.watch(darkThemeColorsProvider);
+    final _lightTheme = ref.watch(lightThemeColorsProvider);
+
+    state = state is LightTheme ? _darkTheme : _lightTheme;
+  }
+}
 
 @immutable
 abstract class BaseTheme {

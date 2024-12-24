@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
-import '../../../../core/constants/assets.dart';
-import '../../../../design_system/spacing/spacing.dart';
-import '../../../../design_system/typography/typography.dart';
+import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/checkbox/checkbox.dart';
-import '../../../dashboard/presentation/state/app_theme.dart';
 import '../state/new_task_provider.dart';
 
 class TaskInputFieldVisibility extends ConsumerStatefulWidget {
@@ -23,7 +20,7 @@ class _TaskInputFieldVisibilityState extends ConsumerState<TaskInputFieldVisibil
   late final Animation<double> _heightFactor;
   late final Animation<double> _opacity;
 
-  static const _duration = Duration(milliseconds: 300);
+  static const _duration = defaultAnimationDuration;
 
   @override
   void initState() {
@@ -38,7 +35,7 @@ class _TaskInputFieldVisibilityState extends ConsumerState<TaskInputFieldVisibil
       end: 1,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.linear,
+      curve: Curves.easeOutSine,
     ));
 
     _opacity = Tween<double>(
@@ -46,7 +43,7 @@ class _TaskInputFieldVisibilityState extends ConsumerState<TaskInputFieldVisibil
       end: 1,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.ease,
+      curve: Curves.linear,
     ));
 
     ref.listenManual(isTaskTextInputFieldVisibleProvider, (previous, next) {
@@ -97,6 +94,19 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.addListener(_syncTextControllerWithProvider);
+      _syncTextControllerWithProvider();
+      _handleTextFieldFocus();
+    });
+  }
+
+  void _syncTextControllerWithProvider() {
+    ref.read(newTaskTextProvider.notifier).update((value) => _controller.text);
+  }
+
+  void _handleTextFieldFocus() {
     ref.listenManual(isTaskTextInputFieldVisibleProvider, (previous, next) {
       if (next) {
         focusNode.requestFocus();
@@ -112,10 +122,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
     super.dispose();
   }
 
-  void _onTappedOutside(PointerDownEvent? event) {
-    ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => false);
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
+  void _onTappedOutside(PointerDownEvent? event) {}
 
   @override
   Widget build(BuildContext context) {
@@ -158,14 +165,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
                       minWidth: 24,
                       minHeight: 24,
                     ),
-                    suffixIcon: UnconstrainedBox(
-                      child: AppIconButton(
-                        svgIconPath: Assets.send,
-                        size: 20,
-                        color: _colors.textTokens.secondary,
-                        onClick: () {},
-                      ),
-                    ),
+                    suffixIcon: const SendIcon(),
                   ),
                 );
               },
@@ -173,6 +173,31 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SendIcon extends ConsumerWidget {
+  const SendIcon({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _newTaskText = ref.watch(newTaskTextProvider);
+    final _colors = ref.watch(appThemeProvider);
+
+    final _iconColor = _newTaskText.isEmpty ? _colors.textTokens.secondary : _colors.primary;
+
+    return Consumer(
+      builder: (context, ref, _) {
+        return UnconstrainedBox(
+          child: AppIconButton(
+            svgIconPath: Assets.send,
+            size: 24,
+            color: _iconColor,
+            onClick: () {},
+          ),
+        );
+      },
     );
   }
 }

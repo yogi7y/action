@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/router/app_router.dart';
+import 'design_system/design_system.dart';
 import 'design_system/typography/mobile_fonts.dart';
-import 'modules/dashboard/presentation/state/app_theme.dart';
 
 final _router = AppRouter();
 

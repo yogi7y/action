@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/assets.dart';
-import '../../../../design_system/spacing/spacing.dart';
+import '../../../../design_system/design_system.dart';
 import '../../../../shared/chips/chips.dart';
 
 class TasksFilters extends ConsumerWidget {

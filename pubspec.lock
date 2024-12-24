@@ -878,10 +878,9 @@ packages:
   smart_textfield:
     dependency: "direct main"
     description:
-      name: smart_textfield
-      sha256: bdf5ec43481c57aa39e523b105436fcc32a061aeb9800ca63678ddd6a401c142
-      url: "https://pub.dev"
-    source: hosted
+      path: "../smart_text_field"
+      relative: true
+    source: path
     version: "1.1.0"
   source_gen:
     dependency: transitive

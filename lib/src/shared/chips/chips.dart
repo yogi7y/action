@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../design_system/spacing/spacing.dart';
-import '../../design_system/typography/typography.dart';
-import '../../modules/dashboard/presentation/state/app_theme.dart';
+import '../../design_system/design_system.dart';
 
 class AppChips extends ConsumerWidget {
   const AppChips({

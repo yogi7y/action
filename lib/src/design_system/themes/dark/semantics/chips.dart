@@ -30,10 +30,13 @@ class DarkSelectableChipsSelectedTokens extends DarkBaseTheme implements Selecta
   DarkSelectableChipsSelectedTokens({required super.primitiveTokens});
 
   @override
-  Color get border => primitiveTokens.neutral.shade700;
+  Color get border => primitiveTokens.neutral.shade600;
 
   @override
-  Color get foregroundColor => textTokens.primary;
+  Color get foregroundColor => primitiveTokens.neutral.shade50;
+
+  @override
+  Color get fillColor => surface.background;
 }
 
 @immutable
@@ -41,8 +44,11 @@ class DarkSelectableChipsUnselectedTokens extends DarkBaseTheme implements Selec
   DarkSelectableChipsUnselectedTokens({required super.primitiveTokens});
 
   @override
-  Color get border => primitiveTokens.neutral.shade700;
+  Color get border => primitiveTokens.neutral.shade800;
 
   @override
-  Color get foregroundColor => textTokens.tertiary;
+  Color get foregroundColor => primitiveTokens.neutral.shade400;
+
+  @override
+  Color get fillColor => surface.backgroundContrast;
 }
