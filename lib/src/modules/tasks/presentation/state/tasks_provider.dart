@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task.dart';
@@ -11,6 +12,8 @@ final tasksProvider = AsyncNotifierProvider<TasksNotifier, Tasks>(TasksNotifier.
 
 class TasksNotifier extends AsyncNotifier<Tasks> {
   late final TaskUseCase _useCase = ref.read(taskUseCaseProvider);
+
+  late final animatedListKey = GlobalKey<SliverAnimatedListState>(debugLabel: 'Animated list key');
 
   @override
   Future<List<TaskEntity>> build() async {
@@ -38,6 +41,7 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
     );
 
     state = AsyncData([_tempTask, ...state.valueOrNull ?? []]);
+    animatedListKey.currentState?.insertItem(0);
     _clearInput();
 
     try {

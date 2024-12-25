@@ -6,6 +6,7 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../domain/entity/task.dart';
+import '../mixin/tasks_operations_mixin.dart';
 import '../state/new_task_provider.dart';
 import '../state/tasks_provider.dart';
 
@@ -89,7 +90,7 @@ class TaskInputField extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskInputFieldState();
 }
 
-class _TaskInputFieldState extends ConsumerState<TaskInputField> {
+class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOperations {
   late final _controller = ref.watch(newTaskTextProvider.notifier).controller;
   late final focusNode = FocusNode();
 
@@ -147,6 +148,11 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
                 return TextFormField(
                   focusNode: focusNode,
                   textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (value) async {
+                    focusNode.requestFocus();
+                    return addTask(ref: ref);
+                  },
                   style: _style,
                   onTapOutside: _onTappedOutside,
                   controller: controller,
@@ -175,7 +181,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
   }
 }
 
-class SendIcon extends ConsumerWidget {
+class SendIcon extends ConsumerWidget with TasksOperations {
   const SendIcon({super.key});
 
   @override
@@ -192,24 +198,10 @@ class SendIcon extends ConsumerWidget {
             svgIconPath: Assets.send,
             size: 24,
             color: _iconColor,
-            onClick: () async => _addTask(ref: ref),
+            onClick: () async => addTask(ref: ref),
           ),
         );
       },
     );
-  }
-
-  Future<void> _addTask({
-    required WidgetRef ref,
-  }) async {
-    final _taskNotifier = ref.watch(tasksProvider.notifier);
-    final _taskName = ref.watch(newTaskTextProvider);
-
-    final _taskProperties = TaskPropertiesEntity(
-      name: _taskName,
-      status: TaskStatus.todo,
-    );
-
-    await _taskNotifier.addTask(_taskProperties);
   }
 }

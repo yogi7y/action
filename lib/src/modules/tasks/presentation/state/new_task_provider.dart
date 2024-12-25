@@ -21,5 +21,5 @@ class NewTaskTextNotifier extends Notifier<String> {
 
   void clear() => controller.clear();
 
-  void update(String text) => controller.text = text;
+  void updateText(String text) => controller.text = text;
 }

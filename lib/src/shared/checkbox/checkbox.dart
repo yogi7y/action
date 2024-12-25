@@ -65,7 +65,6 @@ class AppCheckbox extends ConsumerWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        print('checkbox clicked');
         final _newState = state == AppCheckboxState.checked
             ? AppCheckboxState.unchecked
             : AppCheckboxState.checked;

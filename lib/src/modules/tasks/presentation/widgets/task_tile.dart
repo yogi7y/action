@@ -43,18 +43,9 @@ class TaskTile extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 60),
-                        child: Text(
-                          _task.name,
-                          style: _fonts.text.md.regular.copyWith(
-                            color: _colors.textTokens.primary,
-                            fontSize: 15,
-                            fontVariations: [
-                              const FontVariation.weight(450),
-                            ],
-                          ),
-                        ),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 60),
+                        child: AnimatedTaskName(),
                       ),
                       SizedBox(height: _spacing.xxs),
                       const Padding(
@@ -81,6 +72,35 @@ class TaskTile extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+@immutable
+class AnimatedTaskName extends ConsumerWidget {
+  const AnimatedTaskName({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _fonts = ref.watch(fontsProvider);
+    final _colors = ref.watch(appThemeProvider);
+    final _task = ref.watch(scopedTaskProvider);
+
+    return AnimatedDefaultTextStyle(
+      duration: defaultAnimationDuration,
+      style: _fonts.text.md.regular.copyWith(
+        fontSize: 15,
+        fontVariations: [
+          const FontVariation.weight(450),
+        ],
+        decoration:
+            _task.status == TaskStatus.done ? TextDecoration.lineThrough : TextDecoration.none,
+        decorationThickness: 1,
+        color: _task.status == TaskStatus.done
+            ? _colors.textTokens.secondary
+            : _colors.textTokens.primary,
+      ),
+      child: Text(_task.name),
     );
   }
 }
