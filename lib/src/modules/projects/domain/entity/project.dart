@@ -9,7 +9,6 @@ class ProjectEntity implements Searchable {
     required this.createdAt,
     required this.updatedAt,
   });
-
   final String id;
   final String name;
   final DateTime createdAt;

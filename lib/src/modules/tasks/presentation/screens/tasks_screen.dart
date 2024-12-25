@@ -10,6 +10,7 @@ import '../sections/task_input_field.dart';
 import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
+import '../state/tasks_provider.dart';
 
 @RoutePage()
 class TasksScreen extends ConsumerWidget {
@@ -22,41 +23,44 @@ class TasksScreen extends ConsumerWidget {
     final _spacing = ref.watch(spacingProvider);
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            leadingWidth: 0,
-            pinned: true,
-            elevation: 0,
-            titleSpacing: _spacing.lg,
-            shadowColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            toolbarHeight: kToolbarHeight + _spacing.md,
-            backgroundColor: _colors.surface.background,
-            title: Text(
-              'Tasks',
-              style: _fonts.headline.lg.semibold,
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {},
-                icon: SvgPicture.asset(
-                  Assets.search,
-                  height: 24,
-                  width: 24,
-                  colorFilter: ColorFilter.mode(_colors.textTokens.primary, BlendMode.srcIn),
-                ),
+      body: RefreshIndicator(
+        onRefresh: () async => ref.refresh(tasksProvider.future),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leadingWidth: 0,
+              pinned: true,
+              elevation: 0,
+              titleSpacing: _spacing.lg,
+              shadowColor: Colors.transparent,
+              automaticallyImplyLeading: false,
+              toolbarHeight: kToolbarHeight + _spacing.md,
+              backgroundColor: _colors.surface.background,
+              title: Text(
+                'Tasks',
+                style: _fonts.headline.lg.semibold,
               ),
-              SizedBox(width: _spacing.xs),
-            ],
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
-          const SliverToBoxAdapter(child: TasksFilters()),
-          SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
-          const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
-          const SliverTasksList(),
-          SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
-        ],
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: SvgPicture.asset(
+                    Assets.search,
+                    height: 24,
+                    width: 24,
+                    colorFilter: ColorFilter.mode(_colors.textTokens.primary, BlendMode.srcIn),
+                  ),
+                ),
+                SizedBox(width: _spacing.xs),
+              ],
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
+            const SliverToBoxAdapter(child: TasksFilters()),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+            const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
+            const SliverTasksList(),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
+          ],
+        ),
       ),
       floatingActionButton: Consumer(builder: (context, ref, child) {
         final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;

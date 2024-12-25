@@ -5,7 +5,9 @@ import 'package:smart_textfield/smart_textfield.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/checkbox/checkbox.dart';
+import '../../domain/entity/task.dart';
 import '../state/new_task_provider.dart';
+import '../state/tasks_provider.dart';
 
 class TaskInputFieldVisibility extends ConsumerStatefulWidget {
   const TaskInputFieldVisibility({super.key});
@@ -88,7 +90,7 @@ class TaskInputField extends ConsumerStatefulWidget {
 }
 
 class _TaskInputFieldState extends ConsumerState<TaskInputField> {
-  late final _controller = SmartTextFieldController();
+  late final _controller = ref.watch(newTaskTextProvider.notifier).controller;
   late final focusNode = FocusNode();
 
   @override
@@ -96,14 +98,8 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.addListener(_syncTextControllerWithProvider);
-      _syncTextControllerWithProvider();
       _handleTextFieldFocus();
     });
-  }
-
-  void _syncTextControllerWithProvider() {
-    ref.read(newTaskTextProvider.notifier).update((value) => _controller.text);
   }
 
   void _handleTextFieldFocus() {
@@ -150,15 +146,17 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> {
               textFormFieldBuilder: (context, controller) {
                 return TextFormField(
                   focusNode: focusNode,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: _style,
                   onTapOutside: _onTappedOutside,
                   controller: controller,
                   cursorColor: _colors.textTokens.secondary,
                   cursorOpacityAnimates: true,
                   cursorHeight: 22,
                   decoration: InputDecoration(
-                    hintText: 'New Task',
+                    hintText: 'Use @ to pick projects, # to pick tags',
                     border: InputBorder.none,
-                    hintStyle: _style.copyWith(
+                    hintStyle: _fonts.text.sm.regular.copyWith(
                       color: _colors.textTokens.secondary,
                     ),
                     suffixIconConstraints: const BoxConstraints(
@@ -194,10 +192,24 @@ class SendIcon extends ConsumerWidget {
             svgIconPath: Assets.send,
             size: 24,
             color: _iconColor,
-            onClick: () {},
+            onClick: () async => _addTask(ref: ref),
           ),
         );
       },
     );
+  }
+
+  Future<void> _addTask({
+    required WidgetRef ref,
+  }) async {
+    final _taskNotifier = ref.watch(tasksProvider.notifier);
+    final _taskName = ref.watch(newTaskTextProvider);
+
+    final _taskProperties = TaskPropertiesEntity(
+      name: _taskName,
+      status: TaskStatus.todo,
+    );
+
+    await _taskNotifier.addTask(_taskProperties);
   }
 }

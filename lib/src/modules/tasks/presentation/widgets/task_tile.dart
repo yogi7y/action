@@ -23,45 +23,49 @@ class TaskTile extends ConsumerWidget {
 
     return Stack(
       children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: _spacing.lg) +
-              EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: AppCheckbox(
-                  state: AppCheckboxState.fromTaskStatus(status: _task.status),
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {},
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: _spacing.lg) +
+                EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: AppCheckbox(
+                    state: AppCheckboxState.fromTaskStatus(status: _task.status),
+                  ),
                 ),
-              ),
-              SizedBox(width: _spacing.xs),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 60),
-                      child: Text(
-                        _task.name,
-                        style: _fonts.text.md.regular.copyWith(
-                          color: _colors.textTokens.primary,
-                          fontSize: 15,
-                          fontVariations: [
-                            const FontVariation.weight(450),
-                          ],
+                SizedBox(width: _spacing.xs),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 60),
+                        child: Text(
+                          _task.name,
+                          style: _fonts.text.md.regular.copyWith(
+                            color: _colors.textTokens.primary,
+                            fontSize: 15,
+                            fontVariations: [
+                              const FontVariation.weight(450),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: _spacing.xxs),
-                    const Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: _TaskMetaDataRow(),
-                    ),
-                  ],
+                      SizedBox(height: _spacing.xxs),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: _TaskMetaDataRow(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         Positioned(

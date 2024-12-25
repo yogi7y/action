@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,8 +12,6 @@ class SupabaseContextRepository implements ContextRepository {
     try {
       final response =
           await _supabase.from('contexts').select().order('created_at', ascending: false);
-
-      developer.log('Fetched contexts response: $response');
 
       final contexts = (response as List<Object?>? ?? [])
           .map((context) => ContextModel.fromMap(context as Map<String, Object?>? ?? {}))

@@ -27,15 +27,4 @@ class TaskModel extends TaskEntity {
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );
   }
-
-  Map<String, Object?> toMap() => {
-        'id': id,
-        'name': name,
-        'status': status.toString().split('.').last,
-        'due_date': dueDate?.toIso8601String(),
-        'project_id': projectId,
-        'context_id': contextId,
-        'created_at': createdAt.toIso8601String(),
-        'updated_at': updatedAt.toIso8601String(),
-      };
 }

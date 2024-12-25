@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,7 +13,6 @@ class SupabaseProjectRepository implements ProjectRepository {
       final response =
           await _supabase.from('projects').select().order('created_at', ascending: false);
 
-      developer.log('Fetched projects response: $response');
       final projects = (response as List<Object?>? ?? [])
           .map(
             (project) => ProjectModel.fromMap(project as Map<String, Object?>? ?? {}),

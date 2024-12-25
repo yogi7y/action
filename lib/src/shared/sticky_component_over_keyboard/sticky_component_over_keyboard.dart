@@ -52,7 +52,6 @@ class _StickComponentDataState extends ConsumerState<_StickComponentData> {
   Widget build(BuildContext context) {
     final _spacing = ref.watch(spacingProvider);
     final _colors = ref.watch(appThemeProvider);
-    final _primitiveTokens = ref.watch(primitiveTokensProvider);
 
     final _showStickyKeyboard = ref.watch(showStickyTextFieldProvider);
 
@@ -67,10 +66,6 @@ class _StickComponentDataState extends ConsumerState<_StickComponentData> {
       ),
       decoration: BoxDecoration(
         color: _colors.surface.backgroundContrast,
-        border: Border(
-          bottom: BorderSide(color: _primitiveTokens.neutral.shade200),
-        ),
-        boxShadow: const [],
       ),
       width: double.maxFinite,
       child: _showStickyKeyboard ? const StickyTextField() : const StickyOptions(),
