@@ -6,6 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import '../../design_system/design_system.dart';
 import '../../modules/tasks/domain/entity/task.dart';
 
+typedef AppCheckboxChangedCallback = void Function(AppCheckboxState state);
+
 enum AppCheckboxState {
   unchecked(),
   intermediate(),
@@ -36,10 +38,14 @@ class AppCheckbox extends ConsumerWidget {
     super.key,
     this.size = 20,
     this.state = AppCheckboxState.unchecked,
+    this.onChanged,
+    this.padding = EdgeInsets.zero,
   });
 
   final double size;
   final AppCheckboxState state;
+  final AppCheckboxChangedCallback? onChanged;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,57 +62,70 @@ class AppCheckbox extends ConsumerWidget {
             ? _colors.intermediateCheckbox
             : _colors.unselectedCheckbox;
 
-    return Container(
-      width: size,
-      height: size,
-      // padding: const EdgeInsets.all(2),
-      decoration: ShapeDecoration(
-        color: _isUnchecked ? null : _checkboxTheme.background,
-        shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(cornerRadius: 6, cornerSmoothing: 1),
-          side: BorderSide(
-            color: _checkboxTheme.border,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        print('checkbox clicked');
+        final _newState = state == AppCheckboxState.checked
+            ? AppCheckboxState.unchecked
+            : AppCheckboxState.checked;
+
+        onChanged?.call(_newState);
+      },
+      child: Padding(
+        padding: padding,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: ShapeDecoration(
+            color: _isUnchecked ? null : _checkboxTheme.background,
+            shape: SmoothRectangleBorder(
+              borderRadius: SmoothBorderRadius(cornerRadius: 6, cornerSmoothing: 1),
+              side: BorderSide(
+                color: _checkboxTheme.border,
+              ),
+            ),
           ),
-        ),
-      ),
-      child: _isChecked
-          ? Stack(
-              alignment: Alignment.center,
-              children: [
-                SvgPicture.asset(
-                  Assets.check,
-                  colorFilter: ColorFilter.mode(
-                    _primitiveColors.neutral.shade100,
-                    BlendMode.srcIn,
-                  ),
-                ),
-                // Slightly offset duplicate to create bold effect
-                Transform.translate(
-                  offset: const Offset(0.4, 0.4),
-                  child: SvgPicture.asset(
-                    Assets.check,
-                    colorFilter: ColorFilter.mode(
-                      _primitiveColors.neutral.shade100,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : _isIntermediate
-              ? Center(
-                  child: Container(
-                    height: 2.5,
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    decoration: ShapeDecoration(
-                      color: _primitiveColors.neutral.shade100,
-                      shape: SmoothRectangleBorder(
-                        borderRadius: SmoothBorderRadius(cornerRadius: 4, cornerSmoothing: 1),
+          child: _isChecked
+              ? Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      Assets.check,
+                      colorFilter: ColorFilter.mode(
+                        _primitiveColors.neutral.shade100,
+                        BlendMode.srcIn,
                       ),
                     ),
-                  ),
+                    // Slightly offset duplicate to create bold effect
+                    Transform.translate(
+                      offset: const Offset(0.4, 0.4),
+                      child: SvgPicture.asset(
+                        Assets.check,
+                        colorFilter: ColorFilter.mode(
+                          _primitiveColors.neutral.shade100,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ],
                 )
-              : null,
+              : _isIntermediate
+                  ? Center(
+                      child: Container(
+                        height: 2.5,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: ShapeDecoration(
+                          color: _primitiveColors.neutral.shade100,
+                          shape: SmoothRectangleBorder(
+                            borderRadius: SmoothBorderRadius(cornerRadius: 4, cornerSmoothing: 1),
+                          ),
+                        ),
+                      ),
+                    )
+                  : null,
+        ),
+      ),
     );
   }
 }

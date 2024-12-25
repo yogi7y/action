@@ -17,6 +17,9 @@ class TaskUseCase {
 
   Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) =>
       repository.createTask(task);
+
+  Future<Result<TaskEntity, AppException>> updateTask(TaskEntity task) =>
+      repository.updateTask(task);
 }
 
 final taskUseCaseProvider =

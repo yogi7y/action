@@ -64,5 +64,38 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
     }
   }
 
+  Future<void> updateTask(TaskEntity task) async {
+    final _previousState = state;
+
+    state = AsyncData(
+      state.valueOrNull?.map((taskItem) {
+            return taskItem.id == task.id ? task : taskItem;
+          }).toList() ??
+          [],
+    );
+
+    try {
+      final result = await _useCase.updateTask(task);
+
+      await result.fold(
+        onSuccess: (task) async {
+          final currentTasks = state.valueOrNull ?? [];
+
+          final updatedTasks =
+              currentTasks.map((taskItem) => taskItem.id == task.id ? task : taskItem).toList();
+
+          state = AsyncData(updatedTasks);
+        },
+        onFailure: (error) async {
+          state = _previousState;
+          throw error;
+        },
+      );
+    } catch (e) {
+      state = _previousState;
+      rethrow;
+    }
+  }
+
   void _clearInput() => ref.read(newTaskTextProvider.notifier).clear();
 }

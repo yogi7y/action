@@ -10,6 +10,8 @@ abstract class TaskRepository {
   AsyncTaskResult fetchTasks();
 
   Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task);
+
+  Future<Result<TaskEntity, AppException>> updateTask(TaskEntity task);
 }
 
 final taskRepositoryProvider =

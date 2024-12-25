@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../services/database/model_meta_data.dart';
+import '../../../../shared/checkbox/checkbox.dart';
 
 enum TaskStatus {
   todo('todo'),
@@ -17,6 +18,17 @@ enum TaskStatus {
       (e) => e.value == status,
       orElse: () => throw ArgumentError('Invalid task status: $status'),
     );
+  }
+
+  static TaskStatus fromAppCheckboxState(AppCheckboxState state) {
+    switch (state) {
+      case AppCheckboxState.checked:
+        return TaskStatus.done;
+      case AppCheckboxState.intermediate:
+        return TaskStatus.inProgress;
+      case AppCheckboxState.unchecked:
+        return TaskStatus.todo;
+    }
   }
 }
 
@@ -76,6 +88,27 @@ class TaskEntity extends TaskPropertiesEntity implements ModelMetaData {
     super.dueDate,
     super.projectId,
   });
+
+  TaskEntity copyWith({
+    DateTime? createdAt,
+    Id? id,
+    DateTime? updatedAt,
+    String? name,
+    TaskStatus? status,
+    DateTime? dueDate,
+    String? projectId,
+    String? contextId,
+  }) =>
+      TaskEntity(
+        createdAt: createdAt ?? this.createdAt,
+        id: id ?? this.id,
+        updatedAt: updatedAt ?? this.updatedAt,
+        name: name ?? this.name,
+        status: status ?? this.status,
+        dueDate: dueDate ?? this.dueDate,
+        projectId: projectId ?? this.projectId,
+        contextId: contextId ?? this.contextId,
+      );
 
   factory TaskEntity.fromTaskProperties({
     required TaskPropertiesEntity task,

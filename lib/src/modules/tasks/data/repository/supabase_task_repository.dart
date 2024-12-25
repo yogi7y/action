@@ -58,4 +58,29 @@ class SupabaseTaskRepository implements TaskRepository {
       );
     }
   }
+
+  @override
+  Future<Result<TaskEntity, AppException>> updateTask(TaskEntity task) async {
+    try {
+      final _id = task.id;
+      final _data = task.toMap();
+
+      final _response = await client
+          .from('tasks') //
+          .update(_data)
+          .eq('id', _id)
+          .select()
+          .single();
+
+      final _result = TaskModel.fromMap(_response as Map<String, Object?>);
+      return Success(_result);
+    } catch (e, stackTrace) {
+      return Failure(
+        AppException(
+          exception: e.toString(),
+          stackTrace: stackTrace,
+        ),
+      );
+    }
+  }
 }

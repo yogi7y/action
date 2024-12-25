@@ -8,6 +8,7 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
+import '../../domain/entity/task.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
@@ -27,18 +28,17 @@ class TaskTile extends ConsumerWidget {
           behavior: HitTestBehavior.opaque,
           onTap: () {},
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: _spacing.lg) +
-                EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm),
+            padding: EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm, right: _spacing.lg),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: AppCheckbox(
-                    state: AppCheckboxState.fromTaskStatus(status: _task.status),
-                  ),
+                AppCheckbox(
+                  padding: EdgeInsets.only(right: _spacing.xs, top: 4, left: _spacing.lg),
+                  state: AppCheckboxState.fromTaskStatus(status: _task.status),
+                  onChanged: (state) async => ref.read(tasksProvider.notifier).updateTask(
+                        _task.copyWith(status: TaskStatus.fromAppCheckboxState(state)),
+                      ),
                 ),
-                SizedBox(width: _spacing.xs),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
