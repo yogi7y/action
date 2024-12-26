@@ -48,6 +48,34 @@ class TaskPropertiesEntity {
   final String? projectId;
   final String? contextId;
 
+  TaskPropertiesEntity copyWith({
+    String? name,
+    TaskStatus? status,
+    DateTime? dueDate,
+    String? projectId,
+    String? contextId,
+  }) =>
+      TaskPropertiesEntity(
+        name: name ?? this.name,
+        status: status ?? this.status,
+        dueDate: dueDate ?? this.dueDate,
+        projectId: projectId ?? this.projectId,
+        contextId: contextId ?? this.contextId,
+      );
+
+  TaskPropertiesEntity mark({
+    bool dueDateAsNull = false,
+    bool projectIdAsNull = false,
+    bool contextIdAsNull = false,
+  }) =>
+      TaskPropertiesEntity(
+        name: name,
+        status: status,
+        dueDate: dueDateAsNull ? null : dueDate,
+        projectId: projectIdAsNull ? null : projectId,
+        contextId: contextIdAsNull ? null : contextId,
+      );
+
   Map<String, Object?> toMap() => {
         'name': name,
         'status': status.value,

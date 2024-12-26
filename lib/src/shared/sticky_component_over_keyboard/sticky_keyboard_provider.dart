@@ -1,13 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final showStickyTextFieldProvider = Provider<bool>((ref) {
-  final _showProject = ref.watch(showProjectStickyTextFieldProvider);
-  final _showContext = ref.watch(showContextStickyTextFieldProvider);
-
-  return _showProject || _showContext;
+final showStickyTextFieldProvider = Provider.autoDispose<bool>((ref) {
+  final _currentStickyTextFieldType = ref.watch(currentStickyTextFieldTypeProvider);
+  return _currentStickyTextFieldType != null;
 });
 
-final showProjectStickyTextFieldProvider = StateProvider<bool>((ref) => false);
-final showContextStickyTextFieldProvider = StateProvider<bool>((ref) => false);
+enum StickyTextFieldType { project, context }
+
+final currentStickyTextFieldTypeProvider = StateProvider<StickyTextFieldType?>((ref) => null);
 
 final stickyComponentHeightProvider = StateProvider<double?>((ref) => null);

@@ -91,8 +91,8 @@ class TaskInputField extends ConsumerStatefulWidget {
 }
 
 class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOperations {
-  late final _controller = ref.watch(newTaskTextProvider.notifier).controller;
-  late final focusNode = FocusNode();
+  late final _controller = ref.watch(newTaskProvider.notifier).controller;
+  late final focusNode = ref.watch(newTaskProvider.notifier).focusNode;
 
   @override
   void initState() {
@@ -186,7 +186,7 @@ class SendIcon extends ConsumerWidget with TasksOperations {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _newTaskText = ref.watch(newTaskTextProvider);
+    final _newTaskText = ref.watch(newTaskProvider.select((value) => value.name));
     final _colors = ref.watch(appThemeProvider);
 
     final _iconColor = _newTaskText.isEmpty ? _colors.textTokens.secondary : _colors.primary;

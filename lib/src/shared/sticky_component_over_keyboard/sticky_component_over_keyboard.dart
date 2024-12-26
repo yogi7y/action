@@ -56,6 +56,7 @@ class _StickComponentDataState extends ConsumerState<_StickComponentData> {
     final _showStickyKeyboard = ref.watch(showStickyTextFieldProvider);
 
     final _height = ref.watch(stickyComponentHeightProvider);
+    final _size = MediaQuery.of(context).size;
 
     return Container(
       key: _key,
@@ -67,7 +68,7 @@ class _StickComponentDataState extends ConsumerState<_StickComponentData> {
       decoration: BoxDecoration(
         color: _colors.surface.backgroundContrast,
       ),
-      width: double.maxFinite,
+      width: _size.width,
       child: _showStickyKeyboard ? const StickyTextField() : const StickyOptions(),
     );
   }

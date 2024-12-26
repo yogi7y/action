@@ -101,5 +101,5 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
     }
   }
 
-  void _clearInput() => ref.read(newTaskTextProvider.notifier).clear();
+  void _clearInput() => ref.read(newTaskProvider.notifier).clear();
 }

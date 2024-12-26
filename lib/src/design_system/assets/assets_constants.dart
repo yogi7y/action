@@ -22,4 +22,5 @@ abstract class Assets {
   static const String tag = '$_iconsPath/tag.svg';
   static const String x = '$_iconsPath/x.svg';
   static const String send = '$_iconsPath/send.svg';
+  static const String arrowBack = '$_iconsPath/arrow_back.svg';
 }

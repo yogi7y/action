@@ -9,10 +9,10 @@ mixin TasksOperations {
     required WidgetRef ref,
   }) async {
     final _taskNotifier = ref.watch(tasksProvider.notifier);
-    final _taskName = ref.watch(newTaskTextProvider);
+    final _taskName = ref.watch(newTaskProvider);
 
     final _taskProperties = TaskPropertiesEntity(
-      name: _taskName,
+      name: _taskName.name,
       status: TaskStatus.todo,
     );
 
