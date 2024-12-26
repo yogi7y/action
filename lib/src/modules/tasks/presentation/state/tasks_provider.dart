@@ -27,14 +27,16 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
         );
       });
 
-  Future<void> addTask(TaskPropertiesEntity task) async {
+  Future<void> addTask() async {
+    final _task = ref.read(newTaskProvider);
+
     final _previousState = state;
 
     const _id = '';
     final _createdAt = DateTime.now();
     final _updatedAt = _createdAt;
     final _tempTask = TaskEntity.fromTaskProperties(
-      task: task,
+      task: _task,
       createdAt: _createdAt,
       updatedAt: _updatedAt,
       id: _id,
@@ -45,7 +47,7 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
     _clearInput();
 
     try {
-      final result = await _useCase.createTask(task);
+      final result = await _useCase.createTask(_task);
 
       await result.fold(
         onSuccess: (task) async {
@@ -65,6 +67,8 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
     } catch (e) {
       state = _previousState;
       rethrow;
+    } finally {
+      ref.invalidate(newTaskProvider);
     }
   }
 

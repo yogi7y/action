@@ -79,9 +79,9 @@ class TaskPropertiesEntity {
   Map<String, Object?> toMap() => {
         'name': name,
         'status': status.value,
-        if (dueDate != null) 'dueDate': dueDate?.millisecondsSinceEpoch,
-        if (projectId != null) 'projectId': projectId,
-        if (contextId != null) 'contextId': contextId,
+        if (dueDate != null) 'due_date': dueDate?.millisecondsSinceEpoch,
+        if (projectId != null) 'project_id': projectId,
+        if (contextId != null) 'context_id': contextId,
       };
 
   @override
