@@ -9,6 +9,7 @@ import '../../design_system/spacing/spacing.dart';
 import '../../design_system/themes/base/theme.dart';
 import '../../design_system/themes/dark/dark_theme.dart';
 import '../../design_system/typography/typography.dart';
+import '../../modules/context/presentation/state/context_picker_provider.dart';
 import '../../modules/projects/presentation/state/project_picker_provider.dart';
 import '../buttons/icon_button.dart';
 import 'sticky_keyboard_provider.dart';
@@ -107,13 +108,15 @@ class _PrefixIcon extends ConsumerWidget {
 
 final stickyTextFieldSourcesProvider = Provider<List<SearchSource>>((ref) {
   final _sources = <SearchSource>[];
-
   final _currentStickyTextFieldType = ref.watch(currentStickyTextFieldTypeProvider);
 
   final _isProjectTextFieldVisible = _currentStickyTextFieldType == StickyTextFieldType.project;
+  final _isContextTextFieldVisible = _currentStickyTextFieldType == StickyTextFieldType.context;
 
   if (_isProjectTextFieldVisible) {
     _sources.add(ref.watch(projectPickerSearchSourceProvider));
+  } else if (_isContextTextFieldVisible) {
+    _sources.add(ref.watch(contextPickerSearchSourceProvider));
   }
 
   return _sources;

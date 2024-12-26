@@ -5,10 +5,8 @@ import 'package:smart_textfield/smart_textfield.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/checkbox/checkbox.dart';
-import '../../domain/entity/task.dart';
 import '../mixin/tasks_operations_mixin.dart';
 import '../state/new_task_provider.dart';
-import '../state/tasks_provider.dart';
 
 class TaskInputFieldVisibility extends ConsumerStatefulWidget {
   const TaskInputFieldVisibility({super.key});
@@ -100,6 +98,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _handleTextFieldFocus();
+      _controller.addListener(_onTextChanged);
     });
   }
 
@@ -113,13 +112,27 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
     });
   }
 
+  void _onTextChanged() {
+    final _dateTime = _controller.highlightedDateTime;
+
+    final _existingDateTime = ref.read(newTaskProvider);
+
+    if (_dateTime?.millisecondsSinceEpoch == _existingDateTime.dueDate?.millisecondsSinceEpoch)
+      return;
+
+    if (_dateTime == null) {
+      ref.read(newTaskProvider.notifier).mark(dueDateAsNull: true);
+      return;
+    }
+
+    ref.read(newTaskProvider.notifier).updateValue(dueDate: _dateTime);
+  }
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-
-  void _onTappedOutside(PointerDownEvent? event) {}
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +167,6 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
                     return addTask(ref: ref);
                   },
                   style: _style,
-                  onTapOutside: _onTappedOutside,
                   controller: controller,
                   cursorColor: _colors.textTokens.secondary,
                   cursorOpacityAnimates: true,
