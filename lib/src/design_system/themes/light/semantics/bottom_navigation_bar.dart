@@ -6,8 +6,9 @@ import '../../base/semantics/bottom_navigation_bar.dart';
 import '../light_theme.dart';
 
 @immutable
-class LightBottomNavigationSelectedTokens extends LightTheme implements BottomNavigationBarTokens {
-  const LightBottomNavigationSelectedTokens({required super.primitiveTokens});
+class LightBottomNavigationSelectedTokens extends LightBaseTheme
+    implements BottomNavigationBarTokens {
+  LightBottomNavigationSelectedTokens({required super.primitiveTokens});
 
   @override
   Color get background => primary;
@@ -17,9 +18,9 @@ class LightBottomNavigationSelectedTokens extends LightTheme implements BottomNa
 }
 
 @immutable
-class LightBottomNavigationUnSelectedTokens extends LightTheme
+class LightBottomNavigationUnSelectedTokens extends LightBaseTheme
     implements BottomNavigationBarTokens {
-  const LightBottomNavigationUnSelectedTokens({required super.primitiveTokens});
+  LightBottomNavigationUnSelectedTokens({required super.primitiveTokens});
 
   @override
   Color get background => surface.modals;

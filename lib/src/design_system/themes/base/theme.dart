@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../colors/primitive_tokens.dart';
 import '../dark/dark_theme.dart';
+import '../light/light_theme.dart';
 import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
@@ -10,11 +10,25 @@ import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
 
-final primitiveColorTokens = Provider((ref) => const PrimitiveColorTokens());
+enum AppThemeType { light, dark }
 
-final colorsProvider = StateProvider<ComponentThemes>((ref) => DarkTheme(
-      primitiveTokens: ref.watch(primitiveColorTokens),
-    ));
+final appThemeProvider = NotifierProvider<AppThemeNotifier, AppTheme>(AppThemeNotifier.new);
+
+class AppThemeNotifier extends Notifier<AppTheme> {
+  @override
+  AppTheme build() {
+    final _darkTheme = ref.watch(darkThemeColorsProvider);
+    final _lightTheme = ref.watch(lightThemeColorsProvider);
+    return _lightTheme;
+  }
+
+  void toggle() {
+    final _darkTheme = ref.watch(darkThemeColorsProvider);
+    final _lightTheme = ref.watch(lightThemeColorsProvider);
+
+    state = state is LightTheme ? _darkTheme : _lightTheme;
+  }
+}
 
 @immutable
 abstract class BaseTheme {
@@ -30,8 +44,8 @@ abstract class BaseTheme {
 }
 
 @immutable
-abstract class ComponentThemes extends BaseTheme {
-  const ComponentThemes({
+abstract class AppTheme extends BaseTheme {
+  const AppTheme({
     required super.primary,
     required super.surface,
     required super.textTokens,
@@ -41,6 +55,7 @@ abstract class ComponentThemes extends BaseTheme {
     required this.unselectedCheckbox,
     required this.intermediateCheckbox,
     required this.primaryButton,
+    required this.secondaryButton,
     required this.unselectedChips,
     required this.selectedChips,
     required this.selectableChipsSelected,
@@ -54,6 +69,7 @@ abstract class ComponentThemes extends BaseTheme {
   final CheckboxTokens unselectedCheckbox;
   final CheckboxTokens intermediateCheckbox;
   final ButtonTokens primaryButton;
+  final ButtonTokens secondaryButton;
   final ChipsTokens unselectedChips;
   final ChipsTokens selectedChips;
   final SelectableChipsTokens selectableChipsSelected;

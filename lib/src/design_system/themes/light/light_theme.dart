@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../colors/primitive_tokens.dart';
 import '../base/semantics/bottom_navigation_bar.dart';
@@ -15,61 +16,80 @@ import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
 
+final lightThemeColorsProvider = Provider<LightTheme>((ref) {
+  final _primitiveTokens = ref.watch(primitiveTokensProvider);
+  return LightTheme(primitiveTokens: _primitiveTokens);
+});
+
+@immutable
 class LightBaseTheme implements BaseTheme {
-  const LightBaseTheme({
+  LightBaseTheme({
     required this.primitiveTokens,
-  });
+  })  : primary = primitiveTokens.rose.shade400,
+        surface = LightSurfaceTokens(primitiveTokens),
+        textTokens = LightTextTokens(primitiveTokens);
 
   final PrimitiveColorTokens primitiveTokens;
 
   @override
-  Color get primary => primitiveTokens.rose.shade400;
+  final Color primary;
 
   @override
-  SurfaceTokens get surface => LightSurfaceTokens(primitiveTokens);
+  final SurfaceTokens surface;
 
   @override
-  TextTokens get textTokens => LightTextTokens(primitiveTokens);
+  final TextTokens textTokens;
 }
 
 @immutable
-class LightTheme extends LightBaseTheme implements ComponentThemes {
-  const LightTheme({required super.primitiveTokens});
+class LightTheme extends LightBaseTheme implements AppTheme {
+  LightTheme({required super.primitiveTokens})
+      : selectedBottomNavigationItem =
+            LightBottomNavigationSelectedTokens(primitiveTokens: primitiveTokens),
+        unselectedBottomNavigationItem =
+            LightBottomNavigationUnSelectedTokens(primitiveTokens: primitiveTokens),
+        selectedCheckbox = LightCheckboxSelectedTokens(primitiveTokens: primitiveTokens),
+        unselectedCheckbox = LightCheckboxUnselectedTokens(primitiveTokens: primitiveTokens),
+        intermediateCheckbox = LightCheckboxIntermediateTokens(primitiveTokens: primitiveTokens),
+        primaryButton = LightPrimaryButtonTokens(primitiveTokens: primitiveTokens),
+        secondaryButton = LightSecondaryButtonTokens(primitiveTokens: primitiveTokens),
+        unselectedChips = LightUnselectedChipsTokens(primitiveTokens: primitiveTokens),
+        selectedChips = LightSelectedChipsTokens(primitiveTokens: primitiveTokens),
+        selectableChipsSelected =
+            LightSelectableChipsSelectedTokens(primitiveTokens: primitiveTokens),
+        selectableChipsUnselected =
+            LightSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens);
 
   @override
-  BottomNavigationBarTokens get selectedBottomNavigationItem =>
-      LightBottomNavigationSelectedTokens(primitiveTokens: primitiveTokens);
+  final BottomNavigationBarTokens selectedBottomNavigationItem;
 
   @override
-  BottomNavigationBarTokens get unselectedBottomNavigationItem =>
-      LightBottomNavigationUnSelectedTokens(primitiveTokens: primitiveTokens);
+  final BottomNavigationBarTokens unselectedBottomNavigationItem;
 
   @override
-  CheckboxTokens get selectedCheckbox =>
-      LightCheckboxSelectedTokens(primitiveTokens: primitiveTokens);
+  final CheckboxTokens selectedCheckbox;
 
   @override
-  CheckboxTokens get unselectedCheckbox =>
-      LightCheckboxUnselectedTokens(primitiveTokens: primitiveTokens);
+  final CheckboxTokens unselectedCheckbox;
 
   @override
-  CheckboxTokens get intermediateCheckbox =>
-      LightCheckboxIntermediateTokens(primitiveTokens: primitiveTokens);
+  final CheckboxTokens intermediateCheckbox;
 
   @override
-  ButtonTokens get primaryButton => LightPrimaryButtonTokens(primitiveTokens: primitiveTokens);
+  final ButtonTokens primaryButton;
 
   @override
-  ChipsTokens get unselectedChips => LightUnselectedChipsTokens(primitiveTokens: primitiveTokens);
+  final ButtonTokens secondaryButton;
 
   @override
-  ChipsTokens get selectedChips => LightSelectedChipsTokens(primitiveTokens: primitiveTokens);
+  final ChipsTokens unselectedChips;
 
   @override
-  SelectableChipsTokens get selectableChipsSelected =>
-      LightSelectableChipsSelectedTokens(primitiveTokens: primitiveTokens);
+  final ChipsTokens selectedChips;
 
   @override
-  SelectableChipsTokens get selectableChipsUnselected =>
-      LightSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens);
+  final SelectableChipsTokens selectableChipsSelected;
+
+  @override
+  final SelectableChipsTokens selectableChipsUnselected;
 }

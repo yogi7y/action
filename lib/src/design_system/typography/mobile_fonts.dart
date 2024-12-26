@@ -5,6 +5,22 @@ import 'typography.dart';
 
 const interFontFamily = 'Inter';
 
+const _regularVariation = [
+  FontVariation.weight(400),
+];
+
+const _mediumVariation = [
+  FontVariation.weight(500),
+];
+
+const _semiboldVariation = [
+  FontVariation.weight(600),
+];
+
+const _boldVariation = [
+  FontVariation.weight(700),
+];
+
 @immutable
 class MobileFonts implements Fonts {
   MobileFonts({
@@ -16,7 +32,7 @@ class MobileFonts implements Fonts {
   @override
   final String fontFamily;
 
-  final ComponentThemes colors;
+  final AppTheme colors;
 
   @override
   final TextSize text;
@@ -33,7 +49,7 @@ class MobileTextSize implements TextSize {
         sm = TextSmall(colors: colors, fontFamily: fontFamily),
         xs = TextXSmall(colors: colors, fontFamily: fontFamily);
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -58,25 +74,25 @@ class TextLarge implements TextWeights {
           fontFamily: fontFamily,
           fontSize: 18,
           height: 28 / 18,
-          fontWeight: FontWeight.w400,
+          fontVariations: _regularVariation,
           color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 18,
           height: 28 / 18,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 18,
           height: 28 / 18,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -97,24 +113,24 @@ class TextMedium implements TextWeights {
           fontFamily: fontFamily,
           fontSize: 16,
           height: 24 / 16,
-          fontWeight: FontWeight.w400,
+          fontVariations: _regularVariation,
           color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 16,
           height: 24 / 16,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 16,
           height: 24 / 16,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -135,24 +151,24 @@ class TextSmall implements TextWeights {
           fontFamily: fontFamily,
           fontSize: 14,
           height: 20 / 14,
-          fontWeight: FontWeight.w400,
+          fontVariations: _regularVariation,
           color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 14,
           height: 20 / 14,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 14,
           height: 20 / 14,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -173,24 +189,24 @@ class TextXSmall implements TextWeights {
           fontFamily: fontFamily,
           fontSize: 12,
           height: 16 / 12,
-          fontWeight: FontWeight.w400,
+          fontVariations: _regularVariation,
           color: colors.textTokens.primary,
         ),
         medium = TextStyle(
           fontFamily: fontFamily,
           fontSize: 12,
           height: 16 / 12,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           color: colors.textTokens.primary,
         ),
         semibold = TextStyle(
           fontFamily: fontFamily,
           fontSize: 12,
           height: 16 / 12,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle regular;
@@ -213,7 +229,7 @@ class MobileHeadlineSize implements HeadlineSize {
         sm = HeadlineSm(colors: colors, fontFamily: fontFamily),
         xs = HeadlineXs(colors: colors, fontFamily: fontFamily);
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final HeadlineWeights xxl;
@@ -243,7 +259,7 @@ class HeadlineXxl implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 36,
           height: 44 / 36,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -251,7 +267,7 @@ class HeadlineXxl implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 36,
           height: 44 / 36,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -259,12 +275,12 @@ class HeadlineXxl implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 36,
           height: 44 / 36,
-          fontWeight: FontWeight.w700,
+          fontVariations: _boldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -286,7 +302,7 @@ class HeadlineXl implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 32,
           height: 40 / 32,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -294,7 +310,7 @@ class HeadlineXl implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 32,
           height: 40 / 32,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -302,11 +318,11 @@ class HeadlineXl implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 32,
           height: 40 / 32,
-          fontWeight: FontWeight.w700,
+          fontVariations: _boldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
   @override
   final TextStyle medium;
@@ -327,7 +343,7 @@ class HeadlineLg implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 28,
           height: 36 / 28,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -335,7 +351,7 @@ class HeadlineLg implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 28,
           height: 36 / 28,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -343,12 +359,12 @@ class HeadlineLg implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 28,
           height: 36 / 28,
-          fontWeight: FontWeight.w700,
+          fontVariations: _boldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -370,7 +386,7 @@ class HeadlineMd implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 24,
           height: 32 / 24,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -378,7 +394,7 @@ class HeadlineMd implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 24,
           height: 32 / 24,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -386,12 +402,12 @@ class HeadlineMd implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 24,
           height: 32 / 24,
-          fontWeight: FontWeight.w700,
+          fontVariations: _boldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -413,7 +429,7 @@ class HeadlineSm implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 20,
           height: 28 / 20,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -421,7 +437,7 @@ class HeadlineSm implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 20,
           height: 28 / 20,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -429,12 +445,12 @@ class HeadlineSm implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 20,
           height: 28 / 20,
-          fontWeight: FontWeight.w700,
+          fontVariations: _boldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override
@@ -456,7 +472,7 @@ class HeadlineXs implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 18,
           height: 24 / 18,
-          fontWeight: FontWeight.w500,
+          fontVariations: _mediumVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -464,7 +480,7 @@ class HeadlineXs implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 18,
           height: 24 / 18,
-          fontWeight: FontWeight.w600,
+          fontVariations: _semiboldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         ),
@@ -472,12 +488,12 @@ class HeadlineXs implements HeadlineWeights {
           fontFamily: fontFamily,
           fontSize: 18,
           height: 24 / 18,
-          fontWeight: FontWeight.w700,
+          fontVariations: _boldVariation,
           letterSpacing: -0.02,
           color: colors.textTokens.primary,
         );
 
-  final ComponentThemes colors;
+  final AppTheme colors;
   final String? fontFamily;
 
   @override

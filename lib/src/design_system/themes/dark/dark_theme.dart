@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../colors/primitive_tokens.dart';
 import '../base/semantics/bottom_navigation_bar.dart';
@@ -15,60 +16,80 @@ import 'semantics/chips.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
 
+final darkThemeColorsProvider = Provider<DarkTheme>((ref) {
+  final _primitiveTokens = ref.watch(primitiveTokensProvider);
+  return DarkTheme(primitiveTokens: _primitiveTokens);
+});
+
+@immutable
 class DarkBaseTheme implements BaseTheme {
-  const DarkBaseTheme({
+  DarkBaseTheme({
     required this.primitiveTokens,
-  });
+  })  : primary = primitiveTokens.rose.shade500,
+        surface = DarkSurface(primitiveTokens),
+        textTokens = DarkTextTokens(primitiveTokens);
 
   final PrimitiveColorTokens primitiveTokens;
 
   @override
-  Color get primary => primitiveTokens.rose.shade500;
+  final Color primary;
 
   @override
-  SurfaceTokens get surface => DarkSurface(primitiveTokens);
+  final SurfaceTokens surface;
 
   @override
-  TextTokens get textTokens => DarkTextTokens(primitiveTokens);
+  final TextTokens textTokens;
 }
 
 @immutable
-class DarkTheme extends DarkBaseTheme implements ComponentThemes {
-  const DarkTheme({required super.primitiveTokens});
+class DarkTheme extends DarkBaseTheme implements AppTheme {
+  DarkTheme({required super.primitiveTokens})
+      : selectedBottomNavigationItem =
+            DarkBottomNavigationSelectedTokens(primitiveTokens: primitiveTokens),
+        unselectedBottomNavigationItem =
+            DarkBottomNavigationUnSelectedTokens(primitiveTokens: primitiveTokens),
+        selectedCheckbox = DarkCheckboxSelectedTokens(primitiveTokens: primitiveTokens),
+        unselectedCheckbox = DarkCheckboxUnselectedTokens(primitiveTokens: primitiveTokens),
+        intermediateCheckbox = DarkCheckboxIntermediateTokens(primitiveTokens: primitiveTokens),
+        primaryButton = DarkPrimaryButtonTokens(primitiveTokens: primitiveTokens),
+        secondaryButton = DarkSecondaryButtonTokens(primitiveTokens: primitiveTokens),
+        unselectedChips = DarkUnselectedChipsTokens(primitiveTokens: primitiveTokens),
+        selectedChips = DarkSelectedChipsTokens(primitiveTokens: primitiveTokens),
+        selectableChipsSelected =
+            DarkSelectableChipsSelectedTokens(primitiveTokens: primitiveTokens),
+        selectableChipsUnselected =
+            DarkSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens);
 
   @override
-  BottomNavigationBarTokens get selectedBottomNavigationItem =>
-      DarkBottomNavigationSelectedTokens(primitiveTokens: primitiveTokens);
+  final BottomNavigationBarTokens selectedBottomNavigationItem;
 
   @override
-  BottomNavigationBarTokens get unselectedBottomNavigationItem =>
-      DarkBottomNavigationUnSelectedTokens(primitiveTokens: primitiveTokens);
-  @override
-  CheckboxTokens get selectedCheckbox =>
-      DarkCheckboxSelectedTokens(primitiveTokens: primitiveTokens);
+  final BottomNavigationBarTokens unselectedBottomNavigationItem;
 
   @override
-  CheckboxTokens get unselectedCheckbox =>
-      DarkCheckboxUnselectedTokens(primitiveTokens: primitiveTokens);
+  final CheckboxTokens selectedCheckbox;
 
   @override
-  CheckboxTokens get intermediateCheckbox =>
-      DarkCheckboxIntermediateTokens(primitiveTokens: primitiveTokens);
+  final CheckboxTokens unselectedCheckbox;
 
   @override
-  ButtonTokens get primaryButton => DarkPrimaryButtonTokens(primitiveTokens: primitiveTokens);
+  final CheckboxTokens intermediateCheckbox;
 
   @override
-  ChipsTokens get unselectedChips => DarkUnselectedChipsTokens(primitiveTokens: primitiveTokens);
+  final ButtonTokens primaryButton;
 
   @override
-  ChipsTokens get selectedChips => DarkSelectedChipsTokens(primitiveTokens: primitiveTokens);
+  final ButtonTokens secondaryButton;
 
   @override
-  SelectableChipsTokens get selectableChipsSelected =>
-      DarkSelectableChipsSelectedTokens(primitiveTokens: primitiveTokens);
+  final ChipsTokens unselectedChips;
 
   @override
-  SelectableChipsTokens get selectableChipsUnselected =>
-      DarkSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens);
+  final ChipsTokens selectedChips;
+
+  @override
+  final SelectableChipsTokens selectableChipsSelected;
+
+  @override
+  final SelectableChipsTokens selectableChipsUnselected;
 }

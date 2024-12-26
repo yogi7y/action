@@ -1,19 +1,15 @@
-import 'dart:async';
-import 'dart:ffi';
-
 import 'package:auto_route/auto_route.dart';
-import 'package:collection/collection.dart';
-import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
-import '../../../core/constants/assets.dart';
 import '../../../core/router/app_router.dart';
-import '../../../design_system/spacing/spacing.dart';
-import '../../../design_system/themes/base/theme.dart';
-import '../../../design_system/typography/typography.dart';
-import 'state/bottom_nav_items_provider.dart';
+import '../../../design_system/design_system.dart';
+import '../../../shared/bottom_nav/bottom_nav_bar.dart';
+import '../../../shared/bottom_nav/bottom_nav_items_provider.dart';
+import '../../../shared/sticky_component_over_keyboard/sticky_component_over_keyboard.dart';
+import '../../context/presentation/state/context_provider.dart';
+import '../../projects/presentation/state/projects_provider.dart';
+import '../../tasks/presentation/state/tasks_provider.dart';
 
 @RoutePage()
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -24,6 +20,16 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    ref
+      ..read(projectsProvider)
+      ..read(contextsProvider)
+      ..read(tasksProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AutoTabsRouter.pageView(
@@ -73,97 +79,17 @@ class _DashboardScreenScaffoldState extends ConsumerState<_DashboardScreenScaffo
 
   @override
   Widget build(BuildContext context) {
-    final _colors = ref.watch(colorsProvider);
-    final _items = ref.watch(bottomNavItemsProvider);
-    final _selectedItem = ref.watch(selectedBottomNavProvider);
-    final _tabRouter = AutoTabsRouter.of(context);
-
+    final _colors = ref.watch(appThemeProvider);
     return Scaffold(
       backgroundColor: _colors.surface.background,
-      body: widget.child,
-      bottomNavigationBar: UnconstrainedBox(
-        child: Container(
-          decoration: BoxDecoration(
-            color: _colors.unselectedBottomNavigationItem.background,
-            boxShadow: [
-              BoxShadow(
-                color: _colors.surface.backgroundContrast.withValues(alpha: .2),
-                blurRadius: 8,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            children: _items
-                .mapIndexed((index, item) => Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          _tabRouter.setActiveIndex(index);
-                        },
-                        child: BottomNavItem(
-                          data: item,
-                          isSelected: item == _selectedItem.item,
-                        ),
-                      ),
-                    ))
-                .toList(),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BottomNavItem extends ConsumerWidget {
-  const BottomNavItem({
-    required this.data,
-    this.isSelected = false,
-    super.key,
-  });
-
-  final BottomNavItemData data;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(colorsProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
-
-    final _backgroundColor = isSelected
-        ? _colors.selectedBottomNavigationItem.background
-        : _colors.unselectedBottomNavigationItem.background;
-
-    final _labelStyle = isSelected
-        ? _fonts.text.xs.semibold.copyWith(
-            color: _colors.selectedBottomNavigationItem.text,
-          )
-        : _fonts.text.xs.medium.copyWith(
-            color: _colors.unselectedBottomNavigationItem.text,
-          );
-
-    return Container(
-      decoration: ShapeDecoration(
-        color: _backgroundColor,
-        shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(cornerRadius: isSelected ? 8 : 0, cornerSmoothing: 1),
-        ),
-      ),
-      padding: EdgeInsets.symmetric(
-        vertical: _spacing.sm,
-      ),
-      child: Column(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          SvgPicture.asset(data.iconPath),
-          SizedBox(height: _spacing.xxs),
-          Text(
-            data.label,
-            style: _labelStyle,
-            maxLines: 1,
-          ),
+          widget.child,
+          const StickyComponentOverKeyboard(),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

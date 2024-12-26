@@ -16,8 +16,10 @@ abstract class SelectableChipsTokens {
   const SelectableChipsTokens({
     required this.border,
     required this.foregroundColor,
+    required this.fillColor,
   });
 
   final Color border;
   final Color foregroundColor;
+  final Color fillColor;
 }

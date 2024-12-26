@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../design_system/themes/base/theme.dart';
 import '../../../../design_system/typography/typography.dart';
-import '../../../dashboard/presentation/dashboard_screen.dart';
 import '../../domain/use_case/auth_use_case.dart';
-import 'authentication_screen.dart';
 
 @RoutePage()
 class SplashScreen extends ConsumerStatefulWidget {
@@ -41,7 +39,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _colors = ref.watch(colorsProvider);
+    final _colors = ref.watch(appThemeProvider);
     final _fonts = ref.watch(fontsProvider);
 
     return Scaffold(

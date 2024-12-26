@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_textfield/smart_textfield.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,5 +21,5 @@ Future<void> main() async {
     anonKey: Env.supabaseAnonKey,
   );
 
-  runApp(const ProviderScope(child: App()));
+  runApp(const ProviderScope(child: SmartTextFieldOverlay(child: App())));
 }

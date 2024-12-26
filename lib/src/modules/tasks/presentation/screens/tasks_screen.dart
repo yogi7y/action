@@ -1,8 +1,16 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 
-import '../../../../design_system/typography/typography.dart';
+import '../../../../design_system/design_system.dart';
+import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
+import '../sections/task_input_field.dart';
+import '../sections/tasks_filters.dart';
+import '../sections/tasks_list.dart';
+import '../state/new_task_provider.dart';
+import '../state/tasks_provider.dart';
 
 @RoutePage()
 class TasksScreen extends ConsumerWidget {
@@ -11,11 +19,71 @@ class TasksScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _fonts = ref.watch(fontsProvider);
-    return Center(
-      child: Text(
-        'Tasks',
-        style: _fonts.headline.md.semibold,
+    final _colors = ref.watch(appThemeProvider);
+    final _spacing = ref.watch(spacingProvider);
+
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: () async => ref.refresh(tasksProvider.future),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leadingWidth: 0,
+              pinned: true,
+              elevation: 0,
+              titleSpacing: _spacing.lg,
+              shadowColor: Colors.transparent,
+              automaticallyImplyLeading: false,
+              toolbarHeight: kToolbarHeight + _spacing.md,
+              backgroundColor: _colors.surface.background,
+              title: Text(
+                'Tasks',
+                style: _fonts.headline.lg.semibold,
+              ),
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: SvgPicture.asset(
+                    Assets.search,
+                    height: 24,
+                    width: 24,
+                    colorFilter: ColorFilter.mode(_colors.textTokens.primary, BlendMode.srcIn),
+                  ),
+                ),
+                SizedBox(width: _spacing.xs),
+              ],
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
+            const SliverToBoxAdapter(child: TasksFilters()),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+            const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
+            const SliverTasksList(),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
+          ],
+        ),
       ),
+      floatingActionButton: Consumer(builder: (context, ref, child) {
+        final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
+        final _opacity = _isKeyboardVisible ? 0.0 : 1.0;
+        return AnimatedOpacity(
+          opacity: _opacity,
+          duration: defaultAnimationDuration,
+          child: FloatingActionButton(
+            onPressed: () {
+              ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value);
+            },
+            backgroundColor: _colors.primary,
+            shape: SmoothRectangleBorder(
+              borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
+            ),
+            child: SvgPicture.asset(
+              Assets.add,
+              height: 32,
+              width: 32,
+            ),
+          ),
+        );
+      }),
     );
   }
 }

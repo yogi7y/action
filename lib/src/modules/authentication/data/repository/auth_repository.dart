@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+
 import 'package:core_y/core_y.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
@@ -14,7 +15,10 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<Result<UserEntity, AppException>> signInWithGoogle() async {
+    final iOSClientId = Env.googleIosClientId;
+
     final _googleSignIn = GoogleSignIn(
+      clientId: iOSClientId,
       serverClientId: Env.googleWebClientId,
     );
 
@@ -36,7 +40,7 @@ class SupabaseAuthRepository implements AuthRepository {
       );
     }
 
-    final _result = await _supabaseAuth.signInWithIdToken(
+    await _supabaseAuth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: _idToken,
       accessToken: _accessToken,
