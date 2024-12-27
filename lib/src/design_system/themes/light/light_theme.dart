@@ -6,6 +6,7 @@ import '../base/semantics/bottom_navigation_bar.dart';
 import '../base/semantics/button.dart';
 import '../base/semantics/checkbox.dart';
 import '../base/semantics/chips.dart';
+import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
 import '../base/semantics/text.dart';
 import '../base/theme.dart';
@@ -13,6 +14,7 @@ import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
+import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
 
@@ -58,7 +60,10 @@ class LightTheme extends LightBaseTheme implements AppTheme {
         selectableChipsSelected =
             LightSelectableChipsSelectedTokens(primitiveTokens: primitiveTokens),
         selectableChipsUnselected =
-            LightSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens);
+            LightSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens),
+        statusTodo = LightStatusTodoTokens(primitiveTokens: primitiveTokens),
+        statusInProgress = LightStatusInProgressTokens(primitiveTokens: primitiveTokens),
+        statusDone = LightStatusDoneTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -92,4 +97,13 @@ class LightTheme extends LightBaseTheme implements AppTheme {
 
   @override
   final SelectableChipsTokens selectableChipsUnselected;
+
+  @override
+  final StatusTokens statusTodo;
+
+  @override
+  final StatusTokens statusInProgress;
+
+  @override
+  final StatusTokens statusDone;
 }

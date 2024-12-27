@@ -7,6 +7,7 @@ import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
+import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
 
@@ -60,6 +61,9 @@ abstract class AppTheme extends BaseTheme {
     required this.selectedChips,
     required this.selectableChipsSelected,
     required this.selectableChipsUnselected,
+    required this.statusTodo,
+    required this.statusInProgress,
+    required this.statusDone,
   });
 
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -74,4 +78,7 @@ abstract class AppTheme extends BaseTheme {
   final ChipsTokens selectedChips;
   final SelectableChipsTokens selectableChipsSelected;
   final SelectableChipsTokens selectableChipsUnselected;
+  final StatusTokens statusTodo;
+  final StatusTokens statusInProgress;
+  final StatusTokens statusDone;
 }
