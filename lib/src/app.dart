@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/router/app_router.dart';
 import 'design_system/design_system.dart';
 import 'design_system/typography/mobile_fonts.dart';
+import 'modules/dashboard/presentation/state/status_bar_theme_provider.dart';
 
 final _router = AppRouter();
 
@@ -14,6 +15,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _colors = ref.watch(appThemeProvider);
+    ref.watch(systemUiControllerProvider);
     return MaterialApp.router(
       routerConfig: _router.config(),
       theme: ThemeData(
