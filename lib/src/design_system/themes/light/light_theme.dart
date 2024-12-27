@@ -6,6 +6,7 @@ import '../base/semantics/bottom_navigation_bar.dart';
 import '../base/semantics/button.dart';
 import '../base/semantics/checkbox.dart';
 import '../base/semantics/chips.dart';
+import '../base/semantics/project_card_tokens.dart';
 import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
 import '../base/semantics/text.dart';
@@ -14,6 +15,7 @@ import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
+import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
@@ -63,7 +65,8 @@ class LightTheme extends LightBaseTheme implements AppTheme {
             LightSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens),
         statusTodo = LightStatusTodoTokens(primitiveTokens: primitiveTokens),
         statusInProgress = LightStatusInProgressTokens(primitiveTokens: primitiveTokens),
-        statusDone = LightStatusDoneTokens(primitiveTokens: primitiveTokens);
+        statusDone = LightStatusDoneTokens(primitiveTokens: primitiveTokens),
+        projectCard = LightProjectCardTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -106,4 +109,7 @@ class LightTheme extends LightBaseTheme implements AppTheme {
 
   @override
   final StatusTokens statusDone;
+
+  @override
+  final ProjectCardTokens projectCard;
 }

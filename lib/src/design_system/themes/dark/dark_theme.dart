@@ -6,10 +6,12 @@ import '../base/semantics/bottom_navigation_bar.dart';
 import '../base/semantics/button.dart';
 import '../base/semantics/checkbox.dart';
 import '../base/semantics/chips.dart';
+import '../base/semantics/project_card_tokens.dart';
 import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
 import '../base/semantics/text.dart';
 import '../base/theme.dart';
+import '../light/semantics/project_card_tokens.dart';
 import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
@@ -63,7 +65,8 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
             DarkSelectableChipsUnselectedTokens(primitiveTokens: primitiveTokens),
         statusTodo = DarkStatusTodoTokens(primitiveTokens: primitiveTokens),
         statusInProgress = DarkStatusInProgressTokens(primitiveTokens: primitiveTokens),
-        statusDone = DarkStatusDoneTokens(primitiveTokens: primitiveTokens);
+        statusDone = DarkStatusDoneTokens(primitiveTokens: primitiveTokens),
+        projectCard = LightProjectCardTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -106,4 +109,7 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
 
   @override
   final StatusTokens statusDone;
+
+  @override
+  final ProjectCardTokens projectCard;
 }

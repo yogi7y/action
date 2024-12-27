@@ -7,6 +7,7 @@ import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
+import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
 import 'semantics/text.dart';
@@ -64,6 +65,7 @@ abstract class AppTheme extends BaseTheme {
     required this.statusTodo,
     required this.statusInProgress,
     required this.statusDone,
+    required this.projectCard,
   });
 
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -81,4 +83,5 @@ abstract class AppTheme extends BaseTheme {
   final StatusTokens statusTodo;
   final StatusTokens statusInProgress;
   final StatusTokens statusDone;
+  final ProjectCardTokens projectCard;
 }
