@@ -15,9 +15,10 @@ final systemUiControllerProvider = Provider((ref) {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: _isDark ? Brightness.light : Brightness.dark,
       statusBarBrightness: _isDark ? Brightness.dark : Brightness.light,
-      // Also handling navigation bar for completeness
-      systemNavigationBarColor: _colors.surface.background,
+      // Match navigation bar with bottom nav background color
+      systemNavigationBarColor: _colors.unselectedBottomNavigationItem.background,
       systemNavigationBarIconBrightness: _isDark ? Brightness.light : Brightness.dark,
+      systemNavigationBarDividerColor: Colors.transparent,
     ),
   );
 });
