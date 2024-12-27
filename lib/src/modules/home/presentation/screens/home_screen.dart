@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../shared/buttons/async_button.dart';
+import '../../../../shared/status/status.dart';
 
 @RoutePage()
 class HomeScreen extends ConsumerWidget {
@@ -15,6 +16,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Column(
+        spacing: 12,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AsyncButton(
@@ -24,6 +26,9 @@ class HomeScreen extends ConsumerWidget {
               unawaited(_router.push(const ProfileRoute()));
             },
           ),
+          const StatusWidget(status: StatusType.todo),
+          const StatusWidget(status: StatusType.inProgress),
+          const StatusWidget(status: StatusType.done),
         ],
       ),
     );
