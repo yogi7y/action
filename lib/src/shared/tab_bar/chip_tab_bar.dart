@@ -38,7 +38,6 @@ class ChipTabBar extends ConsumerWidget {
             .mapIndexed((index, item) => TabBarChip(
                   label: item.label,
                   icon: item.icon,
-                  isSelected: index == selectedIndex,
                 ))
             .toList(),
       ),
@@ -52,13 +51,12 @@ class TabBarChip extends ConsumerWidget {
     required this.label,
     this.icon,
     super.key,
-    required this.onTabChanged,
+    this.isSelected = false,
   });
 
   final String label;
   final String? icon;
   final bool isSelected;
-  final void Function(int index) onTabChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,7 +71,6 @@ class TabBarChip extends ConsumerWidget {
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => onTabChanged(index),
         child: Container(
           decoration: ShapeDecoration(
             color: _backgroundColor,

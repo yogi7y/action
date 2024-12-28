@@ -17,7 +17,8 @@ Future<void> main() async {
   };
 
   await Supabase.initialize(
-    url: Env.supabaseUrl,
+    // url: Env.supabaseUrl,
+    url: 'http://192.168.1.6:54321',
     anonKey: Env.supabaseAnonKey,
   );
 

@@ -16,4 +16,4 @@ pubspec.lock
 assets/
 .flutter-plugins
 .flutter-plugins-dependencies
-
+supabase/
