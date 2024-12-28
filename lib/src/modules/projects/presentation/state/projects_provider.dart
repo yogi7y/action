@@ -22,3 +22,6 @@ final projectByIdProvider = Provider.family<ProjectEntity?, String>((ref, projec
     ),
   );
 });
+
+final scopedProjectProvider = Provider<ProjectEntity>(
+    (ref) => throw UnimplementedError('Ensure to override scopedProjectProvider'));

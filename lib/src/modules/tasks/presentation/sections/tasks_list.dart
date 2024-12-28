@@ -23,11 +23,7 @@ class SliverTasksList extends ConsumerWidget {
               child: FadeTransition(
                 opacity: CurvedAnimation(
                   parent: animation,
-                  curve: const Interval(
-                    0.2,
-                    1,
-                    curve: Curves.linear,
-                  ),
+                  curve: const Interval(0.2, 1),
                 ),
                 child: SlideTransition(
                   position: animation.drive(

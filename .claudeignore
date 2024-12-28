@@ -13,4 +13,7 @@ windows/
 action.iml
 analysis_options.yaml
 pubspec.lock
+assets/
+.flutter-plugins
+.flutter-plugins-dependencies
 
