@@ -8,9 +8,10 @@ import '../../design_system/design_system.dart';
 import '../buttons/icon_button.dart';
 
 @immutable
-class ChipTabBar extends ConsumerWidget {
+class ChipTabBar extends ConsumerStatefulWidget {
   const ChipTabBar({
     required this.items,
+    required this.pageController,
     this.onTabChanged,
     this.selectedIndex = 0,
     super.key,
@@ -19,27 +20,97 @@ class ChipTabBar extends ConsumerWidget {
   final List<ChipTabBarItem> items;
   final void Function(int index)? onTabChanged;
   final int selectedIndex;
+  final PageController pageController;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChipTabBar> createState() => _ChipTabBarState();
+}
+
+class _ChipTabBarState extends ConsumerState<ChipTabBar> with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+
+    widget.pageController.addListener(_handlePageChange);
+  }
+
+  void _handlePageChange() {
+    final page = widget.pageController.page ?? 0;
+    _animationController.value = page;
+  }
+
+  @override
+  void dispose() {
+    widget.pageController.removeListener(_handlePageChange);
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final _spacing = ref.watch(spacingProvider);
-    final _color = ref.watch(appThemeProvider);
+    final _colors = ref.watch(appThemeProvider);
+    final _screenWidth = MediaQuery.of(context).size.width;
+    final _tabWidth = (_screenWidth - (_spacing.lg * 2)) / widget.items.length;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: _spacing.lg),
       decoration: ShapeDecoration(
-        color: _color.surface.modals,
+        color: _colors.surface.modals,
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(cornerRadius: 9999, cornerSmoothing: 1),
         ),
       ),
-      child: Row(
-        children: items
-            .mapIndexed((index, item) => TabBarChip(
-                  label: item.label,
-                  icon: item.icon,
-                ))
-            .toList(),
+      child: Stack(
+        children: [
+          Builder(builder: (context) {
+            return AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                final _left = _animationController.value * _tabWidth;
+
+                return Positioned(
+                  top: 0,
+                  left: _left,
+                  bottom: 0,
+                  child: Container(
+                    width: _tabWidth,
+                    decoration: ShapeDecoration(
+                      color: _colors.primary,
+                      shape: SmoothRectangleBorder(
+                        borderRadius: SmoothBorderRadius(
+                          cornerRadius: 9999,
+                          cornerSmoothing: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
+          Row(
+            children: widget.items
+                .mapIndexed(
+                  (index, item) => Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => widget.onTabChanged?.call(index),
+                      child: TabBarChip(
+                        label: item.label,
+                        icon: item.icon,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
       ),
     );
   }
@@ -66,40 +137,34 @@ class TabBarChip extends ConsumerWidget {
     final _primitiveTokens = ref.watch(primitiveTokensProvider);
 
     final _textColor = isSelected ? _primitiveTokens.white : _colors.textTokens.primary;
-    final _backgroundColor = isSelected ? _colors.primary : _colors.surface.modals;
 
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          decoration: ShapeDecoration(
-            color: _backgroundColor,
-            shape: SmoothRectangleBorder(
-              borderRadius: SmoothBorderRadius(cornerRadius: 9999, cornerSmoothing: 1),
+    return Container(
+      decoration: ShapeDecoration(
+        // color: _backgroundColor,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(cornerRadius: 9999, cornerSmoothing: 1),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(vertical: _spacing.xs),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon?.isNotEmpty ?? false)
+            Padding(
+              padding: EdgeInsets.only(right: _spacing.xxs),
+              child: AppIconButton(
+                svgIconPath: icon!,
+                size: 18,
+              ),
+            ),
+          Text(
+            label,
+            style: _fonts.text.md.medium.copyWith(
+              color: _textColor,
             ),
           ),
-          padding: EdgeInsets.symmetric(vertical: _spacing.xs),
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon?.isNotEmpty ?? false)
-                Padding(
-                  padding: EdgeInsets.only(right: _spacing.xxs),
-                  child: AppIconButton(
-                    svgIconPath: icon!,
-                    size: 18,
-                  ),
-                ),
-              Text(
-                label,
-                style: _fonts.text.md.medium.copyWith(
-                  color: _textColor,
-                ),
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

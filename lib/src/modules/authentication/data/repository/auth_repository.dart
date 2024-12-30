@@ -49,13 +49,21 @@ class SupabaseAuthRepository implements AuthRepository {
       );
     }
 
-    await _supabaseAuth.signInWithIdToken(
+    final _response = await _supabaseAuth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: _idToken,
       accessToken: _accessToken,
     );
 
-    throw UnimplementedError();
+    if (_response.user == null)
+      return Failure(AppException(
+        exception: 'User should not be null',
+        stackTrace: StackTrace.current,
+      ));
+
+    final _userResult = UserModel.fromSupabaseUser(_response.user!);
+
+    return Success(_userResult);
   }
 
   @override

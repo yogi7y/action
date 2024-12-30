@@ -21,7 +21,7 @@ class AppThemeNotifier extends Notifier<AppTheme> {
   AppTheme build() {
     final _darkTheme = ref.watch(darkThemeColorsProvider);
     final _lightTheme = ref.watch(lightThemeColorsProvider);
-    return _lightTheme;
+    return _darkTheme;
   }
 
   void toggle() {

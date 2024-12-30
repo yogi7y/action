@@ -9,6 +9,7 @@ import '../../../../shared/header/app_header.dart';
 import '../../../../shared/tab_bar/chip_tab_bar.dart';
 import '../../../context/presentation/screens/context_screen.dart';
 import '../sections/projects_list.dart';
+import '../state/project_and_context_provider.dart';
 
 @RoutePage()
 class ProjectsScreen extends ConsumerStatefulWidget {
@@ -31,6 +32,8 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   Widget build(BuildContext context) {
     final _spacing = ref.watch(spacingProvider);
 
+    final _selectedTab = ref.watch(projectAndContextProvider);
+
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -38,7 +41,12 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             const AppHeader(title: 'Projects'),
             SliverToBoxAdapter(
               child: ChipTabBar(
+                pageController: _pageController,
+                selectedIndex: _selectedTab.indexValue,
                 onTabChanged: (index) {
+                  ref
+                      .read(projectAndContextProvider.notifier)
+                      .update((_) => ProjectAndContext.fromIndex(index));
                   unawaited(_pageController.animateToPage(
                     index,
                     duration: const Duration(milliseconds: 300),
@@ -48,7 +56,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                 items: const [
                   ChipTabBarItem(
                     label: 'Project',
-                    icon: Assets.construction,
+                    icon: Assets.hardware,
                   ),
                   ChipTabBarItem(
                     label: 'Context',
