@@ -5,9 +5,9 @@ import 'package:stack_trace/stack_trace.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'src/app.dart';
-import 'src/core/env/env.dart';
+import 'src/core/env/flavor.dart';
 
-Future<void> main() async {
+Future<void> mainBase(AppFlavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   FlutterError.demangleStackTrace = (stack) {
@@ -17,10 +17,18 @@ Future<void> main() async {
   };
 
   await Supabase.initialize(
-    // url: Env.supabaseUrl,
-    url: 'http://192.168.1.6:54321',
-    anonKey: Env.supabaseAnonKey,
+    url: flavor.env.supabaseUrl,
+    anonKey: flavor.env.supabaseAnonKey,
   );
 
-  runApp(const ProviderScope(child: SmartTextFieldOverlay(child: App())));
+  runApp(
+    ProviderScope(
+      overrides: [
+        appFlavorProvider.overrideWithValue(flavor),
+      ],
+      child: const SmartTextFieldOverlay(
+        child: App(),
+      ),
+    ),
+  );
 }

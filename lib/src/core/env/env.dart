@@ -1,20 +1,52 @@
-// ignore_for_file: avoid_classes_with_only_static_members
+// // ignore_for_file: avoid_classes_with_only_static_members
 
 import 'package:envied/envied.dart';
+import 'package:flutter/foundation.dart';
 
 part 'env.g.dart';
 
-@Envied(path: '.env', obfuscate: true)
-abstract class Env {
+@immutable
+sealed class Env {
+  abstract final String supabaseUrl;
+  abstract final String supabaseAnonKey;
+  abstract final String googleWebClientId;
+  abstract final String googleIosClientId;
+}
+
+@Envied(path: '.env.staging', obfuscate: true)
+class StagingEnv implements Env {
+  @override
   @EnviedField(varName: 'SUPABASE_URL')
-  static final String supabaseUrl = _Env.supabaseUrl;
+  final String supabaseUrl = _StagingEnv.supabaseUrl;
 
+  @override
   @EnviedField(varName: 'SUPABASE_ANON_KEY')
-  static final String supabaseAnonKey = _Env.supabaseAnonKey;
+  final String supabaseAnonKey = _StagingEnv.supabaseAnonKey;
 
+  @override
   @EnviedField(varName: 'GOOGLE_WEB_CLIENT_ID')
-  static final String googleWebClientId = _Env.googleWebClientId;
+  final String googleWebClientId = _StagingEnv.googleWebClientId;
 
+  @override
   @EnviedField(varName: 'GOOGLE_IOS_CLIENT_ID')
-  static final String googleIosClientId = _Env.googleIosClientId;
+  final String googleIosClientId = _StagingEnv.googleIosClientId;
+}
+
+@Envied(path: '.env.production', obfuscate: true)
+class ProductionEnv implements Env {
+  @override
+  @EnviedField(varName: 'SUPABASE_URL')
+  final String supabaseUrl = _ProductionEnv.supabaseUrl;
+
+  @override
+  @EnviedField(varName: 'SUPABASE_ANON_KEY')
+  final String supabaseAnonKey = _ProductionEnv.supabaseAnonKey;
+
+  @override
+  @EnviedField(varName: 'GOOGLE_WEB_CLIENT_ID')
+  final String googleWebClientId = _ProductionEnv.googleWebClientId;
+
+  @override
+  @EnviedField(varName: 'GOOGLE_IOS_CLIENT_ID')
+  final String googleIosClientId = _ProductionEnv.googleIosClientId;
 }

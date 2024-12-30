@@ -1,6 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer' as developer;
 
 import 'package:core_y/core_y.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,16 +12,23 @@ import '../../domain/entity/user.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../models/user_model.dart';
 
+@immutable
 class SupabaseAuthRepository implements AuthRepository {
+  SupabaseAuthRepository({
+    required this.env,
+  });
+
+  final Env env;
+
   late final _supabaseAuth = Supabase.instance.client.auth;
 
   @override
   Future<Result<UserEntity, AppException>> signInWithGoogle() async {
-    final iOSClientId = Env.googleIosClientId;
+    final iOSClientId = env.googleIosClientId;
 
     final _googleSignIn = GoogleSignIn(
       clientId: iOSClientId,
-      serverClientId: Env.googleWebClientId,
+      serverClientId: env.googleWebClientId,
     );
 
     final _user = await _googleSignIn.signIn();

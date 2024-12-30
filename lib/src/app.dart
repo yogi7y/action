@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/env/flavor.dart';
 import 'core/router/app_router.dart';
 import 'design_system/design_system.dart';
 import 'design_system/typography/mobile_fonts.dart';
@@ -15,8 +16,12 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _colors = ref.watch(appThemeProvider);
+    final _appFlavor = ref.watch(appFlavorProvider);
+
     ref.watch(systemUiControllerProvider);
+
     return MaterialApp.router(
+      title: _appFlavor.appName,
       routerConfig: _router.config(),
       theme: ThemeData(
         fontFamily: interFontFamily,

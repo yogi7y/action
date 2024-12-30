@@ -1,6 +1,7 @@
 import 'package:core_y/core_y.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/env/flavor.dart';
 import '../../data/repository/auth_repository.dart';
 import '../entity/user.dart';
 
@@ -16,4 +17,7 @@ abstract class AuthRepository {
   Stream<UserCurrentState> get userCurrentState;
 }
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) => SupabaseAuthRepository());
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final _appFlavor = ref.watch(appFlavorProvider);
+  return SupabaseAuthRepository(env: _appFlavor.env);
+});

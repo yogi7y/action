@@ -46,6 +46,18 @@ android {
             signingConfig = signingConfigs.release
         }
     }
+    flavorDimensions "environment"
+    productFlavors {
+        staging {
+            dimension "environment"
+            applicationIdSuffix ".stg"
+            resValue "string", "app_name", "Action Staging"
+        }
+        production {
+            dimension "environment"
+            resValue "string", "app_name", "Action"
+        }
+    }
 }
 
 flutter {
