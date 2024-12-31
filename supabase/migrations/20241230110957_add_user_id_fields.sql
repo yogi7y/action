@@ -1,4 +1,4 @@
--- First add the columns as nullable
+
 ALTER TABLE tasks ADD COLUMN user_id UUID REFERENCES auth.users(id);
 ALTER TABLE projects ADD COLUMN user_id UUID REFERENCES auth.users(id);
 ALTER TABLE contexts ADD COLUMN user_id UUID REFERENCES auth.users(id);
@@ -29,52 +29,52 @@ ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contexts ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for tasks table
-CREATE POLICY "Users can view their own tasks" 
+CREATE POLICY "Only owners can view their own tasks" 
 ON tasks FOR SELECT 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own tasks" 
+CREATE POLICY "Only authenticated users can insert tasks" 
 ON tasks FOR INSERT 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own tasks" 
+CREATE POLICY "Only owners can update their own tasks" 
 ON tasks FOR UPDATE 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own tasks" 
+CREATE POLICY "Only owners can delete their own tasks" 
 ON tasks FOR DELETE 
 USING (auth.uid() = user_id);
 
 -- Create policies for projects table
-CREATE POLICY "Users can view their own projects" 
+CREATE POLICY "Only owners can view their own projects" 
 ON projects FOR SELECT 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own projects" 
+CREATE POLICY "Only authenticated users can insert projects" 
 ON projects FOR INSERT 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own projects" 
+CREATE POLICY "Only owners can update their own projects" 
 ON projects FOR UPDATE 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own projects" 
+CREATE POLICY "Only owners can delete their own projects" 
 ON projects FOR DELETE 
 USING (auth.uid() = user_id);
 
 -- Create policies for contexts table
-CREATE POLICY "Users can view their own contexts" 
+CREATE POLICY "Only owners can view their own contexts" 
 ON contexts FOR SELECT 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own contexts" 
+CREATE POLICY "Only authenticated users can insert contexts" 
 ON contexts FOR INSERT 
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own contexts" 
+CREATE POLICY "Only owners can update their own contexts" 
 ON contexts FOR UPDATE 
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own contexts" 
+CREATE POLICY "Only owners can delete their own contexts" 
 ON contexts FOR DELETE 
 USING (auth.uid() = user_id);

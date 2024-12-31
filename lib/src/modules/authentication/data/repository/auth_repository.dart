@@ -103,19 +103,26 @@ class SupabaseAuthRepository implements AuthRepository {
     required Email email,
     required Password password,
   }) async {
-    final _response = await _supabaseAuth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final _response = await _supabaseAuth.signInWithPassword(
+        email: email,
+        password: password,
+      );
 
-    if (_response.user == null) {
+      if (_response.user == null) {
+        return Failure(AppException(
+          exception: 'User should not be null',
+          stackTrace: StackTrace.current,
+        ));
+      }
+
+      final _userResult = UserModel.fromSupabaseUser(_response.user!);
+      return Success(_userResult);
+    } catch (e) {
       return Failure(AppException(
-        exception: 'User should not be null',
+        exception: e.toString(),
         stackTrace: StackTrace.current,
       ));
     }
-
-    final _userResult = UserModel.fromSupabaseUser(_response.user!);
-    return Success(_userResult);
   }
 }
