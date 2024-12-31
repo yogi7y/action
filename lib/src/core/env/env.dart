@@ -50,3 +50,22 @@ class ProductionEnv implements Env {
   @EnviedField(varName: 'GOOGLE_IOS_CLIENT_ID')
   final String googleIosClientId = _ProductionEnv.googleIosClientId;
 }
+
+@Envied(path: '.env', obfuscate: true)
+class LocalEnv implements Env {
+  @override
+  @EnviedField(varName: 'SUPABASE_URL')
+  final String supabaseUrl = _LocalEnv.supabaseUrl;
+
+  @override
+  @EnviedField(varName: 'SUPABASE_ANON_KEY')
+  final String supabaseAnonKey = _LocalEnv.supabaseAnonKey;
+
+  @override
+  @EnviedField(varName: 'GOOGLE_WEB_CLIENT_ID')
+  final String googleWebClientId = _LocalEnv.googleWebClientId;
+
+  @override
+  @EnviedField(varName: 'GOOGLE_IOS_CLIENT_ID')
+  final String googleIosClientId = _LocalEnv.googleIosClientId;
+}

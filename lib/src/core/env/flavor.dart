@@ -37,5 +37,10 @@ class ProductionApp extends AppFlavor {
   ProductionApp() : super(env: ProductionEnv(), appName: 'Action');
 }
 
+@immutable
+class LocalApp extends AppFlavor {
+  LocalApp() : super(env: LocalEnv(), appName: 'Action Local');
+}
+
 final appFlavorProvider = Provider<AppFlavor>((ref) =>
     throw UnimplementedError('Ensure to override appFlavorProvider at the root of your app'));
