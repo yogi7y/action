@@ -1,4 +1,3 @@
-
 -- Set up authentication context before inserting data
 SELECT set_authenticated_context();
 

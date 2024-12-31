@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
+import '../models/task_view.dart';
 import 'new_task_provider.dart';
 
 final scopedTaskProvider = Provider<TaskEntity>(
@@ -20,7 +21,9 @@ class TasksNotifier extends AsyncNotifier<Tasks> {
     return _fetchTasks();
   }
 
-  Future<Tasks> _fetchTasks() => _useCase.fetchTasks().then((result) {
+  Future<Tasks> _fetchTasks() => _useCase
+          .fetchTasks(const StatusTaskView(status: TaskStatus.inProgress).toQuerySpecification())
+          .then((result) {
         return result.fold(
           onSuccess: (tasks) => tasks,
           onFailure: (error) => throw error,

@@ -2,31 +2,29 @@ import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_view_type.dart';
 import '../../domain/repository/task_repository.dart';
 import '../models/task.dart';
+import 'query_builder.dart';
 
 class SupabaseTaskRepository implements TaskRepository {
-  const SupabaseTaskRepository(this.client);
+  const SupabaseTaskRepository(this.client, this.queryBuilder);
 
   final SupabaseClient client;
+  final TasksQueryBuilder<PostgrestFilterBuilder<PostgrestList>> queryBuilder;
 
   @override
-  Future<Result<List<TaskEntity>, AppException>> fetchTasks() async {
+  Future<Result<List<TaskEntity>, AppException>> fetchTasks(TaskQuerySpecification spec) async {
     try {
-      final response = await client.from('tasks').select().order('created_at', ascending: false);
+      final _query = queryBuilder.buildQuery(spec);
 
-      final tasks = (response as List<dynamic>)
+      final _response = await _query.select();
+
+      final tasks = (_response as List<dynamic>)
           .map((task) => TaskModel.fromMap(task as Map<String, dynamic>))
           .toList();
 
       return Success(tasks);
-    } on PostgrestException catch (e, stackTrace) {
-      return Failure(
-        AppException(
-          exception: e.message,
-          stackTrace: stackTrace,
-        ),
-      );
     } catch (e, stackTrace) {
       return Failure(
         AppException(

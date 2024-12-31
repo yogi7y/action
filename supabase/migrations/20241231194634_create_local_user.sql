@@ -1,4 +1,3 @@
-
 -- Create user management function
 CREATE OR REPLACE FUNCTION public.create_user(
     email text,
@@ -36,6 +35,7 @@ BEGIN
         ''
     );
 
+    -- Create identity
     INSERT INTO auth.identities (
         id, user_id, identity_data, provider, provider_id,
         last_sign_in_at, created_at, updated_at
@@ -54,7 +54,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create function to set authentication context
+-- Create function to set authentication context for seeding
 CREATE OR REPLACE FUNCTION set_authenticated_context() RETURNS void AS $$
 DECLARE
     created_user_id uuid;
