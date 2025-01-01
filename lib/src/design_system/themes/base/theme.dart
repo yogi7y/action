@@ -7,9 +7,11 @@ import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
+import 'semantics/l2_screen_header_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
+import 'semantics/task_detail_overview_tile_token.dart';
 import 'semantics/text.dart';
 
 enum AppThemeType { light, dark }
@@ -38,9 +40,13 @@ abstract class BaseTheme {
     required this.primary,
     required this.surface,
     required this.textTokens,
+    required this.accentShade,
+    required this.accentTint,
   });
 
   final Color primary;
+  final Color accentShade;
+  final Color accentTint;
   final SurfaceTokens surface;
   final TextTokens textTokens;
 }
@@ -51,6 +57,8 @@ abstract class AppTheme extends BaseTheme {
     required super.primary,
     required super.surface,
     required super.textTokens,
+    required super.accentShade,
+    required super.accentTint,
     required this.selectedBottomNavigationItem,
     required this.unselectedBottomNavigationItem,
     required this.selectedCheckbox,
@@ -66,6 +74,9 @@ abstract class AppTheme extends BaseTheme {
     required this.statusInProgress,
     required this.statusDone,
     required this.projectCard,
+    required this.textDetailOverviewTileHasValue,
+    required this.textDetailOverviewTileNoValue,
+    required this.l2Screen,
   });
 
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -84,4 +95,7 @@ abstract class AppTheme extends BaseTheme {
   final StatusTokens statusInProgress;
   final StatusTokens statusDone;
   final ProjectCardTokens projectCard;
+  final TextDetailOverviewTileTokens textDetailOverviewTileHasValue;
+  final TextDetailOverviewTileTokens textDetailOverviewTileNoValue;
+  final L2ScreenHeaderTokens l2Screen;
 }

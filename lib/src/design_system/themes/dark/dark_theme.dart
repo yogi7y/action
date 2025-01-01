@@ -6,9 +6,11 @@ import '../base/semantics/bottom_navigation_bar.dart';
 import '../base/semantics/button.dart';
 import '../base/semantics/checkbox.dart';
 import '../base/semantics/chips.dart';
+import '../base/semantics/l2_screen_header_tokens.dart';
 import '../base/semantics/project_card_tokens.dart';
 import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
+import '../base/semantics/task_detail_overview_tile_token.dart';
 import '../base/semantics/text.dart';
 import '../base/theme.dart';
 import '../light/semantics/project_card_tokens.dart';
@@ -16,9 +18,11 @@ import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
+import 'semantics/l2_screen_header_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
+import 'semantics/task_detail_overview_tile_token.dart';
 import 'semantics/text.dart';
 
 final darkThemeColorsProvider = Provider<DarkTheme>((ref) {
@@ -31,6 +35,8 @@ class DarkBaseTheme implements BaseTheme {
   DarkBaseTheme({
     required this.primitiveTokens,
   })  : primary = primitiveTokens.rose.shade500,
+        accentTint = const Color(0xFF283344),
+        accentShade = primitiveTokens.dark,
         surface = DarkSurface(primitiveTokens),
         textTokens = DarkTextTokens(primitiveTokens);
 
@@ -38,6 +44,11 @@ class DarkBaseTheme implements BaseTheme {
 
   @override
   final Color primary;
+  @override
+  final Color accentTint;
+
+  @override
+  final Color accentShade;
 
   @override
   final SurfaceTokens surface;
@@ -67,7 +78,12 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
         statusTodo = DarkStatusTodoTokens(primitiveTokens: primitiveTokens),
         statusInProgress = DarkStatusInProgressTokens(primitiveTokens: primitiveTokens),
         statusDone = DarkStatusDoneTokens(primitiveTokens: primitiveTokens),
-        projectCard = DarkProjectCardTokens(primitiveTokens: primitiveTokens);
+        projectCard = DarkProjectCardTokens(primitiveTokens: primitiveTokens),
+        textDetailOverviewTileHasValue =
+            DarkTextDetailOverviewTileHasValueTokens(primitiveTokens: primitiveTokens),
+        textDetailOverviewTileNoValue =
+            DarkTextDetailOverviewTileNoValueTokens(primitiveTokens: primitiveTokens),
+        l2Screen = DarkL2ScreenHeaderTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -113,4 +129,13 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
 
   @override
   final ProjectCardTokens projectCard;
+
+  @override
+  final TextDetailOverviewTileTokens textDetailOverviewTileHasValue;
+
+  @override
+  final TextDetailOverviewTileTokens textDetailOverviewTileNoValue;
+
+  @override
+  final L2ScreenHeaderTokens l2Screen;
 }

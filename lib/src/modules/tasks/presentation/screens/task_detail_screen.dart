@@ -104,8 +104,8 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen>
             collapsedHeight: kToolbarHeight,
             pinned: true,
             foregroundColor: _colors.textTokens.primary,
+            backgroundColor: _colors.surface.backgroundContrast,
             surfaceTintColor: _colors.surface.backgroundContrast,
-            backgroundColor: _colors.surface.background,
             flexibleSpace: AnimatedBuilder(
               animation: _paddingAnimation,
               builder: (context, child) => FlexibleSpaceBar(
