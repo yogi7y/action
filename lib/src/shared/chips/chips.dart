@@ -10,6 +10,7 @@ class AppChips extends ConsumerWidget {
     required this.iconPath,
     this.count = 0,
     this.isSelected = false,
+    this.onClick,
     super.key,
   });
 
@@ -17,6 +18,7 @@ class AppChips extends ConsumerWidget {
   final String label;
   final int count;
   final String iconPath;
+  final VoidCallback? onClick;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,36 +29,40 @@ class AppChips extends ConsumerWidget {
     final _chipsTheme = isSelected ? _colors.selectedChips : _colors.unselectedChips;
     final _labelStyle = isSelected ? _fonts.text.md.semibold : _fonts.text.md.regular;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: _spacing.md,
-        vertical: _spacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: _chipsTheme.background,
-        borderRadius: BorderRadius.circular(9999),
-      ),
-      child: Row(
-        spacing: _spacing.xs,
-        children: [
-          SvgPicture.asset(
-            iconPath,
-            height: 16,
-            width: 16,
-            colorFilter: ColorFilter.mode(_chipsTheme.text, BlendMode.srcIn),
-          ),
-          Text(
-            label,
-            style: _labelStyle.copyWith(color: _chipsTheme.text),
-          ),
-          if (count > 0)
-            Text(
-              count.toString(),
-              style: _fonts.text.sm.regular.copyWith(
-                color: _chipsTheme.text,
-              ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onClick,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: _spacing.md,
+          vertical: _spacing.xs,
+        ),
+        decoration: BoxDecoration(
+          color: _chipsTheme.background,
+          borderRadius: BorderRadius.circular(9999),
+        ),
+        child: Row(
+          spacing: _spacing.xs,
+          children: [
+            SvgPicture.asset(
+              iconPath,
+              height: 16,
+              width: 16,
+              colorFilter: ColorFilter.mode(_chipsTheme.text, BlendMode.srcIn),
             ),
-        ],
+            Text(
+              label,
+              style: _labelStyle.copyWith(color: _chipsTheme.text),
+            ),
+            if (count > 0)
+              Text(
+                count.toString(),
+                style: _fonts.text.sm.regular.copyWith(
+                  color: _chipsTheme.text,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

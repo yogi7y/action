@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/env/flavor.dart';
-import 'core/router/app_router.dart';
+import 'core/router/router.dart';
 import 'design_system/design_system.dart';
 import 'design_system/typography/mobile_fonts.dart';
 import 'modules/dashboard/presentation/state/status_bar_theme_provider.dart';
-
-final _router = AppRouter();
 
 @immutable
 class App extends ConsumerWidget {
@@ -17,12 +15,13 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final _colors = ref.watch(appThemeProvider);
     final _appFlavor = ref.watch(appFlavorProvider);
+    final _router = ref.watch(routerProvider);
 
     ref.watch(systemUiControllerProvider);
 
     return MaterialApp.router(
+      routerConfig: _router,
       title: _appFlavor.appName,
-      routerConfig: _router.config(),
       theme: ThemeData(
         fontFamily: interFontFamily,
         scaffoldBackgroundColor: _colors.surface.background,

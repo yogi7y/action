@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../design_system/design_system.dart';
 
@@ -20,3 +21,6 @@ final bottomNavItemsProvider = Provider<List<BottomNavItemData>>((ref) => [
 final selectedBottomNavProvider = StateProvider<SelectedBottomNavItem>(
   (ref) => (index: 0, item: ref.watch(bottomNavItemsProvider).first),
 );
+
+final navigatorShellProvider =
+    Provider<StatefulNavigationShell>((ref) => throw UnimplementedError());

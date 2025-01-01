@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,7 +10,6 @@ import '../../../context/presentation/screens/context_screen.dart';
 import '../sections/projects_list.dart';
 import '../state/project_and_context_provider.dart';
 
-@RoutePage()
 class ProjectsScreen extends ConsumerStatefulWidget {
   const ProjectsScreen({super.key});
 

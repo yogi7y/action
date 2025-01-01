@@ -4,8 +4,8 @@ import '../state/tasks_provider.dart';
 
 mixin TasksOperations {
   Future<void> addTask({required WidgetRef ref}) async {
-    final _taskNotifier = ref.watch(tasksProvider.notifier);
+    // final _taskNotifier = ref.watch(tasksProvider.notifier);
 
-    await _taskNotifier.addTask();
+    // await _taskNotifier.addTask();
   }
 }

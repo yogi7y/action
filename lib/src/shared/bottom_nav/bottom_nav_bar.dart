@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ class BottomNavBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final _colors = ref.watch(appThemeProvider);
     final _items = ref.watch(bottomNavItemsProvider);
-    final _tabRouter = AutoTabsRouter.of(context);
     final _selectedItem = ref.watch(selectedBottomNavProvider);
 
     return UnconstrainedBox(
@@ -36,9 +34,7 @@ class BottomNavBar extends ConsumerWidget {
           children: _items
               .mapIndexed((index, item) => Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        _tabRouter.setActiveIndex(index);
-                      },
+                      onTap: () => _onTap(index: index, data: item, ref: ref),
                       child: BottomNavItem(
                         data: item,
                         isSelected: item == _selectedItem.item,
@@ -49,6 +45,15 @@ class BottomNavBar extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _onTap({
+    required int index,
+    required BottomNavItemData data,
+    required WidgetRef ref,
+  }) {
+    ref.read(selectedBottomNavProvider.notifier).update((e) => (index: index, item: data));
+    ref.read(navigatorShellProvider).goBranch(index);
   }
 }
 

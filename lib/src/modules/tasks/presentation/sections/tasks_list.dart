@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/task_view.dart';
 import '../state/tasks_provider.dart';
 import '../widgets/task_tile.dart';
 
 @immutable
-class SliverTasksList extends ConsumerWidget {
-  const SliverTasksList({super.key});
+class TasksList extends ConsumerWidget {
+  const TasksList({
+    required this.taskView,
+    super.key,
+  });
+
+  final TaskView taskView;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _animatedListKey = ref.watch(tasksProvider.notifier).animatedListKey;
+    final _animatedListKey = taskView.animatedListKey;
 
-    return ref.watch(tasksProvider).when(
-          data: (tasks) => SliverAnimatedList(
+    return ref.watch(tasksProvider(taskView)).when(
+          data: (tasks) => AnimatedList(
+            padding: EdgeInsets.zero,
             key: _animatedListKey,
             initialItemCount: tasks.length,
             itemBuilder: (context, index, animation) => ProviderScope(
@@ -39,9 +46,8 @@ class SliverTasksList extends ConsumerWidget {
               ),
             ),
           ),
-          loading: () =>
-              const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
-          error: (error, _) => SliverFillRemaining(child: Center(child: Text(error.toString()))),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text(error.toString())),
         );
   }
 }

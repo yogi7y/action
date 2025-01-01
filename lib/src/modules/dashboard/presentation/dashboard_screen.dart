@@ -1,19 +1,20 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../core/router/app_router.dart';
 import '../../../design_system/design_system.dart';
 import '../../../shared/bottom_nav/bottom_nav_bar.dart';
 import '../../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import '../../../shared/sticky_component_over_keyboard/sticky_component_over_keyboard.dart';
 import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
+import '../../tasks/presentation/state/task_filter_provider.dart';
 import '../../tasks/presentation/state/tasks_provider.dart';
 
-@RoutePage()
 class DashboardScreen extends ConsumerStatefulWidget {
-  const DashboardScreen({super.key});
+  const DashboardScreen({required this.navigationShell, super.key});
+
+  final StatefulNavigationShell navigationShell;
 
   @override
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
@@ -26,23 +27,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     ref
       ..read(projectsProvider)
-      ..read(contextsProvider)
-      ..read(tasksProvider);
+      ..read(contextsProvider);
+
+    final _currentFilter = ref.read(tasksFilterProvider).first;
+    ref.read(tasksProvider(_currentFilter));
   }
 
   @override
   Widget build(BuildContext context) {
-    return AutoTabsRouter.pageView(
-      routes: const [
-        HomeRoute(),
-        TasksRoute(),
-        NotesRoute(),
-        ProjectsRoute(),
-        AreaRoute(),
-      ],
-      builder: (context, child, pageController) => _DashboardScreenScaffold(
-        controller: pageController,
-        child: child,
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          widget.navigationShell,
+          const StickyComponentOverKeyboard(),
+        ],
+      ),
+      bottomNavigationBar: ProviderScope(
+        overrides: [
+          navigatorShellProvider.overrideWithValue(widget.navigationShell),
+        ],
+        child: const BottomNavBar(),
       ),
     );
   }

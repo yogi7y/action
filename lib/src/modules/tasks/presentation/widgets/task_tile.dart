@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:core_y/src/extensions/time_ago.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/router/routes.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task.dart';
+import '../state/task_filter_provider.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
@@ -26,7 +30,9 @@ class TaskTile extends ConsumerWidget {
       children: [
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {},
+          onTap: () async {
+            // await AutoRouter.of(context).navigate(TaskDetailRoute(id: _task.id));
+          },
           child: Container(
             padding: EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm, right: _spacing.lg),
             child: Row(
@@ -35,9 +41,12 @@ class TaskTile extends ConsumerWidget {
                 AppCheckbox(
                   padding: EdgeInsets.only(right: _spacing.xs, top: 4, left: _spacing.lg),
                   state: AppCheckboxState.fromTaskStatus(status: _task.status),
-                  onChanged: (state) async => ref.read(tasksProvider.notifier).updateTask(
-                        _task.copyWith(status: TaskStatus.fromAppCheckboxState(state)),
-                      ),
+                  onChanged: (state) async {
+                    final _currentFilter = ref.read(selectedTaskFilterProvider);
+                    return ref.read(tasksProvider(_currentFilter).notifier).updateTask(
+                          _task.copyWith(status: TaskStatus.fromAppCheckboxState(state)),
+                        );
+                  },
                 ),
                 Expanded(
                   child: Column(
