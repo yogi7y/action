@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:core_y/src/extensions/time_ago.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../core/router/routes.dart';
@@ -30,9 +29,11 @@ class TaskTile extends ConsumerWidget {
       children: [
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () async {
-            // await AutoRouter.of(context).navigate(TaskDetailRoute(id: _task.id));
-          },
+          onTap: () async => context.goNamed(
+            AppRoute.taskDetail.name,
+            extra: _task,
+            pathParameters: {'id': _task.id},
+          ),
           child: Container(
             padding: EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm, right: _spacing.lg),
             child: Row(

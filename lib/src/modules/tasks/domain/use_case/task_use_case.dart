@@ -5,17 +5,21 @@ import '../entity/task.dart';
 import '../entity/task_view_type.dart';
 import '../repository/task_repository.dart';
 
+typedef TaskId = String;
 typedef Tasks = List<TaskEntity>;
 typedef TaskResult = Result<Tasks, AppException>;
-typedef AsyncTaskResult = Future<TaskResult>;
+typedef AsyncTasksResult = Future<TaskResult>;
+typedef AsyncTaskResult = Future<Result<TaskEntity, AppException>>;
 
 class TaskUseCase {
   const TaskUseCase(this.repository);
 
   final TaskRepository repository;
 
-  AsyncTaskResult fetchTasks(TaskQuerySpecification querySpecification) =>
+  AsyncTasksResult fetchTasks(TaskQuerySpecification querySpecification) =>
       repository.fetchTasks(querySpecification);
+
+  AsyncTaskResult getTaskById(TaskId id) => repository.getTaskById(id);
 
   Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) =>
       repository.createTask(task);

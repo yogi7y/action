@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/entity/task_view_type.dart';
 import '../../domain/repository/task_repository.dart';
+import '../../domain/use_case/task_use_case.dart';
 import '../models/task.dart';
 import 'query_builder.dart';
 
@@ -80,5 +81,10 @@ class SupabaseTaskRepository implements TaskRepository {
         ),
       );
     }
+  }
+
+  @override
+  AsyncTaskResult getTaskById(TaskId id) {
+    throw UnimplementedError();
   }
 }

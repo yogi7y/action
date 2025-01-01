@@ -29,7 +29,6 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   @override
   void initState() {
     super.initState();
-    print('tasks screen init called');
 
     final _filters = ref.read(tasksFilterProvider);
     for (final filter in _filters) {
@@ -43,7 +42,6 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
 
   @override
   void dispose() {
-    print('tasks screen dispose called');
     super.dispose();
   }
 

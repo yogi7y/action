@@ -5,6 +5,8 @@ import '../../modules/area/presentation/screens/area_screen.dart';
 import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
+import '../../modules/tasks/domain/entity/task.dart';
+import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
 
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -15,6 +17,7 @@ enum AppRoute {
   auth(path: '/auth', name: 'auth'),
   home(path: '/home', name: 'home'),
   tasks(path: '/tasks', name: 'tasks'),
+  taskDetail(path: '/tasks/:id', name: 'task_detail'),
   pages(path: '/pages', name: 'pages'),
   projects(path: '/projects', name: 'projects'),
   area(path: '/area', name: 'area'),
@@ -51,10 +54,22 @@ final shellBranches = [
     navigatorKey: tasksNavigatorKey,
     routes: [
       GoRoute(
-        name: AppRoute.tasks.name,
-        path: AppRoute.tasks.path,
-        builder: (context, state) => const TasksScreen(),
-      ),
+          name: AppRoute.tasks.name,
+          path: AppRoute.tasks.path,
+          builder: (context, state) => const TasksScreen(),
+          routes: [
+            GoRoute(
+              name: AppRoute.taskDetail.name,
+              path: AppRoute.taskDetail.path,
+              builder: (context, state) {
+                final _task = state.extra as TaskEntity?;
+
+                return TaskDetailScreen(
+                  taskDataOrId: (data: _task, id: null),
+                );
+              },
+            ),
+          ]),
     ],
   ),
   StatefulShellBranch(
