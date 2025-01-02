@@ -163,7 +163,7 @@ class TaskDetailDataView extends ConsumerWidget {
               );
             }),
             SliverToBoxAdapter(
-              child: SizedBox(height: _spacing.xxl * 2),
+              child: SizedBox(height: _spacing.xxl),
             ),
           ],
         ),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
+import '../state/task_detail_provider.dart';
 
 class TaskDetailHeader extends ConsumerStatefulWidget {
   const TaskDetailHeader({
@@ -84,6 +85,7 @@ class _TaskDetailHeaderState extends ConsumerState<TaskDetailHeader>
   Widget build(BuildContext context) {
     final _colors = ref.watch(appThemeProvider);
     final _fonts = ref.watch(fontsProvider);
+    final _task = ref.watch(scopedTaskDetailProvider);
 
     return SliverAppBar(
       expandedHeight: _expandedHeight,
@@ -115,10 +117,7 @@ class _TaskDetailHeaderState extends ConsumerState<TaskDetailHeader>
                   child: child,
                 ),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(right: 6, top: 4),
-                child: AppCheckbox(),
-              ),
+              child: const _Checkbox(),
             ),
             Expanded(
               child: Padding(
@@ -132,6 +131,26 @@ class _TaskDetailHeaderState extends ConsumerState<TaskDetailHeader>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Checkbox extends StatelessWidget {
+  const _Checkbox();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6, top: 4),
+      child: Consumer(
+        builder: (context, ref, child) => AppCheckbox(
+          state: AppCheckboxState.fromTaskStatus(
+            status: ref.watch(
+              scopedTaskDetailProvider.select((value) => value.status),
+            ),
+          ),
         ),
       ),
     );
