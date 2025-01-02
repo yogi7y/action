@@ -10,6 +10,7 @@ import '../base/semantics/l2_screen_header_tokens.dart';
 import '../base/semantics/project_card_tokens.dart';
 import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
+import '../base/semantics/tab_bar_inline_tokens.dart';
 import '../base/semantics/task_detail_overview_tile_token.dart';
 import '../base/semantics/text.dart';
 import '../base/theme.dart';
@@ -22,6 +23,7 @@ import 'semantics/l2_screen_header_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
+import 'semantics/tab_bar_inline_tokens.dart';
 import 'semantics/task_detail_overview_tile_token.dart';
 import 'semantics/text.dart';
 
@@ -83,7 +85,8 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
             DarkTextDetailOverviewTileHasValueTokens(primitiveTokens: primitiveTokens),
         textDetailOverviewTileNoValue =
             DarkTextDetailOverviewTileNoValueTokens(primitiveTokens: primitiveTokens),
-        l2Screen = DarkL2ScreenHeaderTokens(primitiveTokens: primitiveTokens);
+        l2Screen = DarkL2ScreenHeaderTokens(primitiveTokens: primitiveTokens),
+        tabBar = DarkTabBarTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -138,4 +141,7 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
 
   @override
   final L2ScreenHeaderTokens l2Screen;
+
+  @override
+  final TabBarTokens tabBar;
 }

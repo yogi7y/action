@@ -5,13 +5,11 @@ import '../light_theme.dart';
 
 @immutable
 class LightL2ScreenHeaderTokens extends LightBaseTheme implements L2ScreenHeaderTokens {
-  LightL2ScreenHeaderTokens({required super.primitiveTokens})
-      : background = primitiveTokens.neutral.shade50,
-        foreground = primitiveTokens.neutral.shade700;
+  LightL2ScreenHeaderTokens({required super.primitiveTokens});
 
   @override
-  final Color background;
+  Color get background => accentShade;
 
   @override
-  final Color foreground;
+  Color get foreground => textTokens.primary;
 }

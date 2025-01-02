@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
+
+@Deprecated('Use AssetsV2 instead')
 abstract class Assets {
+  @Deprecated('Use AssetsV2 instead')
   const Assets._();
 
   static const String _iconsPath = 'assets/icons';
@@ -26,4 +30,29 @@ abstract class Assets {
   static const String circleWithDots = '$_iconsPath/circle_with_dots.svg';
   static const String circle = '$_iconsPath/circle.svg';
   static const String circleWithCheck = '$_iconsPath/circle_with_check.svg';
+}
+
+@immutable
+class AssetsV2 {
+  const AssetsV2._();
+
+  static const String _base = 'assets/icons';
+
+  // Navigation & Actions
+  static const String bookmarkAdd = '$_base/bookmark-add-outlined.svg';
+  static const String addTask = '$_base/add-task-outlined.svg';
+  static const String plus = '$_base/plus-outlined.svg';
+  static const String user = '$_base/user-outlined.svg';
+  static const String clock = '$_base/clock-outlined.svg';
+  static const String loader = '$_base/loader-outlined.svg';
+  static const String home = '$_base/home-outlined.svg';
+  static const hammerOutlined = '$_base/hammer-outlined.svg';
+
+  static const String calendarLines = '$_base/calendar-lines-outlined.svg';
+  static const String calendar = '$_base/calendar-outlined.svg';
+
+  static const String tag = '$_base/tag-outlined.svg';
+
+  static const String xmark = '$_base/xmark.svg';
+  static const String chevronDown = '$_base/chevron-down.svg';
 }

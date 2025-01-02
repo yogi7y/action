@@ -6,35 +6,29 @@ import '../light_theme.dart';
 @immutable
 class LightTextDetailOverviewTileHasValueTokens extends LightBaseTheme
     implements TextDetailOverviewTileTokens {
-  LightTextDetailOverviewTileHasValueTokens({required super.primitiveTokens})
-      : valueForeground = primitiveTokens.neutral.shade400, // textTokens.secondary
-        labelForeground = primitiveTokens.neutral.shade500,
-        border = const Color(0xFFE2E8F0).withValues(alpha: 0.7);
+  LightTextDetailOverviewTileHasValueTokens({required super.primitiveTokens});
 
   @override
-  final Color valueForeground;
+  Color get border => const Color(0xFFE2E8F0).withValues(alpha: 0.7);
 
   @override
-  final Color labelForeground;
+  Color get labelForeground => primitiveTokens.neutral.shade500;
 
   @override
-  final Color border;
+  Color get valueForeground => textTokens.primary;
 }
 
 @immutable
 class LightTextDetailOverviewTileNoValueTokens extends LightBaseTheme
     implements TextDetailOverviewTileTokens {
-  LightTextDetailOverviewTileNoValueTokens({required super.primitiveTokens})
-      : valueForeground = primitiveTokens.neutral.shade400, // textTokens.tertiary
-        labelForeground = primitiveTokens.neutral.shade500,
-        border = const Color(0xFFE2E8F0).withValues(alpha: 0.7);
+  LightTextDetailOverviewTileNoValueTokens({required super.primitiveTokens});
 
   @override
-  final Color valueForeground;
+  Color get border => const Color(0xFFE2E8F0).withValues(alpha: 0.7);
 
   @override
-  final Color labelForeground;
+  Color get labelForeground => primitiveTokens.neutral.shade500;
 
   @override
-  final Color border;
+  Color get valueForeground => textTokens.tertiary;
 }

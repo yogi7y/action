@@ -37,3 +37,44 @@ VALUES
      
     ('7c6d4e70-aaaa-aaaa-a555-555555555555', 'Weekly Meal Prep', 'done', now(),
      '8a7d5f80-1234-4444-a444-444444444444', '9b8e6f90-5555-5555-b111-111111111111', now(), now());
+
+
+-- Insert Checklist Items
+INSERT INTO checklist_items (id, task_id, title, status, created_at, updated_at)
+VALUES 
+    -- For "Complete Project Presentation" task
+    ('7d6e4f70-bbbb-bbbb-b111-111111111111', 
+     '7c6d4e70-aaaa-aaaa-a222-222222222222',
+     'Create intro slides', 
+     'done', 
+     now(), 
+     now()),
+    
+    ('7d6e4f70-bbbb-bbbb-b222-222222222222', 
+     '7c6d4e70-aaaa-aaaa-a222-222222222222',
+     'Add project timeline', 
+     'todo', 
+     now(), 
+     now()),
+     
+    ('7d6e4f70-bbbb-bbbb-b333-333333333333', 
+     '7c6d4e70-aaaa-aaaa-a222-222222222222',
+     'Prepare demo', 
+     'todo', 
+     now(), 
+     now()),
+
+    -- For "Organize Home Office" task
+    ('7d6e4f70-bbbb-bbbb-b444-444444444444', 
+     '7c6d4e70-aaaa-aaaa-a333-333333333333',
+     'Sort documents', 
+     'todo', 
+     now(), 
+     now()),
+     
+    ('7d6e4f70-bbbb-bbbb-b555-555555555555', 
+     '7c6d4e70-aaaa-aaaa-a333-333333333333',
+     'Organize cables', 
+     'done', 
+     now(), 
+     now());

@@ -23,3 +23,5 @@ final taskDetailProvider =
 
   throw Exception('Either id or data must be provided');
 });
+
+final scopedTaskDetailProvider = Provider<TaskEntity>((ref) => throw UnimplementedError());

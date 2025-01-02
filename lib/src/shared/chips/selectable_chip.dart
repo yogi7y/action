@@ -7,15 +7,15 @@ import '../buttons/icon_button.dart';
 
 class AppSelectableChip extends ConsumerWidget {
   const AppSelectableChip({
-    required this.iconPath,
     required this.label,
+    this.iconPath,
     this.value,
     super.key,
     this.onClick,
     this.onCrossClick,
   });
 
-  final String iconPath;
+  final String? iconPath;
   final String label;
   final String? value;
   final VoidCallback? onClick;
@@ -44,7 +44,8 @@ class AppSelectableChip extends ConsumerWidget {
           vertical: _spacing.xxs + 2,
         ),
         decoration: ShapeDecoration(
-          color: _selectableChipTheme.fillColor,
+          // color: _selectableChipTheme.fillColor,
+          color: _colors.surface.background,
           shape: SmoothRectangleBorder(
             borderRadius: SmoothBorderRadius(cornerRadius: 8),
             side: BorderSide(color: _selectableChipTheme.border),
@@ -52,12 +53,14 @@ class AppSelectableChip extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            AppIconButton(
-              svgIconPath: iconPath,
-              color: _selectableChipTheme.foregroundColor,
-              size: 16,
-            ),
-            SizedBox(width: _spacing.xxs),
+            if (iconPath != null && iconPath!.isNotEmpty) ...{
+              AppIconButton(
+                svgIconPath: iconPath!,
+                color: _selectableChipTheme.foregroundColor,
+                size: 16,
+              ),
+              SizedBox(width: _spacing.xxs),
+            },
             Text(
               _labelOrValue,
               style: _textStyle.copyWith(

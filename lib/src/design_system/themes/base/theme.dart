@@ -11,6 +11,7 @@ import 'semantics/l2_screen_header_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
+import 'semantics/tab_bar_inline_tokens.dart';
 import 'semantics/task_detail_overview_tile_token.dart';
 import 'semantics/text.dart';
 
@@ -77,6 +78,7 @@ abstract class AppTheme extends BaseTheme {
     required this.textDetailOverviewTileHasValue,
     required this.textDetailOverviewTileNoValue,
     required this.l2Screen,
+    required this.tabBar,
   });
 
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -98,4 +100,5 @@ abstract class AppTheme extends BaseTheme {
   final TextDetailOverviewTileTokens textDetailOverviewTileHasValue;
   final TextDetailOverviewTileTokens textDetailOverviewTileNoValue;
   final L2ScreenHeaderTokens l2Screen;
+  final TabBarTokens tabBar;
 }

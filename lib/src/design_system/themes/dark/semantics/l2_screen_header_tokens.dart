@@ -5,13 +5,11 @@ import '../dark_theme.dart';
 
 @immutable
 class DarkL2ScreenHeaderTokens extends DarkBaseTheme implements L2ScreenHeaderTokens {
-  DarkL2ScreenHeaderTokens({required super.primitiveTokens})
-      : background = primitiveTokens.dark, // accent-shade
-        foreground = primitiveTokens.neutral.shade100; // text/primary
+  DarkL2ScreenHeaderTokens({required super.primitiveTokens});
 
   @override
-  final Color background;
+  Color get background => accentShade;
 
   @override
-  final Color foreground;
+  Color get foreground => textTokens.primary;
 }

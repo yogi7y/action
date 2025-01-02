@@ -122,7 +122,7 @@ class _AddTaskFloatingActionButton extends ConsumerWidget {
             borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
           ),
           child: SvgPicture.asset(
-            Assets.add,
+            AssetsV2.plus,
             height: 32,
             width: 32,
           ),

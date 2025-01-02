@@ -117,6 +117,7 @@ class TaskEntity extends TaskPropertiesEntity implements ModelMetaData {
     super.projectId,
   });
 
+  @override
   TaskEntity copyWith({
     DateTime? createdAt,
     Id? id,

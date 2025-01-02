@@ -4,6 +4,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Create task status enum
 CREATE TYPE task_status AS ENUM ('todo', 'in_progress', 'done');
 
+-- Create checklist status enum
+CREATE TYPE checklist_status AS ENUM ('todo', 'done');
+
 -- Create Projects table
 CREATE TABLE projects (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -30,6 +33,18 @@ CREATE TABLE tasks (
     due_date DATE,
     project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
     context_id UUID REFERENCES contexts(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_by UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id)
+);
+
+
+-- Create checklist items table
+CREATE TABLE checklist_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    status checklist_status NOT NULL DEFAULT 'todo',
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     created_by UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id)
@@ -80,10 +95,16 @@ CREATE TRIGGER update_tasks_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_checklist_items_updated_at
+    BEFORE UPDATE ON checklist_items
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- Enable RLS
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contexts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE checklist_items ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for Projects
 CREATE POLICY "Users can view own projects" ON projects
@@ -122,4 +143,16 @@ CREATE POLICY "Users can update own tasks" ON tasks
     FOR UPDATE USING (auth.uid() = created_by);
 
 CREATE POLICY "Users can delete own tasks" ON tasks
+    FOR DELETE USING (auth.uid() = created_by);
+
+CREATE POLICY "Users can view own checklist items" ON checklist_items
+    FOR SELECT USING (auth.uid() = created_by);
+
+CREATE POLICY "Users can create checklist items" ON checklist_items
+    FOR INSERT WITH CHECK (auth.uid() = created_by);
+
+CREATE POLICY "Users can update own checklist items" ON checklist_items
+    FOR UPDATE USING (auth.uid() = created_by);
+
+CREATE POLICY "Users can delete own checklist items" ON checklist_items
     FOR DELETE USING (auth.uid() = created_by);
