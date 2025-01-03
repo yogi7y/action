@@ -36,7 +36,7 @@ class ChecklistItem extends ConsumerWidget {
               final newStatus =
                   state == AppCheckboxState.checked ? ChecklistStatus.done : ChecklistStatus.todo;
 
-              final _taskId = ref.read(scopedTaskDetailProvider).id;
+              final _taskId = ref.read(taskDetailNotifierProvider).id;
 
               await ref.read(checklistProvider(_taskId).notifier).updateChecklist(
                     checklist.copyWith(

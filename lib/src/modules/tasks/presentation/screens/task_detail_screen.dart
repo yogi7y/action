@@ -5,9 +5,11 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../design_system/design_system.dart';
 import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
+import '../../domain/entity/task.dart';
 import '../state/checklist_provider.dart';
 import '../state/new_checklist_provider.dart';
 import '../state/task_detail_provider.dart';
+import '../state/tasks_provider.dart';
 import '../widgets/checklist_input_field.dart';
 import '../widgets/checklist_item.dart';
 import '../widgets/task_detail_header.dart';
@@ -41,10 +43,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     return Scaffold(
       body: switch (taskDetail) {
         AsyncData(value: final task) => ProviderScope(
-            overrides: [scopedTaskDetailProvider.overrideWithValue(task)],
-            child: TaskDetailDataView(
-              scrollController: scrollController,
-            ),
+            overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
+            child: Builder(builder: (context) {
+              return TaskDetailDataView(
+                scrollController: scrollController,
+              );
+            }),
           ),
         AsyncError(error: final error) => TaskDetailErrorView(error: error),
         _ => const TaskDetailLoadingView(),
@@ -94,7 +98,7 @@ class TaskDetailDataView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _task = ref.watch(scopedTaskDetailProvider);
+    final _task = ref.watch(taskDetailNotifierProvider);
     final _spacing = ref.watch(spacingProvider);
     final _colors = ref.watch(appThemeProvider);
 
@@ -117,7 +121,7 @@ class TaskDetailDataView extends ConsumerWidget {
                 color: _colors.l2Screen.background,
               ),
             ),
-            const SliverToBoxAdapter(child: TaskProperties()),
+            const SliverToBoxAdapter(child: TaskDetailProperties()),
             SliverToBoxAdapter(
               child: Container(
                 height: _spacing.sm,

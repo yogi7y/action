@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../services/database/model_meta_data.dart';
 import '../../../../shared/checkbox/checkbox.dart';
+import '../../../../shared/status/status.dart';
 
 enum TaskStatus {
   todo('todo'),

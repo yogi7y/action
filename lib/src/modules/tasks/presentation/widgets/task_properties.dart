@@ -11,8 +11,8 @@ import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../state/task_detail_provider.dart';
 
-class TaskProperties extends ConsumerWidget {
-  const TaskProperties({
+class TaskDetailProperties extends ConsumerWidget {
+  const TaskDetailProperties({
     super.key,
   });
 
@@ -21,17 +21,17 @@ class TaskProperties extends ConsumerWidget {
     final _spacing = ref.watch(spacingProvider);
     final _colors = ref.watch(appThemeProvider);
     final _fonts = ref.watch(fontsProvider);
-    final _task = ref.watch(scopedTaskDetailProvider);
+    final _task = ref.watch(taskDetailNotifierProvider);
 
     final _project = ref.watch(projectByIdProvider(_task.projectId ?? ''));
     final _context = ref.watch(contextByIdProvider(_task.contextId ?? ''));
 
     final _properties = <PropertyTileData>[
-      const PropertyTileData(
+      PropertyTileData(
         label: 'Status',
         labelIcon: AssetsV2.loader,
         valuePlaceholder: 'Status is not set',
-        value: StatusWidget(status: StatusType.inProgress),
+        value: StatusWidget(status: StatusType.fromTaskStatus(_task.status)),
       ),
       PropertyTileData(
         label: 'Due',

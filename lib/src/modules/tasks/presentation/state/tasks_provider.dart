@@ -2,7 +2,6 @@ import 'package:core_y/core_y.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../models/task_view.dart';

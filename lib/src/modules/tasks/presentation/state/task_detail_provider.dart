@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/logger/logger.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
 
@@ -24,4 +25,15 @@ final taskDetailProvider =
   throw Exception('Either id or data must be provided');
 });
 
-final scopedTaskDetailProvider = Provider<TaskEntity>((ref) => throw UnimplementedError());
+class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
+  TaskDetailNotifier(this.task);
+
+  final TaskEntity task;
+
+  @override
+  TaskEntity build() => task;
+}
+
+final taskDetailNotifierProvider = NotifierProvider.autoDispose<TaskDetailNotifier, TaskEntity>(
+  () => throw UnimplementedError(),
+);

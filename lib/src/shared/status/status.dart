@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
 import '../../design_system/themes/base/semantics/status_tokens.dart';
+import '../../modules/tasks/domain/entity/task.dart';
 
 enum StatusType {
   todo('Todo', Assets.circle),
@@ -14,6 +15,17 @@ enum StatusType {
 
   final String label;
   final String icon;
+
+  static StatusType fromTaskStatus(TaskStatus taskStatus) {
+    switch (taskStatus) {
+      case TaskStatus.todo:
+        return StatusType.todo;
+      case TaskStatus.inProgress:
+        return StatusType.inProgress;
+      case TaskStatus.done:
+        return StatusType.done;
+    }
+  }
 }
 
 @immutable

@@ -46,9 +46,10 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                   state: AppCheckboxState.fromTaskStatus(status: _task.status),
                   onChanged: (state) async {
                     final _currentFilter = ref.read(selectedTaskFilterProvider);
-                    return ref.read(tasksProvider(_currentFilter).notifier).updateTask(
-                          _task.copyWith(status: TaskStatus.fromAppCheckboxState(state)),
-                        );
+
+                    return ref
+                        .read(tasksProvider(_currentFilter).notifier)
+                        .updateTask(_task.copyWith(status: TaskStatus.fromAppCheckboxState(state)));
                   },
                 ),
                 Expanded(

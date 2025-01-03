@@ -145,9 +145,10 @@ class _Checkbox extends StatelessWidget {
       padding: const EdgeInsets.only(right: 6, top: 4),
       child: Consumer(
         builder: (context, ref, child) => AppCheckbox(
+          onChanged: (state) {},
           state: AppCheckboxState.fromTaskStatus(
             status: ref.watch(
-              scopedTaskDetailProvider.select((value) => value.status),
+              taskDetailNotifierProvider.select((value) => value.status),
             ),
           ),
         ),
