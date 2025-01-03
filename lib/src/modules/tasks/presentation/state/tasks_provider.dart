@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task.dart';
@@ -6,27 +5,33 @@ import '../../domain/use_case/task_use_case.dart';
 import '../models/task_view.dart';
 import 'new_task_provider.dart';
 
-final scopedTaskProvider = Provider<TaskEntity>(
-    (ref) => throw UnimplementedError('Ensure to override scopedTaskProvider'));
-
 final tasksProvider =
     AsyncNotifierProviderFamily<TasksNotifier, Tasks, TaskView>(TasksNotifier.new);
 
 class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
   late final TaskUseCase _useCase = ref.read(taskUseCaseProvider);
 
+  static const _size = 20;
+
   @override
   Future<List<TaskEntity>> build(TaskView arg) async {
     return _fetchTasks(arg);
   }
 
-  Future<Tasks> _fetchTasks(TaskView arg) =>
-      _useCase.fetchTasks(arg.toQuerySpecification()).then((result) {
-        return result.fold(
-          onSuccess: (tasks) => tasks,
-          onFailure: (error) => throw error,
-        );
-      });
+  Future<Tasks> _fetchTasks(TaskView arg) => _useCase
+          .fetchTasks(
+        arg.toQuerySpecification(),
+        page: 1,
+        pageSize: _size,
+      )
+          .then(
+        (result) {
+          return result.fold(
+            onSuccess: (paginatedResponse) => paginatedResponse.results,
+            onFailure: (error) => throw error,
+          );
+        },
+      );
 
   Future<void> addTask() async {
     final _task = ref.read(newTaskProvider);
@@ -108,3 +113,16 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
 
   void _clearInput() => ref.read(newTaskProvider.notifier).clear();
 }
+
+final scopedTaskProvider = Provider<TaskEntity>(
+    (ref) => throw UnimplementedError('Ensure to override scopedTaskProvider'));
+
+final totalTasksForViewProvider = FutureProvider.family<int, TaskView>((ref, view) async {
+  final useCase = ref.watch(taskUseCaseProvider);
+  final result = await useCase.getTotalTasks(view.toQuerySpecification());
+
+  return result.fold(
+    onSuccess: (count) => count,
+    onFailure: (error) => throw error,
+  );
+});

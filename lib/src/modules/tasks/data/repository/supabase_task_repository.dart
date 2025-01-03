@@ -1,6 +1,7 @@
 import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/network/paginated_response.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/entity/task_view_type.dart';
 import '../../domain/repository/task_repository.dart';
@@ -15,17 +16,37 @@ class SupabaseTaskRepository implements TaskRepository {
   final TasksQueryBuilder<PostgrestFilterBuilder<PostgrestList>> queryBuilder;
 
   @override
-  Future<Result<List<TaskEntity>, AppException>> fetchTasks(TaskQuerySpecification spec) async {
+  AsyncTasksResult fetchTasks(
+    TaskQuerySpecification spec, {
+    required int page,
+    required int pageSize,
+  }) async {
     try {
       final _query = queryBuilder.buildQuery(spec);
 
-      final _response = await _query.select();
+      final _start = pageSize * (page - 1);
+      final _end = (pageSize * page) - 1;
+
+      final _totalCount = await _query.count();
+
+      final _queryWithPagination = _query
+          .limit(pageSize) //
+          .range(_start, _end)
+          .order('created_at', ascending: false);
+
+      final _response = await _queryWithPagination.select();
 
       final tasks = (_response as List<dynamic>)
           .map((task) => TaskModel.fromMap(task as Map<String, dynamic>))
           .toList();
 
-      return Success(tasks);
+      final _paginatedResponse = PaginatedResponse<TaskEntity>(
+        results: tasks,
+        totalPages: _totalCount.count,
+        currentPage: page,
+      );
+
+      return Success(_paginatedResponse);
     } catch (e, stackTrace) {
       return Failure(
         AppException(
@@ -86,5 +107,22 @@ class SupabaseTaskRepository implements TaskRepository {
   @override
   AsyncTaskResult getTaskById(TaskId id) {
     throw UnimplementedError();
+  }
+
+  @override
+  AsyncTaskCountResult getTotalTasks(TaskQuerySpecification spec) async {
+    try {
+      final _query = queryBuilder.buildQuery(spec);
+      final _response = await _query.count();
+
+      return Success(_response.count);
+    } catch (e, stackTrace) {
+      return Failure(
+        AppException(
+          exception: e.toString(),
+          stackTrace: stackTrace,
+        ),
+      );
+    }
   }
 }

@@ -70,7 +70,7 @@ class AppSelectableChip extends ConsumerWidget {
             SizedBox(width: _spacing.xxs),
             if (_hasValue)
               AppIconButton(
-                svgIconPath: Assets.x,
+                svgIconPath: AssetsV2.xmark,
                 onClick: onCrossClick,
                 size: 16,
                 color: _selectableChipTheme.foregroundColor.withValues(alpha: .8),

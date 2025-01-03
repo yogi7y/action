@@ -14,7 +14,6 @@ import '../base/semantics/tab_bar_inline_tokens.dart';
 import '../base/semantics/task_detail_overview_tile_token.dart';
 import '../base/semantics/text.dart';
 import '../base/theme.dart';
-import '../light/semantics/project_card_tokens.dart';
 import 'semantics/bottom_navigation_bar.dart';
 import 'semantics/button.dart';
 import 'semantics/checkbox.dart';

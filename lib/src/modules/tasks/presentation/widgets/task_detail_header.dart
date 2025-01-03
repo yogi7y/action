@@ -85,7 +85,6 @@ class _TaskDetailHeaderState extends ConsumerState<TaskDetailHeader>
   Widget build(BuildContext context) {
     final _colors = ref.watch(appThemeProvider);
     final _fonts = ref.watch(fontsProvider);
-    final _task = ref.watch(scopedTaskDetailProvider);
 
     return SliverAppBar(
       expandedHeight: _expandedHeight,
