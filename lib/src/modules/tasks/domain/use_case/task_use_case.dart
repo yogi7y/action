@@ -20,13 +20,13 @@ class TaskUseCase {
 
   AsyncTasksResult fetchTasks(
     TaskQuerySpecification querySpecification, {
-    required int page,
-    required int pageSize,
+    required int limit,
+    Cursor? cursor,
   }) =>
       repository.fetchTasks(
         querySpecification,
-        page: page,
-        pageSize: pageSize,
+        cursor: cursor,
+        limit: limit,
       );
 
   AsyncTaskCountResult getTotalTasks(TaskQuerySpecification spec) => repository.getTotalTasks(spec);

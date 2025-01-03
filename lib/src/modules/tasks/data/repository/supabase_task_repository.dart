@@ -1,5 +1,5 @@
 import 'package:core_y/core_y.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide SupabaseQueryBuilder;
 
 import '../../../../core/network/paginated_response.dart';
 import '../../domain/entity/task.dart';
@@ -13,28 +13,24 @@ class SupabaseTaskRepository implements TaskRepository {
   const SupabaseTaskRepository(this.client, this.queryBuilder);
 
   final SupabaseClient client;
-  final TasksQueryBuilder<PostgrestFilterBuilder<PostgrestList>> queryBuilder;
+  final SupabaseQueryBuilder queryBuilder;
 
   @override
   AsyncTasksResult fetchTasks(
     TaskQuerySpecification spec, {
-    required int page,
-    required int pageSize,
+    required Cursor? cursor,
+    required int limit,
   }) async {
     try {
       final _query = queryBuilder.buildQuery(spec);
 
-      final _start = pageSize * (page - 1);
-      final _end = (pageSize * page) - 1;
+      final _paginationQuery = queryBuilder.buildPaginationQuery(
+        _query,
+        cursor,
+        limit,
+      );
 
-      final _totalCount = await _query.count();
-
-      final _queryWithPagination = _query
-          .limit(pageSize) //
-          .range(_start, _end)
-          .order('created_at', ascending: false);
-
-      final _response = await _queryWithPagination.select();
+      final _response = await _paginationQuery.select();
 
       final tasks = (_response as List<dynamic>)
           .map((task) => TaskModel.fromMap(task as Map<String, dynamic>))
@@ -42,8 +38,6 @@ class SupabaseTaskRepository implements TaskRepository {
 
       final _paginatedResponse = PaginatedResponse<TaskEntity>(
         results: tasks,
-        totalPages: _totalCount.count,
-        currentPage: page,
       );
 
       return Success(_paginatedResponse);

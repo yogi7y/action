@@ -14,6 +14,7 @@ import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
 import '../state/task_filter_provider.dart';
+import '../state/tasks_provider.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
   const TasksScreen({super.key});
@@ -76,6 +77,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
 
     return Scaffold(
       body: NestedScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             const AppHeader(title: 'Tasks'),

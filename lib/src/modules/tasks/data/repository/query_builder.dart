@@ -1,23 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/network/paginated_response.dart';
 import '../../../../services/database/supabase_provider.dart';
 import '../../domain/entity/task_view_type.dart';
 
-abstract class TasksQueryBuilder<T> {
-  T buildQuery(TaskQuerySpecification spec);
-}
-
-class SupabaseQueryBuilder implements TasksQueryBuilder<PostgrestFilterBuilder<PostgrestList>> {
+class SupabaseQueryBuilder {
   const SupabaseQueryBuilder(this.client);
 
   final SupabaseClient client;
 
-  @override
   PostgrestFilterBuilder<PostgrestList> buildQuery(TaskQuerySpecification spec) {
     final _baseQuery = client.from('tasks').select();
 
     return _applySpecification(_baseQuery, spec);
+  }
+
+  PostgrestTransformBuilder<List<Map<String, dynamic>>> buildPaginationQuery(
+    PostgrestFilterBuilder<List<Map<String, dynamic>>> query,
+    Cursor? cursor,
+    int limit,
+  ) {
+    if (cursor == null) return query.order('created_at', ascending: false).limit(limit);
+
+    return query.lt('created_at', cursor).order('created_at', ascending: false).limit(limit);
   }
 
   PostgrestFilterBuilder<PostgrestList> _applySpecification(
@@ -37,6 +43,5 @@ class SupabaseQueryBuilder implements TasksQueryBuilder<PostgrestFilterBuilder<P
   }
 }
 
-final tasksQueryBuilderProvider =
-    Provider<TasksQueryBuilder<PostgrestFilterBuilder<PostgrestList>>>(
-        (ref) => SupabaseQueryBuilder(ref.watch(supabaseClientProvider)));
+final tasksQueryBuilderProvider = Provider<SupabaseQueryBuilder>(
+    (ref) => SupabaseQueryBuilder(ref.watch(supabaseClientProvider)));

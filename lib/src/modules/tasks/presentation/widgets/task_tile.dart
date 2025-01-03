@@ -5,6 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/logger/logger.dart';
+import '../../../../core/mixin/keyboard_mixin.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
@@ -15,7 +17,7 @@ import '../state/task_filter_provider.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
-class TaskTile extends ConsumerWidget {
+class TaskTile extends ConsumerWidget with KeyboardMixin {
   const TaskTile({super.key});
 
   @override

@@ -69,9 +69,12 @@ class _TaskInputFieldVisibilityState extends ConsumerState<TaskInputFieldVisibil
       builder: (context, child) => ClipRect(
         child: Align(
           heightFactor: _heightFactor.value,
-          child: Opacity(
-            opacity: _opacity.value,
-            child: child,
+          child: Visibility(
+            visible: _heightFactor.value > 0,
+            child: Opacity(
+              opacity: _opacity.value,
+              child: child,
+            ),
           ),
         ),
       ),
@@ -103,6 +106,8 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
   }
 
   void _handleTextFieldFocus() {
+    if (ref.read(isTaskTextInputFieldVisibleProvider)) focusNode.requestFocus();
+
     ref.listenManual(isTaskTextInputFieldVisibleProvider, (previous, next) {
       if (next) {
         focusNode.requestFocus();
@@ -166,6 +171,8 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
                     focusNode.requestFocus();
                     return addTask(ref: ref);
                   },
+                  onTapOutside: (event) =>
+                      ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((_) => false),
                   style: _style,
                   controller: controller,
                   cursorColor: _colors.textTokens.secondary,

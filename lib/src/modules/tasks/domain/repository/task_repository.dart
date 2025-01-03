@@ -1,6 +1,7 @@
 import 'package:core_y/core_y.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/paginated_response.dart';
 import '../../../../services/database/supabase_provider.dart';
 import '../../data/repository/query_builder.dart';
 import '../../data/repository/supabase_task_repository.dart';
@@ -11,8 +12,8 @@ import '../use_case/task_use_case.dart';
 abstract class TaskRepository {
   AsyncTasksResult fetchTasks(
     TaskQuerySpecification spec, {
-    required int page,
-    required int pageSize,
+    required Cursor? cursor,
+    required int limit,
   });
 
   AsyncTaskCountResult getTotalTasks(TaskQuerySpecification spec);

@@ -28,7 +28,7 @@ class TasksFilters extends ConsumerWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.only(left: _spacing.lg),
+      padding: EdgeInsets.symmetric(horizontal: _spacing.lg),
       child: Row(
         spacing: _spacing.xs,
         children: filterViews.mapIndexed((index, filterView) {

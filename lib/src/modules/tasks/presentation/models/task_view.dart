@@ -11,13 +11,13 @@ sealed class TaskView {
   const TaskView({
     required this.label,
     required this.icon,
-    required this.animatedListKey,
+    this.status = TaskStatus.todo,
     this.pageCount = 1,
   });
 
   final String label;
   final String icon;
-  final GlobalKey<AnimatedListState> animatedListKey;
+  final TaskStatus status;
   final PageCount pageCount;
 
   TaskQuerySpecification toQuerySpecification();
@@ -43,11 +43,10 @@ sealed class TaskView {
 }
 
 final class AllTasksView extends TaskView {
-  AllTasksView({super.pageCount = 1})
+  const AllTasksView({super.pageCount = 1})
       : super(
           label: 'All Tasks',
           icon: Assets.inbox,
-          animatedListKey: GlobalKey(debugLabel: 'Animated list key All Tasks'),
         );
 
   @override
@@ -58,16 +57,12 @@ final class AllTasksView extends TaskView {
 }
 
 final class StatusTaskView extends TaskView {
-  StatusTaskView({
-    required this.status,
+  const StatusTaskView({
     super.label = 'Status',
     super.icon = Assets.inbox,
     super.pageCount = 1,
-  }) : super(
-          animatedListKey: GlobalKey(debugLabel: 'Animated list key Status'),
-        );
-
-  final TaskStatus status;
+    super.status,
+  }) : super();
 
   @override
   TaskQuerySpecification toQuerySpecification() => StatusTaskSpecification(status);
@@ -81,30 +76,21 @@ final class StatusTaskView extends TaskView {
       );
 }
 
-final class OrganizedTaskView extends TaskView {
-  OrganizedTaskView({
+final class UnOrganizedTaskView extends TaskView {
+  const UnOrganizedTaskView({
     required super.label,
     super.icon = Assets.inbox,
-    this.isOrganized = false,
-    this.isInInbox = false,
     super.pageCount = 1,
-  }) : super(animatedListKey: GlobalKey(debugLabel: 'Animated list key Organized'));
-
-  final bool isOrganized;
-  final bool isInInbox;
+  }) : super();
 
   @override
-  TaskQuerySpecification toQuerySpecification() => OrganizedTaskSpecification(
-        isOrganized: isOrganized,
-        isInInbox: isInInbox,
-      );
+  TaskQuerySpecification toQuerySpecification() =>
+      const OrganizedTaskSpecification(isOrganized: false);
 
   @override
-  OrganizedTaskView copyWithPage(PageCount pageCount) => OrganizedTaskView(
+  UnOrganizedTaskView copyWithPage(PageCount pageCount) => UnOrganizedTaskView(
         label: label,
         icon: icon,
-        isOrganized: isOrganized,
-        isInInbox: isInInbox,
         pageCount: pageCount,
       );
 }

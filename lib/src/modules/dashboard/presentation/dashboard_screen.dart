@@ -30,7 +30,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ..read(contextsProvider);
 
     final _currentFilter = ref.read(tasksFilterProvider).first;
-    ref.read(tasksProvider(_currentFilter));
+    ref
+      ..read(tasksCountNotifierProvider(_currentFilter))
+      ..read(tasksProvider(_currentFilter));
   }
 
   @override

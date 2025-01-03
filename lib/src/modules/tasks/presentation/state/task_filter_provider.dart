@@ -6,12 +6,12 @@ import '../models/task_view.dart';
 
 final tasksFilterProvider = Provider<List<TaskView>>((ref) {
   return [
-    StatusTaskView(status: TaskStatus.inProgress, label: 'In Progress'),
-    StatusTaskView(status: TaskStatus.todo, label: 'Todo'),
-    OrganizedTaskView(label: 'Inbox', isInInbox: true),
-    OrganizedTaskView(label: 'Unorganized'),
-    StatusTaskView(status: TaskStatus.done, label: 'Done'),
     AllTasksView(),
+    StatusTaskView(status: TaskStatus.inProgress, label: 'In Progress'),
+    StatusTaskView(label: 'Todo'),
+    UnOrganizedTaskView(label: 'Inbox'),
+    UnOrganizedTaskView(label: 'Unorganized'),
+    StatusTaskView(status: TaskStatus.done, label: 'Done'),
   ];
 });
 

@@ -64,12 +64,6 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 ALTER TABLE tasks ADD COLUMN is_organized BOOLEAN 
     GENERATED ALWAYS AS (is_task_organized(project_id, status)) STORED;
 
--- ALTER TABLE tasks ADD COLUMN is_in_inbox BOOLEAN 
---     GENERATED ALWAYS AS (
---         NOT is_task_organized(project_id, status) 
---         AND created_at > now() - interval '24 hours'
---     ) STORED;
-
 -- Updated at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
