@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../modules/area/presentation/screens/area_screen.dart';
@@ -8,6 +9,8 @@ import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/domain/entity/task.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
+import '../../modules/tasks/presentation/state/new_task_provider.dart';
+import '../logger/logger.dart';
 
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -46,6 +49,10 @@ final shellBranches = [
       GoRoute(
         name: AppRoute.home.name,
         path: AppRoute.home.path,
+        onExit: (context, state) {
+          logger('home on exit called');
+          return false;
+        },
         builder: (context, state) => const HomeScreen(),
       ),
     ],
@@ -56,6 +63,15 @@ final shellBranches = [
       GoRoute(
           name: AppRoute.tasks.name,
           path: AppRoute.tasks.path,
+          onExit: (context, state) {
+            final _container = ProviderScope.containerOf(context);
+            _container
+                .read(isTaskTextInputFieldVisibleProvider.notifier)
+                // ignore: avoid_bool_literals_in_conditional_expressions
+                .update((state) => state ? false : false);
+
+            return false;
+          },
           builder: (context, state) => const TasksScreen(),
           routes: [
             GoRoute(

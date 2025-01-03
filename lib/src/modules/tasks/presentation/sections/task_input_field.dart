@@ -171,8 +171,6 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
                     focusNode.requestFocus();
                     return addTask(ref: ref);
                   },
-                  onTapOutside: (event) =>
-                      ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((_) => false),
                   style: _style,
                   controller: controller,
                   cursorColor: _colors.textTokens.secondary,

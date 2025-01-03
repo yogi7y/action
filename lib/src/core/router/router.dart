@@ -5,7 +5,6 @@ import '../../modules/authentication/presentation/screens/authentication_screen.
 import '../../modules/authentication/presentation/screens/splash_screen.dart';
 import '../../modules/dashboard/presentation/dashboard_screen.dart';
 import '../../modules/profile/presentation/screens/profile_screen.dart';
-import '../../shared/bottom_nav/bottom_nav_bar.dart';
 import '../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import 'routes.dart';
 
