@@ -31,7 +31,9 @@ class TaskDetailProperties extends ConsumerWidget {
         label: 'Status',
         labelIcon: AssetsV2.loader,
         valuePlaceholder: 'Status is not set',
-        value: StatusWidget(status: StatusType.fromTaskStatus(_task.status)),
+        value: StatusWidget(
+          status: StatusType.fromTaskStatus(_task.status),
+        ),
       ),
       PropertyTileData(
         label: 'Due',

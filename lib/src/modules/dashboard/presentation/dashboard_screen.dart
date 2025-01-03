@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../design_system/design_system.dart';
 import '../../../shared/bottom_nav/bottom_nav_bar.dart';
 import '../../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import '../../../shared/sticky_component_over_keyboard/sticky_component_over_keyboard.dart';
@@ -51,35 +50,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
         child: const BottomNavBar(),
       ),
-    );
-  }
-}
-
-class _DashboardScreenScaffold extends ConsumerStatefulWidget {
-  const _DashboardScreenScaffold({
-    required this.child,
-  });
-
-  final Widget child;
-
-  @override
-  ConsumerState<_DashboardScreenScaffold> createState() => _DashboardScreenScaffoldState();
-}
-
-class _DashboardScreenScaffoldState extends ConsumerState<_DashboardScreenScaffold> {
-  @override
-  Widget build(BuildContext context) {
-    final _colors = ref.watch(appThemeProvider);
-    return Scaffold(
-      backgroundColor: _colors.surface.background,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          widget.child,
-          const StickyComponentOverKeyboard(),
-        ],
-      ),
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

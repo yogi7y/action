@@ -18,7 +18,9 @@ class HomeScreen extends ConsumerWidget {
         children: [
           AsyncButton(
             text: 'Go to Profile',
-            onClick: () async => context.goNamed(AppRoute.profile.name),
+            onClick: () async {
+              await context.pushNamed(AppRoute.profile.name);
+            },
           ),
           const StatusWidget(status: StatusType.todo),
           const StatusWidget(status: StatusType.inProgress),

@@ -5,6 +5,7 @@ import 'package:smart_textfield/smart_textfield.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/checkbox/checkbox.dart';
+import '../mixin/task_ui_triggers.dart';
 import '../mixin/tasks_operations_mixin.dart';
 import '../state/new_task_provider.dart';
 
@@ -91,7 +92,7 @@ class TaskInputField extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskInputFieldState();
 }
 
-class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOperations {
+class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTriggersMixin {
   late final _controller = ref.watch(newTaskProvider.notifier).controller;
   late final focusNode = ref.watch(newTaskProvider.notifier).focusNode;
 
@@ -198,7 +199,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
   }
 }
 
-class SendIcon extends ConsumerWidget with TasksOperations {
+class SendIcon extends ConsumerWidget with TaskUiTriggersMixin {
   const SendIcon({super.key});
 
   @override

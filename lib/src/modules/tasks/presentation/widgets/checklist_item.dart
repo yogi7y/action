@@ -26,24 +26,28 @@ class ChecklistItem extends ConsumerWidget {
         vertical: _spacing.xs,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppCheckbox(
-            state: checklist.status == ChecklistStatus.done
-                ? AppCheckboxState.checked
-                : AppCheckboxState.unchecked,
-            padding: EdgeInsets.only(right: _spacing.xs),
-            onChanged: (state) async {
-              final newStatus =
-                  state == AppCheckboxState.checked ? ChecklistStatus.done : ChecklistStatus.todo;
+          Transform.translate(
+            offset: const Offset(0, 2),
+            child: AppCheckbox(
+              state: checklist.status == ChecklistStatus.done
+                  ? AppCheckboxState.checked
+                  : AppCheckboxState.unchecked,
+              padding: EdgeInsets.only(right: _spacing.xs),
+              onChanged: (state) async {
+                final newStatus =
+                    state == AppCheckboxState.checked ? ChecklistStatus.done : ChecklistStatus.todo;
 
-              final _taskId = ref.read(taskDetailNotifierProvider).id;
+                final _taskId = ref.read(taskDetailNotifierProvider).id;
 
-              await ref.read(checklistProvider(_taskId).notifier).updateChecklist(
-                    checklist.copyWith(
-                      status: newStatus,
-                    ),
-                  );
-            },
+                await ref.read(checklistProvider(_taskId).notifier).updateChecklist(
+                      checklist.copyWith(
+                        status: newStatus,
+                      ),
+                    );
+              },
+            ),
           ),
           Expanded(
             child: Text(

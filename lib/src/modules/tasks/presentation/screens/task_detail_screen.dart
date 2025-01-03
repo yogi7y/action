@@ -13,7 +13,7 @@ import '../state/tasks_provider.dart';
 import '../widgets/checklist_input_field.dart';
 import '../widgets/checklist_item.dart';
 import '../widgets/task_detail_header.dart';
-import '../widgets/task_properties.dart';
+import '../widgets/task_detail_properties.dart';
 
 class TaskDetailScreen extends ConsumerStatefulWidget {
   const TaskDetailScreen({

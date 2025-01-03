@@ -1,71 +1,80 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// ignore: depend_on_referenced_packages, implementation_imports
+import 'package:riverpod/src/notifier.dart';
 
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
 
-/// A mixin that provides common task operations like update and delete
-/// to be shared between different task-related notifiers.
-mixin TaskOperationsMixin<T> {
-  // Abstract getters that implementing classes must provide
+/// Base mixin containing common task operation logic
+mixin BaseTaskOperationsMixin<State extends Object> {
   TaskUseCase get useCase;
-  AsyncValue<T> get getState;
-  set getState(AsyncValue<T> value);
+  State get currentState;
+  void updateState(State newState);
 
-  /// Updates a task and handles optimistic UI updates with error rollback
-  Future<void> updateTask(TaskEntity task) async {
-    final previousState = getState;
+  @protected
+  Future<void> updateTask(
+    TaskEntity task, {
+    /// If true, only the optimistic update will be performed and no network call will be made.
+    bool onlyOptimisticUpdate = false,
+  }) async {
+    final previousState = currentState;
 
-    getState = await handleOptimisticUpdate(task);
+    updateState(handleOptimisticUpdate(task));
+
+    if (onlyOptimisticUpdate) return;
 
     try {
       final result = await useCase.updateTask(task);
 
       await result.fold(
         onSuccess: (updatedTask) async {
-          getState = await handleSuccessfulUpdate(updatedTask);
+          updateState(await handleSuccessfulUpdate(updatedTask));
         },
         onFailure: (error) async {
-          // Rollback on error
-          getState = previousState;
+          updateState(previousState);
           throw error;
         },
       );
     } catch (e) {
-      getState = previousState;
+      updateState(previousState);
       rethrow;
     }
   }
 
-  /// Deletes a task and handles optimistic UI updates with error rollback
-  Future<void> deleteTask(TaskId id) async {
-    // final previousState = state;
+  State handleOptimisticUpdate(TaskEntity task);
+  FutureOr<State> handleSuccessfulUpdate(TaskEntity updatedTask);
+}
 
-    // // Let implementing classes handle UI updates
-    // state = await handleOptimisticDelete(id);
+/// Mixin for AsyncNotifier classes
+mixin AsyncTaskOperationsMixin<T extends Object> on AsyncNotifier<T>
+    implements BaseTaskOperationsMixin<T> {
+  @override
+  T get currentState => state.valueOrNull!;
 
-    // try {
-    //   final result = await useCase.deleteTask(id);
+  @override
+  void updateState(T newState) => state = AsyncData(newState);
+}
 
-    //   await result.fold(
-    //     onSuccess: (_) async {
-    //       // Let implementing classes handle successful deletion
-    //       state = await handleSuccessfulDelete(id);
-    //     },
-    //     onFailure: (error) async {
-    //       // Rollback on error
-    //       state = previousState;
-    //       throw error;
-    //     },
-    //   );
-    // } catch (e) {
-    //   state = previousState;
-    //   rethrow;
-    // }
-  }
+/// Mixin for regular Notifier classes
+// ignore: invalid_use_of_internal_member
+mixin NotifierTaskOperationsMixin<T extends Object> on NotifierBase<T>
+    implements BaseTaskOperationsMixin<T> {
+  @override
+  T get currentState => state;
 
-  // Template methods to be implemented by classes using this mixin
-  Future<AsyncValue<T>> handleOptimisticUpdate(TaskEntity task);
-  Future<AsyncValue<T>> handleSuccessfulUpdate(TaskEntity updatedTask);
-  Future<AsyncValue<T>> handleOptimisticDelete(TaskId id);
-  Future<AsyncValue<T>> handleSuccessfulDelete(TaskId id);
+  @override
+  void updateState(T newState) => state = newState;
+}
+
+// /// Mixin for FamilyAsyncNotifier classes
+mixin FamilyAsyncTaskOperationsMixin<T extends Object, Arg> on FamilyAsyncNotifier<T, Arg>
+    implements BaseTaskOperationsMixin<T> {
+  @override
+  T get currentState => state.valueOrNull!;
+
+  @override
+  void updateState(T newState) => state = AsyncData(newState);
 }

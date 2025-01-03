@@ -28,8 +28,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final _router = ref.read(routerProvider);
 
     if (_authUseCase.isSignedIn) {
-      /// todo: revert back to home.
-      _router.goNamed(AppRoute.tasks.name);
+      _router.goNamed(AppRoute.home.name);
     } else {
       _router.goNamed(AppRoute.auth.name);
     }

@@ -27,6 +27,8 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
     final _fonts = ref.watch(fontsProvider);
     final _colors = ref.watch(appThemeProvider);
 
+    logger('rebuilding task tile: ${_task.name}');
+
     return Stack(
       children: [
         GestureDetector(

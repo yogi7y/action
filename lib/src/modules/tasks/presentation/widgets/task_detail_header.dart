@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
+import '../../domain/entity/task.dart';
 import '../state/task_detail_provider.dart';
 
 class TaskDetailHeader extends ConsumerStatefulWidget {
@@ -145,7 +146,11 @@ class _Checkbox extends StatelessWidget {
       padding: const EdgeInsets.only(right: 6, top: 4),
       child: Consumer(
         builder: (context, ref, child) => AppCheckbox(
-          onChanged: (state) {},
+          onChanged: (state) async {
+            await ref.read(taskDetailNotifierProvider.notifier).updateTaskWithCallback(
+                  (task) => task.copyWith(status: TaskStatus.fromAppCheckboxState(state)),
+                );
+          },
           state: AppCheckboxState.fromTaskStatus(
             status: ref.watch(
               taskDetailNotifierProvider.select((value) => value.status),
