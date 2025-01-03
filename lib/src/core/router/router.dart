@@ -5,26 +5,27 @@ import '../../modules/authentication/presentation/screens/authentication_screen.
 import '../../modules/authentication/presentation/screens/splash_screen.dart';
 import '../../modules/dashboard/presentation/dashboard_screen.dart';
 import '../../modules/profile/presentation/screens/profile_screen.dart';
+import '../../shared/bottom_nav/bottom_nav_bar.dart';
+import '../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import 'routes.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final _bottomNavItems = ref.read(bottomNavItemsProvider);
+  final _selectedBottomNavNotifier = ref.read(selectedBottomNavProvider.notifier);
+
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: AppRoute.splash.path,
     debugLogDiagnostics: true,
-    // redirect: (context, state) {
-    //   final isAuthenticated = authState.value?.isSignedIn ?? false;
-    //   final isAuthScreen = state.matchedLocation == AppRoute.auth.path;
-    //   final isSplashScreen = state.matchedLocation == AppRoute.splash.path;
+    redirect: (context, state) {
+      _updateBottomNavFromRoute(
+        state,
+        _bottomNavItems,
+        _selectedBottomNavNotifier,
+      );
 
-    //   if (isSplashScreen) return null;
-
-    //   if (!isAuthenticated) return isAuthScreen ? null : AppRoute.auth.path;
-
-    //   if (isAuthScreen) return AppRoute.home.path;
-
-    //   return null;
-    // },
+      return null;
+    },
     routes: [
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
@@ -53,3 +54,21 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+void _updateBottomNavFromRoute(
+  GoRouterState state,
+  List<BottomNavItemData> bottomNavItems,
+  StateController<SelectedBottomNavItem> bottomNavNotifier,
+) {
+  if (state.matchedLocation == AppRoute.home.path) {
+    bottomNavNotifier.update((state) => (index: 0, item: bottomNavItems[0]));
+  } else if (state.matchedLocation == AppRoute.tasks.path) {
+    bottomNavNotifier.update((state) => (index: 1, item: bottomNavItems[1]));
+  } else if (state.matchedLocation == AppRoute.pages.path) {
+    bottomNavNotifier.update((state) => (index: 2, item: bottomNavItems[2]));
+  } else if (state.matchedLocation == AppRoute.projects.path) {
+    bottomNavNotifier.update((state) => (index: 3, item: bottomNavItems[3]));
+  } else if (state.matchedLocation == AppRoute.area.path) {
+    bottomNavNotifier.update((state) => (index: 4, item: bottomNavItems[4]));
+  }
+}

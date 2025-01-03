@@ -58,32 +58,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 class _DashboardScreenScaffold extends ConsumerStatefulWidget {
   const _DashboardScreenScaffold({
     required this.child,
-    required this.controller,
   });
 
   final Widget child;
-  final PageController controller;
 
   @override
   ConsumerState<_DashboardScreenScaffold> createState() => _DashboardScreenScaffoldState();
 }
 
 class _DashboardScreenScaffoldState extends ConsumerState<_DashboardScreenScaffold> {
-  @override
-  void initState() {
-    super.initState();
-
-    widget.controller.addListener(() {
-      final _index = widget.controller.page!.round();
-      final _items = ref.read(bottomNavItemsProvider);
-      final _newSelectedItem = _items[_index];
-
-      final _newSelectedItemWithIndex = (index: _index, item: _newSelectedItem);
-
-      ref.read(selectedBottomNavProvider.notifier).update((e) => _newSelectedItemWithIndex);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final _colors = ref.watch(appThemeProvider);

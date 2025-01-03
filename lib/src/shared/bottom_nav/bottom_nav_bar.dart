@@ -52,7 +52,7 @@ class BottomNavBar extends ConsumerWidget {
     required BottomNavItemData data,
     required WidgetRef ref,
   }) {
-    ref.read(selectedBottomNavProvider.notifier).update((e) => (index: index, item: data));
+    // ref.read(selectedBottomNavProvider.notifier).update((e) => (index: index, item: data));
     ref.read(navigatorShellProvider).goBranch(index);
   }
 }
