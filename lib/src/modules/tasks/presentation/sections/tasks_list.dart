@@ -90,47 +90,55 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
 
         return ref.refresh(tasksProvider(_currentTaskView).future);
       },
-      child: AnimatedList(
-        padding: EdgeInsets.zero,
-        key: _animatedListKey,
-        initialItemCount: widget.count,
-        itemBuilder: (context, index, animation) {
-          final _page = index ~/ TasksCountNotifier.pageSize + 1;
-          final _itemIndex = index % TasksCountNotifier.pageSize;
+      child: Stack(
+        children: [
+          Visibility(
+            visible: (ref.watch(tasksProvider(widget.taskView)).valueOrNull ?? []).isEmpty,
+            child: const PlaceholderWidget(text: 'No tasks found'),
+          ),
+          AnimatedList(
+            padding: EdgeInsets.zero,
+            key: _animatedListKey,
+            initialItemCount: widget.count,
+            itemBuilder: (context, index, animation) {
+              final _page = index ~/ TasksCountNotifier.pageSize + 1;
+              final _itemIndex = index % TasksCountNotifier.pageSize;
 
-          final _value = ref.watch(tasksProvider(widget.taskView.copyWithPage(_page)));
+              final _value = ref.watch(tasksProvider(widget.taskView.copyWithPage(_page)));
 
-          return _value.when(
-            data: (tasks) {
-              if (_itemIndex >= tasks.length) return const SizedBox.shrink();
+              return _value.when(
+                data: (tasks) {
+                  if (_itemIndex >= tasks.length) return const SizedBox.shrink();
 
-              return ProviderScope(
-                overrides: [
-                  scopedTaskProvider.overrideWithValue(tasks[_itemIndex]),
-                ],
-                child: FadeTransition(
-                  opacity: CurvedAnimation(
-                    parent: animation,
-                    curve: const Interval(0.2, 1),
-                  ),
-                  child: SlideTransition(
-                    position: animation.drive(
-                      Tween(
-                        begin: const Offset(0, -0.3),
-                        end: Offset.zero,
-                      ).chain(
-                        CurveTween(curve: Curves.easeInOut),
+                  return ProviderScope(
+                    overrides: [
+                      scopedTaskProvider.overrideWithValue(tasks[_itemIndex]),
+                    ],
+                    child: FadeTransition(
+                      opacity: CurvedAnimation(
+                        parent: animation,
+                        curve: const Interval(0.2, 1),
+                      ),
+                      child: SlideTransition(
+                        position: animation.drive(
+                          Tween(
+                            begin: const Offset(0, -0.3),
+                            end: Offset.zero,
+                          ).chain(
+                            CurveTween(curve: Curves.easeInOut),
+                          ),
+                        ),
+                        child: const TaskTile(),
                       ),
                     ),
-                    child: const TaskTile(),
-                  ),
-                ),
+                  );
+                },
+                loading: () => const TasksLoadingTile(),
+                error: (error, _) => Center(child: Text(error.toString())),
               );
             },
-            loading: () => const TasksLoadingTile(),
-            error: (error, _) => Center(child: Text(error.toString())),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
