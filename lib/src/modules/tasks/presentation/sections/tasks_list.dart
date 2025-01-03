@@ -101,8 +101,8 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
             key: _animatedListKey,
             initialItemCount: widget.count,
             itemBuilder: (context, index, animation) {
-              final _page = index ~/ TasksCountNotifier.pageSize + 1;
-              final _itemIndex = index % TasksCountNotifier.pageSize;
+              final _page = index ~/ TasksCountNotifier.limit + 1;
+              final _itemIndex = index % TasksCountNotifier.limit;
 
               final _value = ref.watch(tasksProvider(widget.taskView.copyWithPage(_page)));
 

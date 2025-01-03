@@ -4,17 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
+import '../mixin/tasks_operations_mixin.dart';
 import '../models/task_view.dart';
 import 'new_task_provider.dart';
 
 final tasksProvider =
     AsyncNotifierProviderFamily<TasksNotifier, Tasks, TaskView>(TasksNotifier.new);
 
-class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
-  late final TaskUseCase _useCase = ref.read(taskUseCaseProvider);
-
-  static const _size = 20;
-
+class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> with TaskOperationsMixin<Tasks> {
   /// AnimatedList keys for each task view
   /// This is used to animate the list when adding a new task or removing a task.
   ///
@@ -22,9 +19,7 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
   final _animatedListKeys = <String, GlobalKey<AnimatedListState>>{};
 
   @override
-  Future<List<TaskEntity>> build(TaskView arg) async {
-    return _fetchTasks(arg);
-  }
+  Future<List<TaskEntity>> build(TaskView arg) async => _fetchTasks(arg);
 
   Future<Tasks> _fetchTasks(TaskView arg) async {
     var _previousPageState = <TaskEntity>[];
@@ -37,9 +32,9 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
     final _cursor =
         _previousPageState.isNotEmpty ? _previousPageState.last.createdAt.toIso8601String() : null;
 
-    final result = await _useCase.fetchTasks(
+    final result = await useCase.fetchTasks(
       arg.toQuerySpecification(),
-      limit: _size,
+      limit: TasksCountNotifier.limit,
       cursor: _cursor,
     );
 
@@ -70,7 +65,7 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
   Future<void> addTask() async {
     final _task = ref.read(newTaskProvider);
 
-    final _previousState = state;
+    final _previousState = getState;
 
     const _id = '';
     final _createdAt = DateTime.now();
@@ -82,70 +77,69 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView> {
       id: _id,
     );
 
-    state = AsyncData([_tempTask, ...state.valueOrNull ?? []]);
+    getState = AsyncData([_tempTask, ...getState.valueOrNull ?? []]);
     _animatedListKey.currentState?.insertItem(0);
     _clearInput();
 
     try {
-      final result = await _useCase.createTask(_task);
+      final result = await useCase.createTask(_task);
 
       await result.fold(
         onSuccess: (task) async {
-          final currentTasks = state.valueOrNull ?? [];
+          final currentTasks = getState.valueOrNull ?? [];
 
           final updatedTasks = currentTasks
               .map((taskItem) => taskItem.name == _tempTask.name ? task : taskItem)
               .toList();
 
-          state = AsyncData(updatedTasks);
+          getState = AsyncData(updatedTasks);
         },
         onFailure: (error) async {
-          state = _previousState;
+          getState = _previousState;
           throw error;
         },
       );
     } catch (e) {
-      state = _previousState;
+      getState = _previousState;
       rethrow;
     } finally {
       ref.invalidate(newTaskProvider);
     }
   }
 
-  Future<void> updateTask(TaskEntity task) async {
-    final _previousState = state;
+  void _clearInput() => ref.read(newTaskProvider.notifier).clear();
 
-    state = AsyncData(
-      state.valueOrNull?.map((taskItem) {
+  @override
+  Future<AsyncValue<Tasks>> handleOptimisticUpdate(TaskEntity task) async {
+    return AsyncData(
+      getState.valueOrNull?.map((taskItem) {
             return taskItem.id == task.id ? task : taskItem;
           }).toList() ??
           [],
     );
-
-    try {
-      final result = await _useCase.updateTask(task);
-
-      await result.fold(
-        onSuccess: (task) async {
-          final currentTasks = state.valueOrNull ?? [];
-
-          final updatedTasks =
-              currentTasks.map((taskItem) => taskItem.id == task.id ? task : taskItem).toList();
-
-          state = AsyncData(updatedTasks);
-        },
-        onFailure: (error) async {
-          state = _previousState;
-          throw error;
-        },
-      );
-    } catch (e) {
-      state = _previousState;
-      rethrow;
-    }
   }
 
-  void _clearInput() => ref.read(newTaskProvider.notifier).clear();
+  @override
+  Future<AsyncValue<Tasks>> handleOptimisticDelete(TaskId id) async => AsyncData(
+        getState.valueOrNull?.where((task) => task.id != id).toList() ?? [],
+      );
+
+  @override
+  Future<AsyncValue<Tasks>> handleSuccessfulUpdate(TaskEntity updatedTask) async {
+    final currentTasks = getState.valueOrNull ?? [];
+    final updatedTasks = currentTasks
+        .map((taskItem) => taskItem.id == updatedTask.id ? updatedTask : taskItem)
+        .toList();
+    return AsyncData(updatedTasks);
+  }
+
+  @override
+  Future<AsyncValue<Tasks>> handleSuccessfulDelete(TaskId id) async => AsyncData(
+        getState.valueOrNull?.where((task) => task.id != id).toList() ?? [],
+      );
+
+  @override
+  TaskUseCase get useCase => ref.read(taskUseCaseProvider);
 }
 
 final scopedTaskProvider = Provider<TaskEntity>(
@@ -155,7 +149,7 @@ final tasksCountNotifierProvider =
     AsyncNotifierProviderFamily<TasksCountNotifier, int, TaskView>(TasksCountNotifier.new);
 
 class TasksCountNotifier extends FamilyAsyncNotifier<int, TaskView> {
-  static const pageSize = 20;
+  static const limit = 20;
 
   @override
   Future<int> build(TaskView arg) async {
