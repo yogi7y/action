@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
 import '../state/task_filter_provider.dart';
 import '../state/tasks_provider.dart';
+import '../widgets/add_task_floating_action_button.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
   const TasksScreen({super.key});
@@ -99,37 +101,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
               ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value),
         ),
       ),
-      floatingActionButton: _AddTaskFloatingActionButton(),
+      floatingActionButton: const AddTaskFloatingActionButton(),
     );
-  }
-}
-
-@immutable
-class _AddTaskFloatingActionButton extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    return Consumer(builder: (context, ref, child) {
-      final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
-      final _opacity = _isKeyboardVisible ? 0.0 : 1.0;
-      return AnimatedOpacity(
-        opacity: _opacity,
-        duration: defaultAnimationDuration,
-        child: FloatingActionButton(
-          onPressed: () {
-            ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value);
-          },
-          backgroundColor: _colors.primary,
-          shape: SmoothRectangleBorder(
-            borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
-          ),
-          child: SvgPicture.asset(
-            AssetsV2.plus,
-            height: 32,
-            width: 32,
-          ),
-        ),
-      );
-    });
   }
 }

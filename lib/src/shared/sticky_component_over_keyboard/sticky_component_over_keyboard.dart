@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/router/router.dart';
+import '../../core/router/routes.dart';
 import '../../design_system/design_system.dart';
 import '../../modules/dashboard/presentation/state/keyboard_visibility_provider.dart';
 import 'sticky_keyboard_provider.dart';
@@ -15,8 +17,9 @@ class StickyComponentOverKeyboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
+    final _currentRoute = ref.watch(routerProvider).state?.path;
 
-    if (!_isKeyboardVisible) return const SizedBox.shrink();
+    if (!_isKeyboardVisible || _currentRoute != AppRoute.tasks.path) return const SizedBox.shrink();
 
     return AnimatedPositioned(
       bottom: 0,

@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
-import '../../../../core/logger/logger.dart';
 import '../../../../core/mixin/keyboard_mixin.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../design_system/design_system.dart';
@@ -26,8 +25,6 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
     final _spacing = ref.watch(spacingProvider);
     final _fonts = ref.watch(fontsProvider);
     final _colors = ref.watch(appThemeProvider);
-
-    logger('rebuilding task tile: ${_task.name}');
 
     return Stack(
       children: [
