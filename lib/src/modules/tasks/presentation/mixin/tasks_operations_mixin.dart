@@ -13,16 +13,19 @@ mixin BaseTaskOperationsMixin<State extends Object> {
   TaskUseCase get useCase;
   State get currentState;
   void updateState(State newState);
+  // TaskView get currentTaskView;
 
   @protected
-  Future<void> updateTask(
-    TaskEntity task, {
+  Future<void> updateTask({
+    required TaskEntity task,
+    required int index,
+
     /// If true, only the optimistic update will be performed and no network call will be made.
     bool onlyOptimisticUpdate = false,
   }) async {
     final previousState = currentState;
 
-    updateState(handleOptimisticUpdate(task));
+    updateState(handleOptimisticUpdate(task, index));
 
     if (onlyOptimisticUpdate) return;
 
@@ -44,7 +47,7 @@ mixin BaseTaskOperationsMixin<State extends Object> {
     }
   }
 
-  State handleOptimisticUpdate(TaskEntity task);
+  State handleOptimisticUpdate(TaskEntity task, int index);
   FutureOr<State> handleSuccessfulUpdate(TaskEntity updatedTask);
 }
 

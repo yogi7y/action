@@ -9,23 +9,22 @@ import '../../domain/use_case/task_use_case.dart';
 import '../mixin/tasks_operations_mixin.dart';
 import '../models/task_view.dart';
 import 'new_task_provider.dart';
+import 'task_movement.dart';
 
 final tasksProvider =
     AsyncNotifierProviderFamily<TasksNotifier, Tasks, TaskView>(TasksNotifier.new);
 
 class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
     with BaseTaskOperationsMixin<Tasks>, FamilyAsyncTaskOperationsMixin<Tasks, TaskView> {
-  /// AnimatedList keys for each task view
-  /// This is used to animate the list when adding a new task or removing a task.
-  ///
-  /// Added when the screen is visible.
-  final _animatedListKeys = <String, GlobalKey<AnimatedListState>>{};
+  late final _taskMovementProvider = ref.watch(taskMovementProvider);
 
   @override
   Future<List<TaskEntity>> build(TaskView arg) async => _fetchTasks(arg);
 
   Future<Tasks> _fetchTasks(TaskView arg) async {
     var _previousPageState = <TaskEntity>[];
+
+    state = const AsyncLoading();
 
     if (arg.pageCount > 1) {
       _previousPageState =
@@ -47,23 +46,8 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
     );
   }
 
-  void addAnimatedListKey(String label, GlobalKey<AnimatedListState> key) {
-    _animatedListKeys[label] = key;
-  }
-
-  GlobalKey<AnimatedListState> getAnimatedListKey(String label) {
-    final _key = _animatedListKeys[label];
-
-    if (_key == null)
-      throw AppException(
-        exception: 'AnimatedListKey not found for label: $label',
-        stackTrace: StackTrace.current,
-      );
-
-    return _key;
-  }
-
-  GlobalKey<AnimatedListState> get _animatedListKey => getAnimatedListKey(arg.label);
+  GlobalKey<AnimatedListState> get _animatedListKey =>
+      ref.read(taskMovementProvider).getAnimatedListKey(arg.label);
 
   Future<void> addTask() async {
     final _task = ref.read(newTaskProvider);
@@ -115,12 +99,16 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
   @override
   TaskUseCase get useCase => ref.read(taskUseCaseProvider);
 
+  /// todo: needs optimization here.
+  /// currently we're making a O(n) operation to update the task in the list. Let's target to make it O(1).
   @override
-  Tasks handleOptimisticUpdate(TaskEntity task) =>
-      state.valueOrNull?.map((taskItem) {
-        return taskItem.id == task.id ? task : taskItem;
-      }).toList() ??
-      [];
+  Tasks handleOptimisticUpdate(TaskEntity task, int index) =>
+      _taskMovementProvider.analyzeTaskMovement(
+        updatedTask: task,
+        index: index,
+        tasks: state.valueOrNull ?? [],
+        currentView: arg,
+      );
 
   @override
   FutureOr<Tasks> handleSuccessfulUpdate(TaskEntity updatedTask) {
@@ -133,7 +121,13 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
   }
 }
 
-final scopedTaskProvider = Provider<TaskEntity>(
+typedef ScopedTaskWithIndex = ({int index, TaskEntity value});
+
+extension TaskWithIndexExtension on TaskEntity {
+  ScopedTaskWithIndex withIndex(int index) => (index: index, value: this);
+}
+
+final scopedTaskProvider = Provider<ScopedTaskWithIndex>(
     (ref) => throw UnimplementedError('Ensure to override scopedTaskProvider'));
 
 final tasksCountNotifierProvider =

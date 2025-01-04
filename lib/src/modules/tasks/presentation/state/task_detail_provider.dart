@@ -47,13 +47,15 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
 
     final _currentFilter = ref.read(selectedTaskFilterProvider);
 
-    await ref
-        .read(tasksProvider(_currentFilter).notifier)
-        .updateTask(current, onlyOptimisticUpdate: true);
+    await ref.read(tasksProvider(_currentFilter).notifier).updateTask(
+          task: current,
+          index: 0,
+          onlyOptimisticUpdate: true,
+        );
   }
 
   @override
-  TaskEntity handleOptimisticUpdate(TaskEntity task) => task;
+  TaskEntity handleOptimisticUpdate(TaskEntity task, int index) => task;
 
   @override
   FutureOr<TaskEntity> handleSuccessfulUpdate(TaskEntity updatedTask) => updatedTask;
@@ -61,7 +63,7 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
   Future<void> updateTaskWithCallback(UpdateTaskCallback update) async {
     final _task = update(task);
 
-    await super.updateTask(_task);
+    await super.updateTask(task: _task, index: 0);
   }
 
   @override

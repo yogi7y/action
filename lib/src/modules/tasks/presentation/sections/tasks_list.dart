@@ -5,6 +5,7 @@ import '../../../../core/logger/logger.dart';
 import '../../../../shared/placeholder_widget.dart';
 import '../models/task_view.dart';
 import '../state/task_filter_provider.dart';
+import '../state/task_movement.dart';
 import '../state/tasks_provider.dart';
 import '../widgets/task_loading_tile.dart';
 import '../widgets/task_tile.dart';
@@ -26,6 +27,7 @@ class TasksList extends ConsumerWidget {
       error: (error, _) => PlaceholderWidget(text: error.toString()),
       loading: _TaskListLoadingState.new,
       data: (count) {
+        logger('rebuilding count: $count for ${taskView.label}');
         return _TaskListDataState(
           taskView: taskView,
           count: count,
@@ -57,10 +59,8 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
   void initState() {
     super.initState();
 
-    logger('TaskList init state: ${widget.taskView.label}');
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(tasksProvider(widget.taskView).notifier).addAnimatedListKey(
+      ref.read(taskMovementProvider).addAnimatedListKey(
             widget.taskView.label,
             _animatedListKey,
           );
@@ -72,9 +72,9 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
   }
 
   @override
-  void dispose() {
-    logger('TaskList dispose: ${widget.taskView.label}');
-    super.dispose();
+  void didUpdateWidget(covariant _TaskListDataState oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    logger('did update widget called with ${widget.taskView.label} and ${widget.count}');
   }
 
   @override
@@ -93,7 +93,8 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
       child: Stack(
         children: [
           Visibility(
-            visible: (ref.watch(tasksProvider(widget.taskView)).valueOrNull ?? []).isEmpty,
+            visible: widget.count <= 0 &&
+                (ref.watch(tasksProvider(widget.taskView)).valueOrNull ?? []).isEmpty,
             child: const PlaceholderWidget(text: 'No tasks found'),
           ),
           AnimatedList(
@@ -112,7 +113,9 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
 
                   return ProviderScope(
                     overrides: [
-                      scopedTaskProvider.overrideWithValue(tasks[_itemIndex]),
+                      scopedTaskProvider.overrideWithValue(
+                        (value: tasks[_itemIndex], index: index),
+                      ),
                     ],
                     child: FadeTransition(
                       opacity: CurvedAnimation(

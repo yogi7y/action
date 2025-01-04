@@ -20,6 +20,10 @@ sealed class TaskView {
   final TaskStatus status;
   final PageCount pageCount;
 
+  /// Given a task, it checks if it can be a part of the current view or not.
+  /// Clients implementing this provider the query.
+  bool canContainTask(TaskEntity entity);
+
   TaskQuerySpecification toQuerySpecification();
 
   TaskView copyWithPage(PageCount pageCount);
@@ -54,6 +58,9 @@ final class AllTasksView extends TaskView {
 
   @override
   AllTasksView copyWithPage(PageCount pageCount) => AllTasksView(pageCount: pageCount);
+
+  @override
+  bool canContainTask(TaskEntity entity) => true;
 }
 
 final class StatusTaskView extends TaskView {
@@ -74,6 +81,9 @@ final class StatusTaskView extends TaskView {
         icon: icon,
         pageCount: pageCount,
       );
+
+  @override
+  bool canContainTask(TaskEntity entity) => entity.status == status && entity.isOrganized;
 }
 
 final class UnOrganizedTaskView extends TaskView {
@@ -82,6 +92,9 @@ final class UnOrganizedTaskView extends TaskView {
     super.icon = Assets.inbox,
     super.pageCount = 1,
   }) : super();
+
+  @override
+  bool canContainTask(TaskEntity entity) => !entity.isOrganized;
 
   @override
   TaskQuerySpecification toQuerySpecification() =>

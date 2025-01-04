@@ -1,0 +1,11 @@
+flutter_launcher_icons:
+  image_path: "assets/brand/action_foreground_icon.png"
+
+  android: "launcher_icon"
+  min_sdk_android: 21
+  adaptive_icon_background: "#F43F5E"
+  adaptive_icon_foreground: "assets/brand/action_foreground_icon.png"
+  adaptive_icon_monochrome: "assets/brand/action_foreground_icon.png"
+
+  ios: true
+  remove_alpha_channel_ios: true

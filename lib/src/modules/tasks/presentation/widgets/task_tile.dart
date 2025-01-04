@@ -32,8 +32,8 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           behavior: HitTestBehavior.opaque,
           onTap: () async => context.goNamed(
             AppRoute.taskDetail.name,
-            extra: _task,
-            pathParameters: {'id': _task.id},
+            extra: _task.value,
+            pathParameters: {'id': _task.value.id},
           ),
           child: Container(
             padding: EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm, right: _spacing.lg),
@@ -42,13 +42,16 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
               children: [
                 AppCheckbox(
                   padding: EdgeInsets.only(right: _spacing.xs, top: 4, left: _spacing.lg),
-                  state: AppCheckboxState.fromTaskStatus(status: _task.status),
+                  state: AppCheckboxState.fromTaskStatus(status: _task.value.status),
                   onChanged: (state) async {
                     final _currentFilter = ref.read(selectedTaskFilterProvider);
 
-                    return ref
-                        .read(tasksProvider(_currentFilter).notifier)
-                        .updateTask(_task.copyWith(status: TaskStatus.fromAppCheckboxState(state)));
+                    return ref.read(tasksProvider(_currentFilter).notifier).updateTask(
+                          task: _task.value.copyWith(
+                            status: TaskStatus.fromAppCheckboxState(state),
+                          ),
+                          index: _task.index,
+                        );
                   },
                 ),
                 Expanded(
@@ -75,7 +78,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           top: _spacing.xs,
           right: _spacing.lg,
           child: Text(
-            _task.createdAt.timeAgo,
+            _task.value.createdAt.timeAgo,
             style: _fonts.text.xs.regular.copyWith(
               fontSize: 10,
               height: 16 / 10,
@@ -105,14 +108,15 @@ class AnimatedTaskName extends ConsumerWidget {
         fontVariations: [
           const FontVariation.weight(450),
         ],
-        decoration:
-            _task.status == TaskStatus.done ? TextDecoration.lineThrough : TextDecoration.none,
+        decoration: _task.value.status == TaskStatus.done
+            ? TextDecoration.lineThrough
+            : TextDecoration.none,
         decorationThickness: 1,
-        color: _task.status == TaskStatus.done
+        color: _task.value.status == TaskStatus.done
             ? _colors.textTokens.secondary
             : _colors.textTokens.primary,
       ),
-      child: Text(_task.name),
+      child: Text(_task.value.name),
     );
   }
 }
@@ -125,9 +129,9 @@ class _TaskMetaDataRow extends ConsumerWidget {
     final _spacing = ref.watch(spacingProvider);
     final _task = ref.watch(scopedTaskProvider);
 
-    final _project = ref.watch(projectByIdProvider(_task.projectId ?? ''));
-    final _context = ref.watch(contextByIdProvider(_task.contextId ?? ''));
-    final _dueDate = _task.dueDate;
+    final _project = ref.watch(projectByIdProvider(_task.value.projectId ?? ''));
+    final _context = ref.watch(contextByIdProvider(_task.value.contextId ?? ''));
+    final _dueDate = _task.value.dueDate;
 
     return Wrap(
       spacing: _spacing.xs,

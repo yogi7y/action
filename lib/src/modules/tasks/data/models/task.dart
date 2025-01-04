@@ -13,6 +13,7 @@ class TaskModel extends TaskEntity {
     super.dueDate,
     super.projectId,
     super.contextId,
+    super.isOrganized,
   });
 
   factory TaskModel.fromMap(Map<String, Object?> map) {
@@ -23,6 +24,7 @@ class TaskModel extends TaskEntity {
       dueDate: map['due_date'] != null ? DateTime.parse(map['due_date'] as String) : null,
       projectId: map['project_id'] as String?,
       contextId: map['context_id'] as String?,
+      isOrganized: map['is_organized'] as bool? ?? false,
       createdAt: DateTime.parse(map['created_at'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );
