@@ -101,7 +101,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
               ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value),
         ),
       ),
-      floatingActionButton: const AddTaskFloatingActionButton(),
+      floatingActionButton: AddRemoveFloatingActionButton(
+        onStateChanged: (state) =>
+            ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value),
+      ),
     );
   }
 }

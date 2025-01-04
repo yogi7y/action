@@ -11,15 +11,29 @@ import '../../../../shared/sticky_component_over_keyboard/sticky_keyboard_provid
 import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
 import '../state/new_task_provider.dart';
 
-@immutable
-class AddTaskFloatingActionButton extends ConsumerStatefulWidget {
-  const AddTaskFloatingActionButton({super.key});
-
-  @override
-  ConsumerState<AddTaskFloatingActionButton> createState() => _AddTaskFloatingActionButtonState();
+enum AddRemoveFloatingActionButtonState {
+  add,
+  remove,
 }
 
-class _AddTaskFloatingActionButtonState extends ConsumerState<AddTaskFloatingActionButton>
+typedef AddRemoveFloatingActionButtonCallback = void Function(
+  AddRemoveFloatingActionButtonState state,
+);
+
+@immutable
+class AddRemoveFloatingActionButton extends ConsumerStatefulWidget {
+  const AddRemoveFloatingActionButton({
+    super.key,
+    this.onStateChanged,
+  });
+
+  final AddRemoveFloatingActionButtonCallback? onStateChanged;
+
+  @override
+  ConsumerState<AddRemoveFloatingActionButton> createState() => _AddTaskFloatingActionButtonState();
+}
+
+class _AddTaskFloatingActionButtonState extends ConsumerState<AddRemoveFloatingActionButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _rotationAnimation;
@@ -47,37 +61,34 @@ class _AddTaskFloatingActionButtonState extends ConsumerState<AddTaskFloatingAct
   Widget build(BuildContext context) {
     final _colors = ref.watch(appThemeProvider);
 
-    final _stickyComponentHeight = ref.watch(stickyComponentHeightProvider);
     final _isKeyboardOpen = ref.watch(keyboardVisibilityProvider).value ?? false;
 
-    final _bottomPadding = (_isKeyboardOpen ? _stickyComponentHeight ?? 0 : 0).toDouble();
+    if (_isKeyboardOpen) return const SizedBox.shrink();
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: _bottomPadding),
-      child: FloatingActionButton(
-        onPressed: () async {
-          ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value);
-          await Future<void>.delayed(const Duration(milliseconds: 200));
+    return FloatingActionButton(
+      onPressed: () async {
+        final _isAddFlow = _animationController.status == AnimationStatus.dismissed;
 
-          if (_animationController.status == AnimationStatus.completed) {
-            unawaited(_animationController.reverse());
-          } else {
-            unawaited(_animationController.forward());
-          }
-        },
-        backgroundColor: _colors.primary,
-        shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
-        ),
-        child: AnimatedBuilder(
-          animation: _rotationAnimation,
-          builder: (context, child) => Transform.rotate(
-            angle: _rotationAnimation.value,
-            child: SvgPicture.asset(
-              AssetsV2.plus,
-              height: 32,
-              width: 32,
-            ),
+        if (_isAddFlow) {
+          widget.onStateChanged?.call(AddRemoveFloatingActionButtonState.add);
+          unawaited(_animationController.forward());
+        } else {
+          widget.onStateChanged?.call(AddRemoveFloatingActionButtonState.remove);
+          unawaited(_animationController.reverse());
+        }
+      },
+      backgroundColor: _colors.primary,
+      shape: SmoothRectangleBorder(
+        borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
+      ),
+      child: AnimatedBuilder(
+        animation: _rotationAnimation,
+        builder: (context, child) => Transform.rotate(
+          angle: _rotationAnimation.value,
+          child: SvgPicture.asset(
+            AssetsV2.plus,
+            height: 32,
+            width: 32,
           ),
         ),
       ),

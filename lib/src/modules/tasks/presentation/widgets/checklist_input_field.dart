@@ -79,15 +79,21 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistO
     final _spacing = ref.watch(spacingProvider);
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppCheckbox(
-          padding: EdgeInsets.only(right: _spacing.xs),
+        Transform.translate(
+          offset: const Offset(0, 2),
+          child: AppCheckbox(
+            padding: EdgeInsets.only(right: _spacing.xs),
+          ),
         ),
         Expanded(
           child: TextField(
             controller: _textController,
+            // minLines: 1,
+            // maxLines: 3,
+            textCapitalization: TextCapitalization.sentences,
             focusNode: ref.watch(newChecklistProvider.notifier).focusNode,
-            // focusNode: ref.read(newChecklistProvider.notifier).focusNode,
             style: _fonts.text.md.regular.copyWith(
               color: _colors.textTokens.primary,
             ),

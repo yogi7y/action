@@ -71,6 +71,11 @@ class AppCheckbox extends ConsumerWidget {
 
         onChanged?.call(_newState);
       },
+      onLongPress: () {
+        if (state != AppCheckboxState.unchecked) return;
+
+        onChanged?.call(AppCheckboxState.intermediate);
+      },
       child: Padding(
         padding: padding,
         child: Container(

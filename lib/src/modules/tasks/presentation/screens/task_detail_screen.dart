@@ -10,6 +10,7 @@ import '../state/checklist_provider.dart';
 import '../state/new_checklist_provider.dart';
 import '../state/task_detail_provider.dart';
 import '../state/tasks_provider.dart';
+import '../widgets/add_task_floating_action_button.dart';
 import '../widgets/checklist_input_field.dart';
 import '../widgets/checklist_item.dart';
 import '../widgets/task_detail_header.dart';
@@ -53,37 +54,11 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         AsyncError(error: final error) => TaskDetailErrorView(error: error),
         _ => const TaskDetailLoadingView(),
       },
-      floatingActionButton: _AddChecklistFloatingActionButton(),
+      floatingActionButton: AddRemoveFloatingActionButton(
+        onStateChanged: (state) =>
+            ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => !value),
+      ),
     );
-  }
-}
-
-@immutable
-class _AddChecklistFloatingActionButton extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    return Consumer(builder: (context, ref, child) {
-      final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
-      final _opacity = _isKeyboardVisible ? 0.0 : 1.0;
-      return AnimatedOpacity(
-        opacity: _opacity,
-        duration: defaultAnimationDuration,
-        child: FloatingActionButton(
-          onPressed: () =>
-              ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => !value),
-          backgroundColor: _colors.primary,
-          shape: SmoothRectangleBorder(
-            borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
-          ),
-          child: SvgPicture.asset(
-            AssetsV2.plus,
-            height: 32,
-            width: 32,
-          ),
-        ),
-      );
-    });
   }
 }
 
