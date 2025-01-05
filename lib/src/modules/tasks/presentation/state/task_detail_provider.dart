@@ -30,6 +30,10 @@ final taskDetailProvider =
   throw Exception('Either id or data must be provided');
 });
 
+/// index of the task tile form which the task detail is opened
+final taskDetailIndexProvider = Provider<int?>((ref) => throw UnimplementedError(
+    'Ensure that the taskDetailIndexProvider is overridden when opening the task detail'));
+
 class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
     with BaseTaskOperationsMixin<TaskEntity>, NotifierTaskOperationsMixin<TaskEntity> {
   TaskDetailNotifier(this.task);
@@ -43,13 +47,16 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
   }
 
   Future<void> _onChanged(TaskEntity? previous, TaskEntity? current) async {
-    if (current == null) return;
+    /// if previous is null, we're considering that the task provider is just initialized hence skipping the update
+    if (current == null || previous == null) return;
+    if (previous == current) return;
 
     final _currentFilter = ref.read(selectedTaskFilterProvider);
 
+    final _index = ref.read(taskDetailIndexProvider);
     await ref.read(tasksProvider(_currentFilter).notifier).updateTask(
           task: current,
-          index: 0,
+          index: _index ?? 0,
           onlyOptimisticUpdate: true,
         );
   }

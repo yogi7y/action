@@ -121,13 +121,13 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
   }
 }
 
-typedef ScopedTaskWithIndex = ({int index, TaskEntity value});
+typedef WithIndex<T> = ({int index, T value});
 
 extension TaskWithIndexExtension on TaskEntity {
-  ScopedTaskWithIndex withIndex(int index) => (index: index, value: this);
+  WithIndex<TaskEntity> withIndex(int index) => (index: index, value: this);
 }
 
-final scopedTaskProvider = Provider<ScopedTaskWithIndex>(
+final scopedTaskProvider = Provider<WithIndex<TaskEntity>>(
     (ref) => throw UnimplementedError('Ensure to override scopedTaskProvider'));
 
 final tasksCountNotifierProvider =

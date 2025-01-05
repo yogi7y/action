@@ -5,12 +5,14 @@ import '../../modules/area/presentation/screens/area_screen.dart';
 import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
-import '../../modules/tasks/domain/entity/task.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
+import '../../modules/tasks/presentation/state/task_detail_provider.dart';
 
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
+typedef TaskDetailRouteData = ({TaskDataOrId? value, int? index});
 
 enum AppRoute {
   splash(path: '/splash', name: 'splash'),
@@ -62,10 +64,13 @@ final shellBranches = [
               name: AppRoute.taskDetail.name,
               path: AppRoute.taskDetail.path,
               builder: (context, state) {
-                final _task = state.extra as TaskEntity?;
+                final _task = state.extra as TaskDetailRouteData?;
+
+                if (_task == null) throw Exception('TaskDetailRouteData is required');
 
                 return TaskDetailScreen(
-                  taskDataOrId: (data: _task, id: null),
+                  taskDataOrId: _task.value!,
+                  index: _task.index,
                 );
               },
             ),

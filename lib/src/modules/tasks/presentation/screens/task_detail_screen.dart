@@ -1,15 +1,10 @@
-import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../../design_system/design_system.dart';
-import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
-import '../../domain/entity/task.dart';
 import '../state/checklist_provider.dart';
 import '../state/new_checklist_provider.dart';
 import '../state/task_detail_provider.dart';
-import '../state/tasks_provider.dart';
 import '../widgets/add_task_floating_action_button.dart';
 import '../widgets/checklist_input_field.dart';
 import '../widgets/checklist_item.dart';
@@ -19,10 +14,12 @@ import '../widgets/task_detail_properties.dart';
 class TaskDetailScreen extends ConsumerStatefulWidget {
   const TaskDetailScreen({
     required this.taskDataOrId,
+    this.index,
     super.key,
   });
 
   final TaskDataOrId taskDataOrId;
+  final int? index;
 
   @override
   ConsumerState<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -41,22 +38,25 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   Widget build(BuildContext context) {
     final taskDetail = ref.watch(taskDetailProvider(widget.taskDataOrId));
 
-    return Scaffold(
-      body: switch (taskDetail) {
-        AsyncData(value: final task) => ProviderScope(
-            overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
-            child: Builder(builder: (context) {
-              return TaskDetailDataView(
-                scrollController: scrollController,
-              );
-            }),
-          ),
-        AsyncError(error: final error) => TaskDetailErrorView(error: error),
-        _ => const TaskDetailLoadingView(),
-      },
-      floatingActionButton: AddRemoveFloatingActionButton(
-        onStateChanged: (state) =>
-            ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => !value),
+    return ProviderScope(
+      overrides: [taskDetailIndexProvider.overrideWithValue(widget.index)],
+      child: Scaffold(
+        body: switch (taskDetail) {
+          AsyncData(value: final task) => ProviderScope(
+              overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
+              child: Builder(builder: (context) {
+                return TaskDetailDataView(
+                  scrollController: scrollController,
+                );
+              }),
+            ),
+          AsyncError(error: final error) => TaskDetailErrorView(error: error),
+          _ => const TaskDetailLoadingView(),
+        },
+        floatingActionButton: AddRemoveFloatingActionButton(
+          onStateChanged: (state) =>
+              ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => !value),
+        ),
       ),
     );
   }

@@ -32,7 +32,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           behavior: HitTestBehavior.opaque,
           onTap: () async => context.goNamed(
             AppRoute.taskDetail.name,
-            extra: _task.value,
+            extra: (value: (data: _task.value, id: null), index: 1),
             pathParameters: {'id': _task.value.id},
           ),
           child: Container(
