@@ -35,8 +35,12 @@ class SupabaseQueryBuilder {
           query,
           _applySpecification,
         ),
-      final StatusTaskSpecification s => query.eq('status', s.status.value),
-      final OrganizedTaskSpecification o => query.eq('is_organized', o.isOrganized),
+      final StatusTaskSpecification s => query //
+          .eq('status', s.status.value),
+      final OrganizedStatusSpecification o => query.eq(
+          'is_organized',
+          o.isOrganized,
+        ),
       _ => query,
     };
   }

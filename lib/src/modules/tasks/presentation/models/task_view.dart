@@ -72,7 +72,10 @@ final class StatusTaskView extends TaskView {
   }) : super();
 
   @override
-  TaskQuerySpecification toQuerySpecification() => StatusTaskSpecification(status);
+  TaskQuerySpecification toQuerySpecification() => CompositeSpecification([
+        StatusTaskSpecification(status),
+        const OrganizedStatusSpecification(),
+      ]);
 
   @override
   StatusTaskView copyWithPage(PageCount pageCount) => StatusTaskView(
@@ -97,8 +100,9 @@ final class UnOrganizedTaskView extends TaskView {
   bool canContainTask(TaskEntity entity) => !entity.isOrganized;
 
   @override
-  TaskQuerySpecification toQuerySpecification() =>
-      const OrganizedTaskSpecification(isOrganized: false);
+  TaskQuerySpecification toQuerySpecification() => const OrganizedStatusSpecification(
+        isOrganized: false,
+      );
 
   @override
   UnOrganizedTaskView copyWithPage(PageCount pageCount) => UnOrganizedTaskView(

@@ -23,16 +23,15 @@ class AllTasksSpecification extends TaskQuerySpecification {
 @immutable
 class StatusTaskSpecification extends TaskQuerySpecification {
   const StatusTaskSpecification(this.status);
+
   final TaskStatus status;
 }
 
 @immutable
-class OrganizedTaskSpecification extends TaskQuerySpecification {
-  const OrganizedTaskSpecification({
+class OrganizedStatusSpecification extends TaskQuerySpecification {
+  const OrganizedStatusSpecification({
     this.isOrganized = true,
-    this.isInInbox = false,
   });
 
   final bool isOrganized;
-  final bool isInInbox;
 }
