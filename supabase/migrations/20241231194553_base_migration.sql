@@ -43,7 +43,7 @@ CREATE TABLE tasks (
 CREATE TABLE checklist_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
-    title TEXT NOT NULL CHECK (length(trim(name)) > 0),
+    title TEXT NOT NULL CHECK (length(trim(title)) > 0),
     status checklist_status NOT NULL DEFAULT 'todo',
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
