@@ -16,8 +16,6 @@ final tasksProvider =
 
 class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
     with BaseTaskOperationsMixin<Tasks>, FamilyAsyncTaskOperationsMixin<Tasks, TaskView> {
-  late final _taskMovementProvider = ref.watch(taskMovementProvider);
-
   @override
   Future<List<TaskEntity>> build(TaskView arg) async => _fetchTasks(arg);
 
@@ -103,12 +101,52 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
   /// currently we're making a O(n) operation to update the task in the list. Let's target to make it O(1).
   @override
   Tasks handleOptimisticUpdate(TaskEntity task, int index) =>
-      _taskMovementProvider.analyzeTaskMovement(
-        updatedTask: task,
-        index: index,
-        tasks: state.valueOrNull ?? [],
-        currentView: arg,
+      ref.watch(taskMovementProvider).updateTaskInList(
+            task: task,
+            index: index,
+            currentView: arg,
+            tasks: state.valueOrNull ?? [],
+          );
+
+  /// Inserts a task into the in-memory task list without performing any API operations.
+  ///
+  /// This method prepends the given [task] to the current list of tasks stored in state.
+  /// Note: This is a memory-only operation and does not persist changes to any backend/storage.
+  ///
+  /// [task] The task entity to be inserted at the beginning of the task list.
+  void insertTaskInMemory(TaskEntity task) =>
+      state = AsyncData([task, ...(state.valueOrNull ?? [])]);
+
+  /// Removes a task from in-memory without performing any API operations.
+  ///
+  /// This method removes the given task from the current list of tasks stored in state.
+  /// Note: This is a memory-only operation and does not persist changes to any backend/storage.
+  ///
+  /// [taskId] The ID of the task to be removed. Only used for validation.
+  /// [index] The index of the task to be removed from the task list.
+  void removeTaskFromMemory({
+    required String taskId,
+    required int index,
+  }) {
+    final tasks = state.valueOrNull ?? [];
+
+    if (index < 0 || index >= tasks.length) {
+      throw AppException(
+        exception: 'Index out of bounds',
+        stackTrace: StackTrace.current,
       );
+    }
+
+    if (tasks[index].id != taskId) {
+      throw AppException(
+        exception: 'Task ID mismatch at the specified index',
+        stackTrace: StackTrace.current,
+      );
+    }
+
+    final updatedTasks = List<TaskEntity>.from(tasks)..removeAt(index);
+    state = AsyncData(updatedTasks);
+  }
 
   @override
   FutureOr<Tasks> handleSuccessfulUpdate(TaskEntity updatedTask) {

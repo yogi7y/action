@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../design_system/design_system.dart';
-import '../../../../shared/sticky_component_over_keyboard/sticky_keyboard_provider.dart';
 import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
-import '../state/new_task_provider.dart';
 
 enum AddRemoveFloatingActionButtonState {
   add,

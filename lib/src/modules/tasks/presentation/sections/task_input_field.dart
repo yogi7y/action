@@ -6,7 +6,6 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../mixin/task_ui_triggers.dart';
-import '../mixin/tasks_operations_mixin.dart';
 import '../state/new_task_provider.dart';
 
 class TaskInputFieldVisibility extends ConsumerStatefulWidget {

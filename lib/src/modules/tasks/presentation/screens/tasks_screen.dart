@@ -1,21 +1,16 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/header/app_header.dart';
-import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
 import '../models/task_view.dart';
 import '../sections/task_input_field.dart';
 import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
 import '../state/task_filter_provider.dart';
-import '../state/tasks_provider.dart';
 import '../widgets/add_task_floating_action_button.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {

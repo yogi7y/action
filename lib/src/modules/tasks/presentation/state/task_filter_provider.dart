@@ -8,6 +8,7 @@ final tasksFilterProvider = Provider<List<TaskView>>((ref) {
   return [
     const StatusTaskView(status: TaskStatus.inProgress, label: 'In Progress'),
     const StatusTaskView(label: 'Todo'),
+    const StatusTaskView(label: 'Done', status: TaskStatus.done),
     const AllTasksView(),
     const UnOrganizedTaskView(label: 'Unorganized'),
   ];
