@@ -10,7 +10,7 @@ CREATE TYPE checklist_status AS ENUM ('todo', 'done');
 -- Create Projects table
 CREATE TABLE projects (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
+    name TEXT NOT NULL CHECK (length(trim(name)) > 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     created_by UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id)
@@ -19,7 +19,7 @@ CREATE TABLE projects (
 -- Create Contexts table
 CREATE TABLE contexts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
+    name TEXT NOT NULL CHECK (length(trim(name)) > 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     created_by UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id)
@@ -28,7 +28,7 @@ CREATE TABLE contexts (
 -- Create Tasks table
 CREATE TABLE tasks (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
+    name TEXT NOT NULL CHECK (length(trim(name)) > 0),
     status task_status NOT NULL DEFAULT 'todo',
     due_date DATE,
     project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
