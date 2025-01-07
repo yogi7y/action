@@ -8,8 +8,9 @@ import 'task_filter_provider.dart';
 final isTaskTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);
 
 /// holds the task entered by the user.
-final newTaskProvider =
-    AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskPropertiesEntity>(NewTaskTextNotifier.new);
+final newTaskProvider = AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskPropertiesEntity>(
+  NewTaskTextNotifier.new,
+);
 
 class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
   late final controller = SmartTextFieldController();

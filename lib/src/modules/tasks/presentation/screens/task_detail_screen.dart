@@ -106,6 +106,9 @@ class TaskDetailDataView extends ConsumerWidget {
             SliverToBoxAdapter(
               child: _ChecklistHeadingAndInputField(),
             ),
+            SliverToBoxAdapter(
+              child: SizedBox(height: _spacing.xs),
+            ),
             Consumer(builder: (context, ref, child) {
               final _checklist = ref.watch(checklistProvider(_task.id));
               final listKey = ref.watch(checklistAnimatedListKeyProvider);

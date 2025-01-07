@@ -11,11 +11,15 @@ class ChecklistUseCase {
   AsyncChecklistResult getChecklistsByTaskId(String taskId) =>
       repository.getChecklistsByTaskId(taskId);
 
-  AsyncSingleChecklistResult createChecklist(ChecklistPropertiesEntity checklist) =>
-      repository.createChecklist(checklist);
+  AsyncSingleChecklistResult createChecklist(ChecklistPropertiesEntity checklist) {
+    checklist.validate();
+    return repository.createChecklist(checklist);
+  }
 
-  AsyncSingleChecklistResult updateChecklist(ChecklistEntity checklist) =>
-      repository.updateChecklist(checklist);
+  AsyncSingleChecklistResult updateChecklist(ChecklistEntity checklist) {
+    checklist.validate();
+    return repository.updateChecklist(checklist);
+  }
 }
 
 final checklistUseCaseProvider = Provider.autoDispose<ChecklistUseCase>(

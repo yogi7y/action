@@ -33,8 +33,10 @@ class TaskUseCase {
 
   AsyncTaskResult getTaskById(TaskId id) => repository.getTaskById(id);
 
-  Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) =>
-      repository.createTask(task);
+  Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) {
+    task.validate();
+    return repository.createTask(task);
+  }
 
   Future<Result<TaskEntity, AppException>> updateTask(TaskEntity task) =>
       repository.updateTask(task);

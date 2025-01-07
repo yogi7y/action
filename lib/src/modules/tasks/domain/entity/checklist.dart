@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/entity.dart';
+import '../../../../core/exceptions/validation_exception.dart';
 import '../../../../services/database/model_meta_data.dart';
 import '../use_case/task_use_case.dart';
 
@@ -20,7 +22,7 @@ enum ChecklistStatus {
 }
 
 @immutable
-class ChecklistPropertiesEntity {
+class ChecklistPropertiesEntity implements Entity {
   const ChecklistPropertiesEntity({
     required this.taskId,
     required this.title,
@@ -60,6 +62,16 @@ class ChecklistPropertiesEntity {
 
   @override
   String toString() => 'ChecklistPropertiesEntity(taskId: $taskId, title: $title, status: $status)';
+
+  @override
+  void validate() {
+    if (title.trim().isEmpty)
+      throw ValidationException(
+        exception: 'Task name cannot be empty. Got: $title',
+        stackTrace: StackTrace.current,
+        userFriendlyMessage: 'Task name cannot be empty',
+      );
+  }
 }
 
 @immutable

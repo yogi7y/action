@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
@@ -87,13 +88,16 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
             ),
             SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
             const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
+            SliverToBoxAdapter(child: SizedBox(height: _spacing.xs)),
           ];
         },
         body: PageView(
           controller: _pageController,
           children: _filters.map((filter) => TasksList(taskView: filter)).toList(),
-          onPageChanged: (value) =>
-              ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value),
+          onPageChanged: (value) {
+            unawaited(HapticFeedback.lightImpact());
+            ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
+          },
         ),
       ),
       floatingActionButton: AddRemoveFloatingActionButton(

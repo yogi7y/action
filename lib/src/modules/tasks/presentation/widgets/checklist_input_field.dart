@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
+import '../../../../shared/buttons/send_icon.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../mixin/checklist_operations_mixin.dart';
 import '../state/new_checklist_provider.dart';
@@ -69,7 +70,7 @@ class ChecklistInput extends ConsumerStatefulWidget {
   ConsumerState<ChecklistInput> createState() => _ChecklistInputState();
 }
 
-class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistOperationsMixin {
+class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistUiTriggerMixin {
   late final _textController = ref.read(newChecklistProvider.notifier).controller;
 
   @override
@@ -90,8 +91,9 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistO
         Expanded(
           child: TextField(
             controller: _textController,
-            // minLines: 1,
-            // maxLines: 3,
+            minLines: 1,
+            maxLines: 3,
+            textInputAction: TextInputAction.done,
             textCapitalization: TextCapitalization.sentences,
             focusNode: ref.watch(newChecklistProvider.notifier).focusNode,
             style: _fonts.text.md.regular.copyWith(
@@ -100,8 +102,15 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistO
             decoration: InputDecoration(
               hintText: 'Add checklist item',
               border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
               hintStyle: _fonts.text.md.regular.copyWith(
-                color: _colors.textTokens.secondary,
+                color: _colors.textTokens.secondary.withValues(alpha: .8),
+              ),
+              suffixIcon: const _ChecklistSendIcon(),
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 24,
+                minHeight: 24,
               ),
             ),
             onSubmitted: (value) async {
@@ -117,6 +126,23 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistO
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ChecklistSendIcon extends ConsumerWidget with ChecklistUiTriggerMixin {
+  const _ChecklistSendIcon();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _title = ref.watch(newChecklistProvider.select((value) => value.title.trim()));
+
+    return SendIcon(
+      onClick: () async => addChecklist(
+        ref: ref,
+        checklistText: _title,
+      ),
+      isEnabled: _title.isNotEmpty,
     );
   }
 }
