@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/logger/logger.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/header/app_header.dart';
 import '../models/task_view.dart';
@@ -12,7 +13,7 @@ import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
 import '../state/task_filter_provider.dart';
-import '../widgets/add_task_floating_action_button.dart';
+import '../widgets/add_remove_floating_action_button.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
   const TasksScreen({super.key});
@@ -73,36 +74,43 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
     final _spacing = ref.watch(spacingProvider);
     final _filters = ref.watch(tasksFilterProvider);
 
-    return Scaffold(
-      body: NestedScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            const AppHeader(title: 'Tasks'),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
-            SliverToBoxAdapter(
-              child: TasksFilters(
-                filterViews:
-                    _filters.map((filter) => (filter: filter, key: _filterKeys[filter]!)).toList(),
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        logger('on back button pressed');
+        return false;
+      },
+      child: Scaffold(
+        body: NestedScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              const AppHeader(title: 'Tasks'),
+              SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
+              SliverToBoxAdapter(
+                child: TasksFilters(
+                  filterViews: _filters
+                      .map((filter) => (filter: filter, key: _filterKeys[filter]!))
+                      .toList(),
+                ),
               ),
-            ),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
-            const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.xs)),
-          ];
-        },
-        body: PageView(
-          controller: _pageController,
-          children: _filters.map((filter) => TasksList(taskView: filter)).toList(),
-          onPageChanged: (value) {
-            unawaited(HapticFeedback.lightImpact());
-            ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
+              SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+              const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
+              SliverToBoxAdapter(child: SizedBox(height: _spacing.xs)),
+            ];
           },
+          body: PageView(
+            controller: _pageController,
+            children: _filters.map((filter) => TasksList(taskView: filter)).toList(),
+            onPageChanged: (value) {
+              unawaited(HapticFeedback.lightImpact());
+              ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
+            },
+          ),
         ),
-      ),
-      floatingActionButton: AddRemoveFloatingActionButton(
-        onStateChanged: (state) =>
-            ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value),
+        floatingActionButton: AddRemoveFloatingActionButton(
+          onStateChanged: (state) =>
+              ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value),
+        ),
       ),
     );
   }

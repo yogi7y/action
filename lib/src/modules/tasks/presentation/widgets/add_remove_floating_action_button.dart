@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -40,12 +41,12 @@ class _AddTaskFloatingActionButtonState extends ConsumerState<AddRemoveFloatingA
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: defaultAnimationDuration,
+      duration: Duration.zero,
       vsync: this,
     );
     _rotationAnimation = Tween<double>(
       begin: pi / 2,
-      end: pi / 4,
+      end: pi / 2,
     ).animate(_animationController);
   }
 
@@ -65,6 +66,7 @@ class _AddTaskFloatingActionButtonState extends ConsumerState<AddRemoveFloatingA
 
     return FloatingActionButton(
       onPressed: () async {
+        unawaited(HapticFeedback.lightImpact());
         final _isAddFlow = _animationController.status == AnimationStatus.dismissed;
 
         if (_isAddFlow) {

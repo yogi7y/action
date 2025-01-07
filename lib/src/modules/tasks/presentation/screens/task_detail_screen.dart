@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
+import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
 import '../state/checklist_provider.dart';
 import '../state/new_checklist_provider.dart';
 import '../state/task_detail_provider.dart';
-import '../widgets/add_task_floating_action_button.dart';
+import '../widgets/add_remove_floating_action_button.dart';
 import '../widgets/checklist_input_field.dart';
 import '../widgets/checklist_item.dart';
 import '../widgets/task_detail_header.dart';
@@ -27,6 +30,25 @@ class TaskDetailScreen extends ConsumerStatefulWidget {
 
 class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   late final ScrollController scrollController = ScrollController();
+  late final _checklistSectionKey = GlobalKey(debugLabel: 'Checklist Section');
+
+  @override
+  void initState() {
+    super.initState();
+
+    ref.listenManual(keyboardVisibilityProvider, (previous, next) {
+      final _previousValue = previous?.valueOrNull ?? false;
+      final _nextValue = next.valueOrNull ?? false;
+
+      if (_previousValue && !_nextValue) {
+        unawaited(scrollController.animateTo(
+          0,
+          duration: defaultAnimationDuration,
+          curve: Curves.easeOutCubic,
+        ));
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -47,6 +69,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
               child: Builder(builder: (context) {
                 return TaskDetailDataView(
                   scrollController: scrollController,
+                  checklistSectionKey: _checklistSectionKey,
                 );
               }),
             ),
@@ -54,8 +77,25 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _ => const TaskDetailLoadingView(),
         },
         floatingActionButton: AddRemoveFloatingActionButton(
-          onStateChanged: (state) =>
-              ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => !value),
+          onStateChanged: (state) {
+            ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => true);
+
+            final _checklistContext = _checklistSectionKey.currentContext;
+            if (_checklistContext == null) return;
+
+            final _renderBox = _checklistContext.findRenderObject() as RenderBox?;
+            if (_renderBox == null) return;
+
+            final _position = _renderBox.localToGlobal(Offset.zero);
+            final _scrollOffset =
+                scrollController.offset + _position.dy - MediaQuery.of(context).padding.top - 40;
+
+            unawaited(scrollController.animateTo(
+              _scrollOffset,
+              duration: defaultAnimationDuration,
+              curve: Curves.easeOutCubic,
+            ));
+          },
         ),
       ),
     );
@@ -66,10 +106,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
 class TaskDetailDataView extends ConsumerWidget {
   const TaskDetailDataView({
     required this.scrollController,
+    required this.checklistSectionKey,
     super.key,
   });
 
   final ScrollController scrollController;
+  final GlobalKey checklistSectionKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,7 +146,9 @@ class TaskDetailDataView extends ConsumerWidget {
               ),
             ),
             SliverToBoxAdapter(
-              child: _ChecklistHeadingAndInputField(),
+              child: _ChecklistHeadingAndInputField(
+                key: checklistSectionKey,
+              ),
             ),
             SliverToBoxAdapter(
               child: SizedBox(height: _spacing.xs),
@@ -147,6 +191,9 @@ class TaskDetailDataView extends ConsumerWidget {
             SliverToBoxAdapter(
               child: SizedBox(height: _spacing.xxl),
             ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 2000), // Force scrollable content
+            ),
           ],
         ),
       ),
@@ -155,6 +202,8 @@ class TaskDetailDataView extends ConsumerWidget {
 }
 
 class _ChecklistHeadingAndInputField extends ConsumerWidget {
+  const _ChecklistHeadingAndInputField({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _colors = ref.watch(appThemeProvider);
