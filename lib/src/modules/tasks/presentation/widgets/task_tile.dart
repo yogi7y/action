@@ -26,6 +26,9 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
     final _fonts = ref.watch(fontsProvider);
     final _colors = ref.watch(appThemeProvider);
 
+    final _topPadding = _spacing.xs;
+    final _bottomPadding = _spacing.sm;
+
     return Stack(
       children: [
         GestureDetector(
@@ -36,12 +39,19 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
             pathParameters: {'id': _task.value.id},
           ),
           child: Container(
-            padding: EdgeInsets.only(top: _spacing.xs, bottom: _spacing.sm, right: _spacing.lg),
+            padding: EdgeInsets.only(
+              right: _spacing.lg,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppCheckbox(
-                  padding: EdgeInsets.only(right: _spacing.xs, top: 4, left: _spacing.lg),
+                  padding: EdgeInsets.only(
+                    right: _spacing.xs,
+                    top: 4 + _topPadding,
+                    left: _spacing.lg,
+                    bottom: _bottomPadding,
+                  ),
                   state: AppCheckboxState.fromTaskStatus(status: _task.value.status),
                   onChanged: (state) async {
                     final _currentFilter = ref.read(selectedTaskFilterProvider);
@@ -58,9 +68,9 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(right: 60),
-                        child: AnimatedTaskName(),
+                      Padding(
+                        padding: EdgeInsets.only(right: 60, top: _topPadding),
+                        child: const AnimatedTaskName(),
                       ),
                       SizedBox(height: _spacing.xxs),
                       const Padding(

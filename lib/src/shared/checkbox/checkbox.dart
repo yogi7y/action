@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -65,6 +68,7 @@ class AppCheckbox extends ConsumerWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
+        unawaited(HapticFeedback.lightImpact());
         final _newState = state == AppCheckboxState.checked
             ? AppCheckboxState.unchecked
             : AppCheckboxState.checked;
