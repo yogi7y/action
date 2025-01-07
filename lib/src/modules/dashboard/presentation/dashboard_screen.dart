@@ -7,8 +7,11 @@ import '../../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import '../../../shared/sticky_component_over_keyboard/sticky_component_over_keyboard.dart';
 import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
+import '../../tasks/presentation/state/new_checklist_provider.dart';
+import '../../tasks/presentation/state/new_task_provider.dart';
 import '../../tasks/presentation/state/task_filter_provider.dart';
 import '../../tasks/presentation/state/tasks_provider.dart';
+import 'state/keyboard_visibility_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({required this.navigationShell, super.key});
@@ -25,6 +28,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     super.initState();
 
     ref
+      ..listenManual(keyboardVisibilityProvider, (previous, next) {
+        final _previousValue = previous?.valueOrNull ?? false;
+        final _nextValue = next.valueOrNull ?? false;
+
+        if (_previousValue && !_nextValue) {
+          ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((_) => false);
+          ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((_) => false);
+        }
+      })
       ..read(projectsProvider)
       ..read(contextsProvider);
 
