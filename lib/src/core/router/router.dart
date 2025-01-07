@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,6 +20,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoute.splash.path,
     debugLogDiagnostics: true,
     redirect: (context, state) {
+      _handleBottomNavFeedback(state);
       _updateBottomNavFromRoute(
         state,
         _bottomNavItems,
@@ -70,4 +74,16 @@ void _updateBottomNavFromRoute(
   } else if (state.matchedLocation == AppRoute.area.path) {
     bottomNavNotifier.update((state) => (index: 4, item: bottomNavItems[4]));
   }
+}
+
+bool _isBottomNavRoute(String location) {
+  return location == AppRoute.home.path ||
+      location == AppRoute.tasks.path ||
+      location == AppRoute.pages.path ||
+      location == AppRoute.projects.path ||
+      location == AppRoute.area.path;
+}
+
+void _handleBottomNavFeedback(GoRouterState state) {
+  if (_isBottomNavRoute(state.matchedLocation)) unawaited(HapticFeedback.lightImpact());
 }
