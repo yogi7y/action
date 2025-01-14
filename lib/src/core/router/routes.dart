@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../modules/area/presentation/screens/area_screen.dart';
 import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
+import '../../modules/projects/presentation/screens/project_detail_screend.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
@@ -22,6 +23,7 @@ enum AppRoute {
   taskDetail(path: '/tasks/:id', name: 'task_detail'),
   pages(path: '/pages', name: 'pages'),
   projects(path: '/projects', name: 'projects'),
+  projectDetail(path: '/projects/:id', name: 'project_detail'),
   area(path: '/area', name: 'area'),
   profile(path: '/profile', name: 'profile');
 
@@ -91,10 +93,19 @@ final shellBranches = [
     navigatorKey: projectsNavigatorKey,
     routes: [
       GoRoute(
-        name: AppRoute.projects.name,
-        path: AppRoute.projects.path,
-        builder: (context, state) => const ProjectsScreen(),
-      ),
+          name: AppRoute.projects.name,
+          path: AppRoute.projects.path,
+          builder: (context, state) => const ProjectsScreen(),
+          routes: [
+            GoRoute(
+              name: AppRoute.projectDetail.name,
+              path: 'projects/:id',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return ProjectDetailScreen(projectId: id);
+              },
+            ),
+          ]),
     ],
   ),
   StatefulShellBranch(

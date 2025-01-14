@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../entity/project.dart';
 import '../repository/project_repository.dart';
 
 class ProjectUseCase {
@@ -7,7 +8,11 @@ class ProjectUseCase {
 
   final ProjectRepository repository;
 
-  AsyncProjectResult fetchProjects() => repository.fetchProjects();
+  AsyncProjectsResult fetchProjects() => repository.fetchProjects();
+
+  AsyncProjectResult getProjectById(ProjectId id) => repository.getProjectById(id);
+
+  AsyncProjectResult updateProject(ProjectEntity project) => repository.updateProject(project);
 }
 
 final projectUseCaseProvider = Provider<ProjectUseCase>(
