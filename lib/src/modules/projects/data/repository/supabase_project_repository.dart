@@ -9,7 +9,6 @@ class SupabaseProjectRepository implements ProjectRepository {
   final _supabase = Supabase.instance.client;
 
   @override
-  AsyncProjectResult fetchProjects() async {
   AsyncProjectsResult fetchProjects() async {
     try {
       final response =
