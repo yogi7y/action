@@ -8,27 +8,27 @@ import '../../../../shared/sticky_component_over_keyboard/sticky_keyboard_provid
 import '../../../tasks/presentation/state/new_task_provider.dart';
 import '../../domain/entity/project.dart';
 
-class ProjectPickerTileRenderer extends SearchRenderer<ProjectEntity> {
-  ProjectPickerTileRenderer({
-    required this.fonts,
-  });
+// class ProjectPickerTileRenderer extends SearchRenderer<ProjectEntity> {
+//   ProjectPickerTileRenderer({
+//     required this.fonts,
+//   });
 
-  final Fonts fonts;
+//   final Fonts fonts;
 
-  @override
-  Widget render(BuildContext context, ProjectEntity item) {
-    return Text(
-      item.stringifiedValue,
-      style: fonts.text.sm.medium,
-    );
-  }
+//   @override
+//   Widget render(BuildContext context, ProjectEntity item) {
+//     return Text(
+//       item.stringifiedValue,
+//       style: fonts.text.sm.medium,
+//     );
+//   }
 
-  @override
-  void onItemSelected(BuildContext context, ProjectEntity item) {
-    final _container = ProviderScope.containerOf(context);
-    _container.read(newTaskProvider.notifier).focusNode.requestFocus();
-    _container.read(currentStickyTextFieldTypeProvider.notifier).update((_) => null);
+//   @override
+//   void onItemSelected(BuildContext context, ProjectEntity item) {
+//     final _container = ProviderScope.containerOf(context);
+//     _container.read(newTaskProvider.notifier).focusNode.requestFocus();
+//     _container.read(currentStickyTextFieldTypeProvider.notifier).update((_) => null);
 
-    _container.read(newTaskProvider.notifier).updateValue(projectId: item.id);
-  }
-}
+//     _container.read(newTaskProvider.notifier).updateValue(projectId: item.id);
+//   }
+// }

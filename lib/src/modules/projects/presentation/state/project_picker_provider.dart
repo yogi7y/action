@@ -19,9 +19,10 @@ final projectPickerSearchSourceProvider = Provider<SearchSource>((ref) {
   final _projects = ref.watch(projectsProvider).valueOrNull ?? [];
 
   final _fonts = ref.watch(fontsProvider);
+  throw UnimplementedError();
 
-  return SearchSource(
-    provider: ProjectPickerSearchSyncProvider(items: _projects),
-    renderer: ProjectPickerTileRenderer(fonts: _fonts),
-  );
+  // return SearchSource(
+  //   provider: ProjectPickerSearchSyncProvider(items: _projects),
+  //   renderer: ProjectPickerTileRenderer(fonts: _fonts),
+  // );
 });

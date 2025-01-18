@@ -6,9 +6,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'src/app.dart';
 import 'src/core/env/flavor.dart';
+import 'src/core/logger/logger.dart';
 
 Future<void> mainBase(AppFlavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
+  logger('launching app with URL: ${flavor.env.supabaseUrl}');
 
   FlutterError.demangleStackTrace = (stack) {
     if (stack is Trace) return stack.vmTrace;
