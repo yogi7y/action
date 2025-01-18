@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../modules/area/presentation/screens/area_screen.dart';
 import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
-import '../../modules/projects/presentation/screens/project_detail_screend.dart';
+import '../../modules/projects/domain/entity/project.dart';
+import '../../modules/projects/presentation/screens/project_detail_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
 import '../../modules/tasks/presentation/state/task_detail_provider.dart';
+import '../exceptions/route_exception.dart';
 
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -99,11 +101,8 @@ final shellBranches = [
           routes: [
             GoRoute(
               name: AppRoute.projectDetail.name,
-              path: 'projects/:id',
-              builder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return ProjectDetailScreen(projectId: id);
-              },
+              path: ':id',
+              builder: handleProjectDetailScreenRoute,
             ),
           ]),
     ],
@@ -119,3 +118,42 @@ final shellBranches = [
     ],
   ),
 ];
+
+typedef RouteDetails = (BuildContext context, GoRouterState state);
+
+@visibleForTesting
+Widget handleProjectDetailScreenRoute(BuildContext context, GoRouterState state) {
+  if (state.extra is! ProjectEntity?)
+    throw RouteException(
+      exception: 'Data must be of type ProjectEntity or null',
+      stackTrace: StackTrace.current,
+      route: state.fullPath ?? state.path ?? '',
+      uri: state.uri,
+      details: {
+        'projectData': state.extra,
+        'type': state.extra.runtimeType,
+      },
+    );
+
+  final projectData = state.extra as ProjectEntity?;
+  final id = state.pathParameters['id'];
+
+  if (projectData == null && id == null)
+    throw RouteException(
+      exception: 'Either project data or ID is required',
+      stackTrace: StackTrace.current,
+      route: state.fullPath ?? state.path ?? '',
+      uri: state.uri,
+      details: {
+        'projectData': projectData,
+        'id': id,
+      },
+    );
+
+  final projectOrId = (
+    id: id,
+    value: projectData,
+  );
+
+  return ProjectDetailScreen(projectOrId: projectOrId);
+}
