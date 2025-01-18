@@ -1,17 +1,17 @@
 import 'package:flutter/foundation.dart';
 
 @immutable
-class RouteData {
-  const RouteData({
+class AppRouteData {
+  const AppRouteData({
     required this.uri,
-    required this.pathParameters,
-    required this.queryParameters,
+    this.pathParameters,
+    this.queryParameters,
     this.extra,
   });
 
-  final String uri;
-  final Map<String, String> pathParameters;
-  final Map<String, String> queryParameters;
+  final Uri uri;
+  final Map<String, String>? pathParameters;
+  final Map<String, String>? queryParameters;
   final Object? extra;
 
   @override
@@ -19,7 +19,7 @@ class RouteData {
       'RouteData(uri: $uri, pathParameters: $pathParameters, queryParameters: $queryParameters, extra: $extra)';
 
   @override
-  bool operator ==(covariant RouteData other) {
+  bool operator ==(covariant AppRouteData other) {
     if (identical(this, other)) return true;
 
     return other.uri == uri &&
