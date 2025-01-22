@@ -19,9 +19,6 @@ class ProjectDetailScreen extends ConsumerStatefulWidget {
 class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
   late final ScrollController scrollController = ScrollController();
 
-  late final _tasksSectionKey = GlobalKey(debugLabel: 'Checklist Section');
-  late final _pagesSectionKey = GlobalKey(debugLabel: 'Checklist Section');
-
   @override
   void dispose() {
     scrollController.dispose();
@@ -37,15 +34,15 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         body: switch (_project) {
           AsyncData(value: final project) => ProviderScope(
               overrides: [
-                scopedProjectProvider.overrideWith(
-                  () => ProjectNotifier(
-                    ProjectViewModel(
-                      project: project,
-                      totalTasks: 0,
-                      totalPages: 0,
-                    ),
-                  ),
-                ),
+                // scopedProjectProvider.overrideWith(
+                //   () => ProjectNotifier(
+                //     ProjectViewModel(
+                //       project: project,
+                //       totalTasks: 0,
+                //       totalPages: 0,
+                //     ),
+                //   ),
+                // ),
               ],
               child: const CustomScrollView(),
             ),

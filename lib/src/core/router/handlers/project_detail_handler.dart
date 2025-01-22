@@ -21,7 +21,7 @@ class ProjectDetailRouteHandler extends RouteHandler<ProjectOrId> {
 
     if (extra is! ProjectEntity?)
       throw RouteException(
-        exception: 'Data must be of type ProjectEntity or null',
+        exception: 'Data must be of type ProjectEntity or null, but was ${extra.runtimeType}',
         stackTrace: StackTrace.current,
         route: data.uri.toString(),
         uri: data.uri,
@@ -31,11 +31,11 @@ class ProjectDetailRouteHandler extends RouteHandler<ProjectOrId> {
         },
       );
 
-    final id = data.pathParameters!['id'];
+    final id = data.pathParameters?['id'] ?? '';
 
-    if (extra == null && id == null)
+    if (extra == null && id.isEmpty)
       throw RouteException(
-        exception: 'Either project data or ID is required',
+        exception: 'Either of project data or ID is required',
         stackTrace: StackTrace.current,
         route: route,
         uri: data.uri,
