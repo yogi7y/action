@@ -21,7 +21,7 @@ void main() {
 
       final result = adapter.adapt(state);
 
-      expect(result?.uri, '/home');
+      expect(result?.uri, Uri(path: '/home'));
       expect(result?.pathParameters, isEmpty);
       expect(result?.queryParameters, isEmpty);
     });
@@ -34,7 +34,7 @@ void main() {
 
       final result = adapter.adapt(state);
 
-      expect(result?.uri, '/users/123');
+      expect(result?.uri, Uri(path: '/users/123'));
       expect(result?.pathParameters, {'id': '123'});
       expect(result?.queryParameters, isEmpty);
     });
@@ -47,7 +47,12 @@ void main() {
 
       final result = adapter.adapt(state);
 
-      expect(result?.uri, '/search?q=flutter&page=1');
+      expect(
+          result?.uri,
+          Uri(
+            path: '/search',
+            queryParameters: {'q': 'flutter', 'page': '1'},
+          ));
       expect(result?.pathParameters, isEmpty);
       expect(result?.queryParameters, {'q': 'flutter', 'page': '1'});
     });
@@ -64,7 +69,13 @@ void main() {
 
       final result = adapter.adapt(state);
 
-      expect(result?.uri, '/users/123/posts/456?sort=date');
+      expect(
+        result?.uri,
+        Uri(
+          path: '/users/123/posts/456',
+          queryParameters: {'sort': 'date'},
+        ),
+      );
       expect(result?.pathParameters, {'id': '123', 'postId': '456'});
       expect(result?.queryParameters, {'sort': 'date'});
     });
