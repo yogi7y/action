@@ -54,7 +54,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                 items: const [
                   ChipTabBarItem(
                     label: 'Project',
-                    icon: Assets.hardware,
+                    icon: AssetsV2.hammerOutlined,
                   ),
                   ChipTabBarItem(
                     label: 'Context',

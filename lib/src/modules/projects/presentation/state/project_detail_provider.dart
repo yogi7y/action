@@ -35,7 +35,7 @@ class ProjectNotifier extends AutoDisposeNotifier<ProjectViewModel> {
 
   final ProjectViewModel projectViewModel;
 
-  late final ProjectUseCase _useCase = ref.read(projectUseCaseProvider);
+  late final _useCase = ref.read(projectUseCaseProvider);
 
   @override
   ProjectViewModel build() => projectViewModel;

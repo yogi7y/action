@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/project_detail_provider.dart';
+import '../state/projects_provider.dart';
 import '../view_models/project_view_model.dart';
 
 class ProjectDetailScreen extends ConsumerStatefulWidget {

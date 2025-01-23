@@ -13,7 +13,7 @@ sealed class Env {
   abstract final String googleIosClientId;
 }
 
-@Envied(path: '.env.staging', obfuscate: true)
+@Envied(path: '.env.staging', obfuscate: false)
 class StagingEnv implements Env {
   @override
   @EnviedField(varName: 'SUPABASE_URL')
@@ -32,7 +32,7 @@ class StagingEnv implements Env {
   final String googleIosClientId = _StagingEnv.googleIosClientId;
 }
 
-@Envied(path: '.env.production', obfuscate: true)
+@Envied(path: '.env.production', obfuscate: false)
 class ProductionEnv implements Env {
   @override
   @EnviedField(varName: 'SUPABASE_URL')
@@ -51,7 +51,7 @@ class ProductionEnv implements Env {
   final String googleIosClientId = _ProductionEnv.googleIosClientId;
 }
 
-@Envied(path: '.env', obfuscate: true)
+@Envied(path: '.env', obfuscate: false)
 class LocalEnv implements Env {
   @override
   @EnviedField(varName: 'SUPABASE_URL')
