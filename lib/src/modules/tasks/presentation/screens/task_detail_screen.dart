@@ -66,12 +66,10 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         body: switch (taskDetail) {
           AsyncData(value: final task) => ProviderScope(
               overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
-              child: Builder(builder: (context) {
-                return TaskDetailDataView(
-                  scrollController: scrollController,
-                  checklistSectionKey: _checklistSectionKey,
-                );
-              }),
+              child: TaskDetailDataView(
+                scrollController: scrollController,
+                checklistSectionKey: _checklistSectionKey,
+              ),
             ),
           AsyncError(error: final error) => TaskDetailErrorView(error: error),
           _ => const TaskDetailLoadingView(),
@@ -129,7 +127,7 @@ class TaskDetailDataView extends ConsumerWidget {
           controller: scrollController,
           slivers: [
             TaskDetailHeader(
-              taskName: _task.name,
+              title: _task.name,
               scrollController: scrollController,
             ),
             SliverToBoxAdapter(

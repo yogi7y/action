@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
+import '../../modules/projects/domain/entity/project_status.dart';
 import '../../modules/tasks/domain/entity/task.dart';
 
 typedef AppCheckboxChangedCallback = void Function(AppCheckboxState state);
@@ -30,6 +31,22 @@ enum AppCheckboxState {
         return AppCheckboxState.intermediate;
 
       case TaskStatus.todo:
+        return AppCheckboxState.unchecked;
+    }
+  }
+
+  factory AppCheckboxState.fromProjectStatus({required ProjectStatus status}) {
+    switch (status) {
+      case ProjectStatus.done:
+      case ProjectStatus.archive:
+        return AppCheckboxState.checked;
+
+      case ProjectStatus.inProgress:
+        return AppCheckboxState.intermediate;
+
+      case ProjectStatus.notStarted:
+      case ProjectStatus.doNext:
+      case ProjectStatus.onHold:
         return AppCheckboxState.unchecked;
     }
   }

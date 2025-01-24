@@ -38,7 +38,7 @@ class ConnectivityCheckerImpl implements ConnectivityChecker {
   Stream<ConnectivityStatus> get connectionStatus => throw UnimplementedError();
 
   @override
-  ConnectivityStatus get currentStatus => throw UnimplementedError();
+  ConnectivityStatus get currentStatus => ConnectivityStatus.connected;
 
   @override
   Future<void> dispose() async {}
