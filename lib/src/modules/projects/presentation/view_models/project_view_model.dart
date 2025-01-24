@@ -26,6 +26,10 @@ class ProjectViewModel {
       );
 
   @override
+  String toString() =>
+      'ProjectViewModel(project: $project, totalTasks: $totalTasks, totalPages: $totalPages)';
+
+  @override
   bool operator ==(covariant ProjectViewModel other) {
     if (identical(this, other)) return true;
 
