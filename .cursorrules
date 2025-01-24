@@ -1,0 +1,253 @@
+// Action - Engineering Guidelines
+// Core principles and best practices for building maintainable, testable Flutter applications
+
+// Core Engineering Principles
+const engineeringPrinciples = {
+    "cleanCode": [
+        "Write self-documenting code with clear intent",
+        "Keep functions small and focused (< 20 lines)",
+        "Follow SOLID principles",
+        "Prefer composition over inheritance",
+        "Prefer immutable types and pure functions"
+    ],
+    "architecture": [
+        "Follow clean architecture principles",
+        "Maintain clear separation of concerns",
+        "Use dependency injection for better testability",
+        "Ensure unidirectional data flow",
+        "Make dependencies explicit"
+    ],
+    "codingStyle": [
+        "Use arrow syntax for simple functions",
+        "Prefer expression bodies for one-line getters",
+        "Keep classes focused and small",
+        "Follow functional programming patterns where appropriate",
+        "Write self-documenting code with clear naming"
+    ]
+};
+
+// Project Structure
+const projectStructure = `
+lib/
+  ├── core/                    # Core utilities and shared code
+  │   ├── constants/          # App-wide constants
+  │   ├── exceptions/         # Custom exceptions
+  │   ├── extensions/         # Extension methods
+  │   ├── router/            # Navigation/routing logic
+  │   └── validators/        # Validation utilities
+  │
+  ├── design_system/          # Design system implementation
+  │   ├── colors/           
+  │   ├── spacing/
+  │   ├── themes/
+  │   └── typography/
+  │
+    modules/
+    └── module_name/              # e.g., tasks, projects, authentication
+        ├── data/                 # Data Layer
+        │   ├── data_source/    
+        │   │   ├── remote/      # Supabase implementations
+        │   │   └── local/       # Local storage if needed
+        │   ├── models/          # Data models that implement entities
+        │   │   ├── model.dart   # e.g., task_model.dart
+        │   └── repository/      
+        │       └── repository_impl.dart # Implementation of domain repository
+        │
+        ├── domain/              # Domain Layer - Business Logic
+        │   ├── entity/          # Core business entities
+        │   │   └── entity.dart  # e.g., task.dart, project.dart
+        │   ├── repository/      # Repository interfaces
+        │   │   └── repository.dart # Abstract repository class
+        │   └── use_case/       # Business logic use cases
+        │       └── use_case.dart  # e.g., create_task.dart, update_task.dart
+        │
+        └── presentation/        # Presentation Layer - UI
+            ├── mixin/          # Shared functionality for widgets
+            ├── models/         # View models/UI models if needed
+            ├── state/          # Riverpod providers and notifiers
+            │   ├── providers/  # Provider definitions
+            │   └── notifiers/  # State management logic
+            ├── screens/        # Full page widgets
+            ├── sections/       # Major UI sections
+            └── widgets/        # Reusable UI components
+    `;
+
+    // Example files in each directory
+    const moduleExamples = {
+        "data": {
+            "dataSources": [
+                "supabase_task_data_source.dart", // Implements API calls
+                "local_task_data_source.dart"     // Local storage operations
+            ],
+            "models": [
+                "task_model.dart",     // Data model with serialization
+            ],
+            "repositories": [
+                "supabase_task_repository.dart"  // Concrete repository implementation
+            ]
+        },
+        "domain": {
+            "entities": [
+                "task.dart",           // Core business entity
+                "task_status.dart",    // Value objects/enums
+                "task_id.dart"         // Type definitions
+            ],
+            "repositories": [
+                "task_repository.dart" // Repository interface
+            ],
+            "useCases": [
+                "create_task.dart",    // Single responsibility use cases
+                "update_task.dart",
+                "delete_task.dart",
+                "get_tasks.dart"
+            ]
+        },
+        "presentation": {
+            "state": {
+                "providers": [
+                    "task_provider.dart",        // Provider definitions
+                    "task_filter_provider.dart"  // UI state providers
+                ],
+                "notifiers": [
+                    "task_notifier.dart",        // State management logic
+                    "task_filter_notifier.dart"
+                ]
+            },
+            "screens": [
+                "tasks_screen.dart",             // Main screen widget
+                "task_detail_screen.dart"        // Detail view widget
+            ],
+            "sections": [
+                "tasks_list.dart",               // Major screen sections
+                "task_filters.dart"
+            ],
+            "widgets": [
+                "task_tile.dart",                // Reusable components
+                "task_status_badge.dart"
+            ]
+        }
+    };
+  │
+  ├── services/               # Core services
+  │   ├── connectivity/      
+  │   └── database/
+  │
+  └── shared/                 # Shared widgets and utilities
+      ├── buttons/
+      ├── chips/
+      └── status/
+`;
+
+// State Management with Riverpod
+const stateManagementRules = {
+    "patterns": [
+        "Use AsyncNotifierProvider for async operations",
+        "Prefer NotifierProvider over StateProvider",
+        "Handle loading/error states with AsyncValue",
+        "Keep providers focused and composable",
+        "Use proper provider scoping"
+    ],
+    "bestPractices": [
+        "Implement proper cancellation of async operations",
+        "Use ref.watch() for reactive state",
+        "Avoid manual state updates when possible",
+        "Keep state immutable",
+        "Handle edge cases and errors gracefully"
+    ]
+};
+
+// UI Update Patterns
+const uiUpdatePatterns = {
+    "optimisticUpdates": [
+        "Prefer optimistic UI updates for better user experience",
+        "Update local state immediately before API calls",
+        "Keep previous state for rollback on failure",
+        "Handle edge cases and race conditions",
+        "Show loading indicators only for initial data fetch"
+    ],
+    "implementation": [
+        "Store previous state before updates",
+        "Update UI immediately",
+        "Make API call in background",
+        "Revert to previous state on failure",
+        "Show error message without disrupting UI"
+    ],
+};
+
+// Testing Strategy
+const testingStrategy = {
+    "unitTesting": [
+        "Test all business logic and use cases",
+        "Use mocktail for mocking dependencies",
+        "Follow AAA pattern (Arrange-Act-Assert)",
+        "Don't add Arrange-Act-Assert comment on each line of the test",
+        "Use systemUnderTest to define the test subject",
+        "Test both success and failure scenarios",
+        "Mock external dependencies properly"
+    ],
+    "bestPractices": [
+        "Keep tests focused and readable",
+        "Use meaningful test descriptions",
+        "Properly set up test dependencies",
+        "Test edge cases and error conditions",
+        "Maintain test independence"
+    ],
+    "mocking": [
+        "Create mock classes with Mocktail",
+        "Define clear test behaviors",
+        "Verify mock interactions when needed",
+        "Keep mocks simple and focused"
+    ]
+};
+
+// Error Handling
+const errorHandling = {
+    "hierarchy": [
+        "Use custom exceptions inheriting from AppException",
+        "Include proper error context and messages",
+        "Handle errors at appropriate layers"
+    ],
+    "patterns": [
+        "Use Result type for operation outcomes",
+        "Handle async errors properly",
+        "Provide user-friendly error messages",
+        "Log errors appropriately",
+        "Implement proper error recovery"
+    ]
+};
+
+// Code Quality Rules
+const codeQualityRules = [
+    "Follow effective Dart style guide",
+    "Use proper null safety",
+    "Implement proper validation",
+    "Write self-documenting code",
+    "Use proper static analysis",
+    "Keep cyclomatic complexity low",
+    "Follow consistent naming conventions"
+];
+
+// Dependency Injection
+const dependencyInjection = [
+    "Use Riverpod for dependency injection",
+    "Make dependencies explicit",
+    "Avoid service locator pattern",
+    "Use proper provider overrides in tests",
+    "Keep provider dependencies clear and minimal"
+];
+
+// Supabase Integration
+const supabaseGuidelines = {
+    "dataAccess": [
+        "Use typed responses",
+        "Implement proper error handling",
+        "Handle offline scenarios",
+        "Follow RLS best practices"
+    ],
+    "models": [
+        "Use proper model serialization",
+        "Include audit fields (created_at, updated_at)",
+        "Implement proper validation",
+        "Use meaningful table/column names"
+    ]
+};
