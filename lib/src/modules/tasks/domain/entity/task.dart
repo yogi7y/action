@@ -4,37 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/entity.dart';
 import '../../../../core/exceptions/validation_exception.dart';
 import '../../../../services/database/model_meta_data.dart';
-import '../../../../shared/checkbox/checkbox.dart';
-
-enum TaskStatus {
-  todo('todo'),
-  inProgress('in_progress'),
-  done('done');
-
-  const TaskStatus(this.value);
-
-  final String value;
-
-  static TaskStatus fromString(String status) {
-    return TaskStatus.values.firstWhere(
-      (e) => e.value == status,
-      orElse: () => throw ArgumentError('Invalid task status: $status'),
-    );
-  }
-
-  static TaskStatus fromAppCheckboxState(AppCheckboxState state) {
-    switch (state) {
-      case AppCheckboxState.checked:
-        return TaskStatus.done;
-      case AppCheckboxState.intermediate:
-        return TaskStatus.inProgress;
-      case AppCheckboxState.unchecked:
-        return TaskStatus.todo;
-    }
-  }
-
-  AppCheckboxState toAppCheckboxState() => throw UnimplementedError('toAppCheckboxState');
-}
+import 'task_status.dart';
 
 @immutable
 class TaskPropertiesEntity implements Entity {

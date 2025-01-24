@@ -12,6 +12,7 @@ import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_status.dart';
 import '../state/task_filter_provider.dart';
 import '../state/tasks_provider.dart';
 

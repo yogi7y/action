@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_status.dart';
 import '../models/task_view.dart';
 
 final tasksFilterProvider = Provider<List<TaskView>>((ref) {

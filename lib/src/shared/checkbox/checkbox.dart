@@ -8,50 +8,55 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
 import '../../modules/projects/domain/entity/project_status.dart';
-import '../../modules/tasks/domain/entity/task.dart';
+import '../../modules/tasks/domain/entity/task_status.dart';
 
 typedef AppCheckboxChangedCallback = void Function(AppCheckboxState state);
 
+/// Represents the state of a checkbox in the application.
+///
+/// Can be in one of three states:
+/// - [unchecked]: The default state, indicating no selection
+/// - [intermediate]: A partial or in-progress state
+/// - [checked]: The fully selected state
 enum AppCheckboxState {
+  /// The default unselected state
   unchecked(),
+
+  /// Represents a partial or in-progress state
   intermediate(),
+
+  /// The fully selected state
   checked();
 
   const AppCheckboxState();
 
+  /// Creates an [AppCheckboxState] from a boolean value.
+  ///
+  /// [value] determines if the state should be checked (true) or unchecked (false).
+  /// Defaults to false if not specified.
   factory AppCheckboxState.fromBool({bool value = false}) =>
       value ? AppCheckboxState.checked : AppCheckboxState.unchecked;
 
-  factory AppCheckboxState.fromTaskStatus({required TaskStatus status}) {
-    switch (status) {
-      case TaskStatus.done:
-        return AppCheckboxState.checked;
+  /// Creates an [AppCheckboxState] from a [TaskStatus].
+  ///
+  /// Maps the task status to the appropriate checkbox state using the
+  /// [TaskStatus.toAppCheckboxState] extension method.
+  factory AppCheckboxState.fromTaskStatus({required TaskStatus status}) =>
+      status.toAppCheckboxState();
 
-      case TaskStatus.inProgress:
-        return AppCheckboxState.intermediate;
+  // /// Creates an [AppCheckboxState] from a [ProjectStatus].
+  // ///
+  // /// Maps the project status to the appropriate checkbox state using the
+  // /// [ProjectStatus.toAppCheckboxState] extension method.
+  // factory AppCheckboxState.fromProjectStatus({required ProjectStatus status}) =>
+  //     status.toAppCheckboxState();
 
-      case TaskStatus.todo:
-        return AppCheckboxState.unchecked;
-    }
-  }
-
-  factory AppCheckboxState.fromProjectStatus({required ProjectStatus status}) {
-    switch (status) {
-      case ProjectStatus.done:
-      case ProjectStatus.archive:
-        return AppCheckboxState.checked;
-
-      case ProjectStatus.inProgress:
-        return AppCheckboxState.intermediate;
-
-      case ProjectStatus.notStarted:
-      case ProjectStatus.doNext:
-      case ProjectStatus.onHold:
-        return AppCheckboxState.unchecked;
-    }
-  }
-
-  /// Convert the AppCheckboxState to a ProjectStatus.
+  /// Converts the [AppCheckboxState] to a [ProjectStatus].
+  ///
+  /// Maps:
+  /// - [checked] to [ProjectStatus.done]
+  /// - [intermediate] to [ProjectStatus.inProgress]
+  /// - [unchecked] to [ProjectStatus.notStarted]
   ProjectStatus toProjectStatus() {
     switch (this) {
       case AppCheckboxState.checked:
@@ -107,6 +112,7 @@ class AppCheckbox extends ConsumerWidget {
         onChanged?.call(_newState);
       },
       onLongPress: () {
+        unawaited(HapticFeedback.lightImpact());
         if (state != AppCheckboxState.unchecked) return;
 
         onChanged?.call(AppCheckboxState.intermediate);

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../../shared/header/detail_header.dart';
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_status.dart';
 import '../state/task_detail_provider.dart';
 
 class TaskDetailHeader extends StatelessWidget {

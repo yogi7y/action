@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_status.dart';
 import 'task_filter_provider.dart';
 
 final isTaskTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);

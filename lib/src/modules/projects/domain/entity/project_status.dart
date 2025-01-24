@@ -23,6 +23,13 @@ enum ProjectStatus {
     );
   }
 
-  /// Convert the project status to an AppCheckboxState.
-  AppCheckboxState toAppCheckboxState() => AppCheckboxState.fromProjectStatus(status: this);
+  /// Converts the project status to an [AppCheckboxState].
+  AppCheckboxState toAppCheckboxState() => switch (this) {
+        ProjectStatus.done || ProjectStatus.archive => AppCheckboxState.checked,
+        ProjectStatus.inProgress => AppCheckboxState.intermediate,
+        ProjectStatus.notStarted ||
+        ProjectStatus.onHold ||
+        ProjectStatus.doNext =>
+          AppCheckboxState.unchecked,
+      };
 }

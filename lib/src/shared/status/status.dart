@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
 import '../../design_system/themes/base/semantics/status_tokens.dart';
-import '../../modules/tasks/domain/entity/task.dart';
 import '../checkbox/checkbox.dart';
 
 extension on AppCheckboxState {
@@ -58,7 +57,7 @@ class StatusWidget extends ConsumerWidget {
     final statusTokens = _getStatusTokens(colors);
 
     final padding = isStadiumBorder
-        ? EdgeInsets.all(spacing.xs)
+        ? EdgeInsets.symmetric(horizontal: spacing.sm, vertical: spacing.xxs)
         : EdgeInsets.symmetric(horizontal: spacing.sm, vertical: spacing.xxs);
 
     final shape = isStadiumBorder
@@ -68,10 +67,7 @@ class StatusWidget extends ConsumerWidget {
               bottomLeft: SmoothRadius(cornerRadius: 12, cornerSmoothing: 1),
               topRight: SmoothRadius(cornerRadius: 12, cornerSmoothing: 1),
             ),
-            side: BorderSide(
-              color: statusTokens.border,
-              width: 1.5,
-            ),
+            side: BorderSide(color: statusTokens.border, width: 1.5),
           );
 
     final textStyle = isStadiumBorder

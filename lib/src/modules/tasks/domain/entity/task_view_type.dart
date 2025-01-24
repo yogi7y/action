@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'task.dart';
+import 'task_status.dart';
 
 @immutable
 abstract class TaskQuerySpecification {

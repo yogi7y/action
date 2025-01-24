@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../design_system/design_system.dart';
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_status.dart';
 import '../../domain/entity/task_view_type.dart';
 
 typedef PageCount = int;

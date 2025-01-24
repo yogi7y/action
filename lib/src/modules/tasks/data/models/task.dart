@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entity/task.dart';
+import '../../domain/entity/task_status.dart';
 
 @immutable
 class TaskModel extends TaskEntity {
