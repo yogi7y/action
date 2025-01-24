@@ -22,8 +22,9 @@ class ProjectCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final project = ref.watch(scopedProjectProvider);
-    final colors = ref.watch(appThemeProvider);
+    final projectViewModel = ref.watch(scopedProjectProvider);
+    final project = projectViewModel.project;
+    final relationMetaData = projectViewModel.metadata;
     final projectCardTheme = ref.watch(appThemeProvider).projectCard;
     final spacing = ref.watch(spacingProvider);
     final fonts = ref.watch(fontsProvider);
@@ -34,7 +35,7 @@ class ProjectCard extends ConsumerWidget {
         context.pushNamed(
           AppRoute.projectDetail.name,
           pathParameters: {'id': project.id},
-          extra: project,
+          extra: projectViewModel,
         ),
       ),
       child: DecoratedBox(
@@ -100,16 +101,16 @@ class ProjectCard extends ConsumerWidget {
                     iconPath: Assets.calendarMonth,
                   ),
                   SizedBox(height: spacing.xs),
-                  const Row(
+                  Row(
                     children: [
                       _IconWithText(
-                        label: '14/16',
-                        iconPath: Assets.addTask,
+                        label: relationMetaData.totalTasks.toString(),
+                        iconPath: AssetsV2.addTask,
                       ),
-                      Spacer(),
+                      const Spacer(),
                       _IconWithText(
-                        label: '12',
-                        iconPath: Assets.bookmarkAdd,
+                        label: relationMetaData.totalPages.toString(),
+                        iconPath: AssetsV2.bookmarkAdd,
                       ),
                     ],
                   )

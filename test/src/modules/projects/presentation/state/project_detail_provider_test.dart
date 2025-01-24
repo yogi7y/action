@@ -1,4 +1,5 @@
 import 'package:action/src/modules/projects/domain/entity/project.dart';
+import 'package:action/src/modules/projects/domain/entity/project_relation_metadata.dart';
 import 'package:action/src/modules/projects/domain/entity/project_status.dart';
 import 'package:action/src/modules/projects/domain/use_case/project_use_case.dart';
 import 'package:action/src/modules/projects/presentation/state/project_detail_provider.dart';
@@ -37,8 +38,12 @@ void main() {
     );
     testViewModel = ProjectViewModel(
       project: testProject,
-      totalTasks: 0,
-      totalPages: 0,
+      metadata: const ProjectRelationMetadata(
+        totalTasks: 0,
+        totalPages: 0,
+        completedTasks: 0,
+        projectId: '',
+      ),
     );
 
     container = ProviderContainer(
@@ -116,26 +121,6 @@ void main() {
           equals(previousState),
         );
       });
-    });
-
-    group('updateTaskCount', () {
-      test('should update total tasks count', () {
-        container.read(projectNotifierProvider.notifier).updateTaskCount(
-              (current) => current + 1,
-            );
-
-        expect(container.read(projectNotifierProvider).totalTasks, equals(1));
-      }, skip: "don't recall why I added this");
-    });
-
-    group('updatePageCount', () {
-      test('should update total pages count', () {
-        container.read(projectNotifierProvider.notifier).updatePageCount(
-              (current) => current + 1,
-            );
-
-        expect(container.read(projectNotifierProvider).totalPages, equals(1));
-      }, skip: "don't recall why I added this");
     });
   });
 }

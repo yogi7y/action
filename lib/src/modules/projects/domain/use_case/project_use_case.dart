@@ -13,6 +13,12 @@ class ProjectUseCase {
   AsyncProjectResult getProjectById(ProjectId id) => repository.getProjectById(id);
 
   AsyncProjectResult updateProject(ProjectEntity project) => repository.updateProject(project);
+
+  AsyncProjectRelationMetadataResult getProjectRelationMetadata(String projectId) =>
+      repository.getProjectRelationMetadata(projectId);
+
+  AsyncProjectsWithMetadataResult fetchProjectsWithMetadata() =>
+      repository.fetchProjectsWithMetadata();
 }
 
 final projectUseCaseProvider = Provider<ProjectUseCase>(

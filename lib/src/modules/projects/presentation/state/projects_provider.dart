@@ -1,12 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entity/project.dart';
 import '../../domain/use_case/project_use_case.dart';
+import '../view_models/project_view_model.dart';
 
-final projectsProvider = FutureProvider<List<ProjectEntity>>((ref) async {
+final projectsProvider = FutureProvider<List<ProjectViewModel>>((ref) async {
   final useCase = ref.watch(projectUseCaseProvider);
-  final result = await useCase.fetchProjects();
+  final result = await useCase.fetchProjectsWithMetadata();
 
   return result.fold(
     onSuccess: (projects) => projects,
@@ -14,15 +14,15 @@ final projectsProvider = FutureProvider<List<ProjectEntity>>((ref) async {
   );
 });
 
-final projectByIdProvider = Provider.family<ProjectEntity?, String>((ref, projectId) {
+final projectByIdProvider = Provider.family<ProjectViewModel?, String>((ref, projectId) {
   final projectsAsync = ref.watch(projectsProvider);
 
   return projectsAsync.whenOrNull(
     data: (projects) => projects.firstWhereOrNull(
-      (project) => project.id == projectId,
+      (project) => project.project.id == projectId,
     ),
   );
 });
 
-final scopedProjectProvider = Provider<ProjectEntity>(
+final scopedProjectProvider = Provider<ProjectViewModel>(
     (ref) => throw UnimplementedError('Ensure to override scopedProjectProvider'));

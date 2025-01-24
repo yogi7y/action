@@ -22,8 +22,9 @@ class TaskDetailProperties extends ConsumerWidget {
     final fonts = ref.watch(fontsProvider);
     final task = ref.watch(taskDetailNotifierProvider);
 
-    final project = ref.watch(projectByIdProvider(task.projectId ?? ''));
+    final projectViewModel = ref.watch(projectByIdProvider(task.projectId ?? ''));
     final context = ref.watch(contextByIdProvider(task.contextId ?? ''));
+    final project = projectViewModel?.project;
 
     final properties = <PropertyData>[
       PropertyData(

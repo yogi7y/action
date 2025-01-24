@@ -41,16 +41,13 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
         body: switch (_project) {
           AsyncData(value: final project) => ProviderScope(
               overrides: [
-                projectNotifierProvider.overrideWith(
-                  () => ProjectNotifier(
-                    ProjectViewModel(
-                      project: project,
-                      totalTasks: 0,
-                      totalPages: 0,
-                      completedTasks: 0,
-                    ),
-                  ),
-                ),
+                // projectNotifierProvider.overrideWith(
+                //   () => ProjectNotifier(
+                //     ProjectViewModel(
+                //       project: project,
+                //     ),
+                //   ),
+                // ),
               ],
               child: _ProjectDetailDataState(controller: scrollController),
             ),
@@ -128,11 +125,11 @@ class _ProjectDetailMetaData extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _ProjectMetaDataItem(
-            label: '${project.completedTasks}/${project.totalTasks} Tasks',
+            label: '${project.metadata.completedTasks}/${project.metadata.totalTasks} Tasks',
             iconPath: AssetsV2.addTask,
           ),
           _ProjectMetaDataItem(
-            label: '${project.totalPages} Pages',
+            label: '${project.metadata.totalPages} Pages',
             iconPath: AssetsV2.bookmarkAdd,
           ),
           const _ProjectMetaDataItem(

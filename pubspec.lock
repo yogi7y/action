@@ -209,10 +209,11 @@ packages:
   core_y:
     dependency: "direct main"
     description:
-      name: core_y
-      sha256: "975129d5b6699e15213322dc447118cd482e9ec7a01e8490070260539da67c90"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/core"
+      ref: result
+      resolved-ref: "6d4a8c2ed3542d1493c812c3625c5514702b31b3"
+      url: "https://github.com/Yogi-7y/Project-Y"
+    source: git
     version: "0.3.1"
   crypto:
     dependency: transitive

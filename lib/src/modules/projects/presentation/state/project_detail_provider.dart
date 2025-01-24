@@ -64,10 +64,4 @@ class ProjectNotifier extends AutoDisposeNotifier<ProjectViewModel> {
       rethrow;
     }
   }
-
-  void updateTaskCount(int Function(int current) update) =>
-      state = state.copyWith(totalTasks: update(state.totalTasks));
-
-  void updatePageCount(int Function(int current) update) =>
-      state = state.copyWith(totalPages: update(state.totalPages));
 }

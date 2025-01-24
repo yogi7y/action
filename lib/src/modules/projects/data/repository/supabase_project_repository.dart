@@ -2,10 +2,13 @@ import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/strings.dart';
+import '../../../../core/logger/logger.dart';
 import '../../../../services/connectivity/connetivity_checker.dart';
 import '../../domain/entity/project.dart';
 import '../../domain/repository/project_repository.dart';
+import '../../presentation/view_models/project_view_model.dart';
 import '../data_source/project_remote_data_source.dart';
+import '../models/project_model.dart';
 
 class SupabaseProjectRepository with ConnectivityCheckerMixin implements ProjectRepository {
   SupabaseProjectRepository({
@@ -100,6 +103,59 @@ class SupabaseProjectRepository with ConnectivityCheckerMixin implements Project
         onFailure: Failure.new,
       );
     } catch (e, stackTrace) {
+      return Failure(
+        AppException(
+          exception: e.toString(),
+          stackTrace: stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  AsyncProjectRelationMetadataResult getProjectRelationMetadata(String projectId) async {
+    try {
+      final result = checkAndThrowNoInternetException();
+
+      return result.fold(
+        onSuccess: (success) async {
+          final metadata = await _remoteDataSource.getProjectRelationMetadata(projectId);
+          return Success(metadata);
+        },
+        onFailure: Failure.new,
+      );
+    } catch (e, stackTrace) {
+      return Failure(
+        AppException(
+          exception: e.toString(),
+          stackTrace: stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  AsyncProjectsWithMetadataResult fetchProjectsWithMetadata() async {
+    try {
+      final result = checkAndThrowNoInternetException();
+
+      return result.asyncFold(
+        onSuccess: (success) async {
+          final projectResult = await _remoteDataSource.fetchProjectsWithMetadata();
+
+          final projectViewModels = projectResult
+              .map((project) => ProjectViewModel(project: project.$1, metadata: project.$2))
+              .toList();
+
+          return Success(projectViewModels);
+        },
+        onFailure: (failure) {
+          logger('fetchProjectsWithMetadata repository failure: $failure');
+          return Failure(failure);
+        },
+      );
+    } catch (e, stackTrace) {
+      logger('fetchProjectsWithMetadata repository error: $e');
       return Failure(
         AppException(
           exception: e.toString(),

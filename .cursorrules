@@ -224,7 +224,8 @@ const codeQualityRules = [
     "Write self-documenting code",
     "Use proper static analysis",
     "Keep cyclomatic complexity low",
-    "Follow consistent naming conventions"
+    "Follow consistent naming conventions",
+    "Use Object? instead of dynamic"
 ];
 
 // Dependency Injection

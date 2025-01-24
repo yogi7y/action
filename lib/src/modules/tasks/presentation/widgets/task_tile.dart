@@ -140,7 +140,7 @@ class _TaskMetaDataRow extends ConsumerWidget {
     final _spacing = ref.watch(spacingProvider);
     final _task = ref.watch(scopedTaskProvider);
 
-    final _project = ref.watch(projectByIdProvider(_task.value.projectId ?? ''));
+    final _project = ref.watch(projectByIdProvider(_task.value.projectId ?? ''))?.project;
     final _context = ref.watch(contextByIdProvider(_task.value.contextId ?? ''));
     final _dueDate = _task.value.dueDate;
 

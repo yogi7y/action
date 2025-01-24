@@ -82,7 +82,7 @@ class _ProjectOption extends ConsumerWidget {
 
     return AppSelectableChip(
       iconPath: Assets.construction,
-      value: _selectedProject?.name,
+      value: _selectedProject?.project.name,
       label: 'Project',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(projectIdAsNull: true),
       onClick: () => ref

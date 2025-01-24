@@ -28,18 +28,16 @@ void main() {
   group('fetchProjects', () {
     test('returns list of projects when successful', () async {
       final mockProjects = [
-        {
-          'id': '123',
-          'name': 'Test Project',
-          'created_at': '2024-01-23T00:00:00.000Z',
-          'updated_at': '2024-01-23T00:00:00.000Z',
-        },
-        {
-          'id': '456',
-          'name': 'Another Project',
-          'created_at': '2024-01-23T00:00:00.000Z',
-          'updated_at': '2024-01-23T00:00:00.000Z',
-        }
+        _createMockProject(
+          id: '123',
+          name: 'Test Project',
+          dueDate: '2024-02-23T00:00:00.000Z',
+        ),
+        _createMockProject(
+          id: '456',
+          name: 'Another Project',
+          status: 'done',
+        ),
       ];
 
       // Insert mock data
@@ -61,30 +59,15 @@ void main() {
 
     test('skips invalid projects and returns valid ones', () async {
       final mockProjects = [
-        {
-          'id': '1',
-          'name': 'First Project',
-          'created_at': '2024-01-23T00:00:00.000Z',
-          'updated_at': '2024-01-23T00:00:00.000Z',
-        },
+        _createMockProject(id: '1', name: 'First Project'),
         {
           'id': '2',
           'name': null, // Invalid project missing required name
           'created_at': '2024-01-23T00:00:00.000Z',
           'updated_at': '2024-01-23T00:00:00.000Z',
         },
-        {
-          'id': '3',
-          'name': 'Third Project',
-          'created_at': '2024-01-23T00:00:00.000Z',
-          'updated_at': '2024-01-23T00:00:00.000Z',
-        },
-        {
-          'id': '4',
-          'name': 'Fourth Project',
-          'created_at': '2024-01-23T00:00:00.000Z',
-          'updated_at': '2024-01-23T00:00:00.000Z',
-        },
+        _createMockProject(id: '3', name: 'Third Project'),
+        _createMockProject(id: '4', name: 'Fourth Project'),
       ];
 
       await mockSupabase.from('projects').insert(mockProjects);
@@ -101,12 +84,10 @@ void main() {
 
   group('getProjectById', () {
     test('returns project when found', () async {
-      final mockProject = {
-        'id': 'test-id',
-        'name': 'Test Project',
-        'created_at': '2024-01-23T00:00:00.000Z',
-        'updated_at': '2024-01-23T00:00:00.000Z',
-      };
+      final mockProject = _createMockProject(
+        id: 'test-id',
+        name: 'Test Project',
+      );
 
       await mockSupabase.from('projects').insert([mockProject]);
 
@@ -115,18 +96,23 @@ void main() {
       expect(result.id, 'test-id');
       expect(result.name, 'Test Project');
     });
-
-    test(
-      'throws exception when project not found',
-      () async {
-        await mockSupabase.from('projects').insert([]);
-
-        expect(
-          () => remoteDataSource.getProjectById('non-existent-id'),
-          throwsA(isA<PostgrestException>()),
-        );
-      },
-      skip: 'TODO: fix this test',
-    );
   });
+}
+
+Map<String, Object?> _createMockProject({
+  required String id,
+  required String name,
+  String status = 'not_started',
+  String? dueDate,
+  String createdAt = '2024-01-23T00:00:00.000Z',
+  String updatedAt = '2024-01-23T00:00:00.000Z',
+}) {
+  return {
+    'id': id,
+    'name': name,
+    'status': status,
+    if (dueDate != null) 'due_date': dueDate,
+    'created_at': createdAt,
+    'updated_at': updatedAt,
+  };
 }

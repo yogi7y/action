@@ -1,4 +1,6 @@
+import 'package:action/src/modules/projects/data/models/project_relation_metadata_model.dart';
 import 'package:action/src/modules/projects/domain/entity/project.dart';
+import 'package:action/src/modules/projects/domain/entity/project_relation_metadata.dart';
 import 'package:action/src/modules/projects/domain/repository/project_repository.dart';
 import 'package:action/src/modules/projects/domain/use_case/project_use_case.dart';
 import 'package:core_y/core_y.dart';
@@ -10,12 +12,16 @@ class MockProjectRepository extends Mock implements ProjectRepository {}
 // ignore: avoid_implementing_value_types
 class FakeProject extends Fake implements ProjectEntity {}
 
+// ignore: avoid_implementing_value_types
+class FakeProjectRelationMetadata extends Fake implements ProjectRelationMetadata {}
+
 void main() {
   late ProjectUseCase systemUnderTest;
   late MockProjectRepository mockRepository;
 
   setUpAll(() {
     registerFallbackValue(FakeProject());
+    registerFallbackValue(FakeProjectRelationMetadata());
   });
 
   setUp(() {
@@ -50,6 +56,18 @@ void main() {
       await systemUnderTest.updateProject(project);
 
       verify(() => mockRepository.updateProject(project)).called(1);
+    });
+
+    test(
+        'getProjectRelationMetadata calls repository.getProjectRelationMetadata with correct projectId',
+        () async {
+      const projectId = 'test-project-id';
+      when(() => mockRepository.getProjectRelationMetadata(projectId))
+          .thenAnswer((_) => Future.value(Success(FakeProjectRelationMetadata())));
+
+      await systemUnderTest.getProjectRelationMetadata(projectId);
+
+      verify(() => mockRepository.getProjectRelationMetadata(projectId)).called(1);
     });
   });
 }
