@@ -32,6 +32,8 @@ enum TaskStatus {
         return TaskStatus.todo;
     }
   }
+
+  AppCheckboxState toAppCheckboxState() => throw UnimplementedError('toAppCheckboxState');
 }
 
 @immutable

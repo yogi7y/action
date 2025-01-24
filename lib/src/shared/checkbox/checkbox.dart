@@ -50,6 +50,20 @@ enum AppCheckboxState {
         return AppCheckboxState.unchecked;
     }
   }
+
+  /// Convert the AppCheckboxState to a ProjectStatus.
+  ProjectStatus toProjectStatus() {
+    switch (this) {
+      case AppCheckboxState.checked:
+        return ProjectStatus.done;
+
+      case AppCheckboxState.intermediate:
+        return ProjectStatus.inProgress;
+
+      case AppCheckboxState.unchecked:
+        return ProjectStatus.notStarted;
+    }
+  }
 }
 
 @immutable

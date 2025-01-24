@@ -1,4 +1,5 @@
 import 'package:action/src/modules/projects/domain/entity/project_status.dart';
+import 'package:action/src/shared/checkbox/checkbox.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -26,6 +27,15 @@ void main() {
       expect(ProjectStatus.inProgress.value, 'in_progress');
       expect(ProjectStatus.done.value, 'done');
       expect(ProjectStatus.archive.value, 'archive');
+    });
+
+    test('toAppCheckboxState should return correct AppCheckboxState', () {
+      expect(ProjectStatus.notStarted.toAppCheckboxState(), AppCheckboxState.unchecked);
+      expect(ProjectStatus.onHold.toAppCheckboxState(), AppCheckboxState.unchecked);
+      expect(ProjectStatus.doNext.toAppCheckboxState(), AppCheckboxState.unchecked);
+      expect(ProjectStatus.inProgress.toAppCheckboxState(), AppCheckboxState.intermediate);
+      expect(ProjectStatus.done.toAppCheckboxState(), AppCheckboxState.checked);
+      expect(ProjectStatus.archive.toAppCheckboxState(), AppCheckboxState.checked);
     });
   });
 }

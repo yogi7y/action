@@ -11,6 +11,7 @@ import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/themes/base/theme.dart';
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/buttons/icon_button.dart';
+import '../../../../shared/status/status.dart';
 import '../state/projects_provider.dart';
 
 @immutable
@@ -72,28 +73,11 @@ class ProjectCard extends ConsumerWidget {
                   Positioned(
                     right: 0,
                     top: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(spacing.xs),
-                      decoration: ShapeDecoration(
-                        color: colors.statusInProgress.background,
-                        shape: SmoothRectangleBorder(
-                          borderRadius: const SmoothBorderRadius.only(
-                            bottomLeft:
-                                SmoothRadius(cornerRadius: borderRadiusValue, cornerSmoothing: 1),
-                            topRight:
-                                SmoothRadius(cornerRadius: borderRadiusValue, cornerSmoothing: 1),
-                          ),
-                          side: BorderSide(
-                            color: colors.statusInProgress.border,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        'In Progress',
-                        style: fonts.text.xs.regular.copyWith(
-                          color: colors.statusInProgress.text,
-                        ),
-                      ),
+                    child: StatusWidget(
+                      state: project.status.toAppCheckboxState(),
+                      label: project.status.displayStatus,
+                      showIcon: false,
+                      isStadiumBorder: false,
                     ),
                   ),
                 ],

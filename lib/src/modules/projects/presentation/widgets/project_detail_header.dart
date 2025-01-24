@@ -21,6 +21,7 @@ class ProjectDetailHeader extends ConsumerWidget {
     return DetailHeader(
       title: project.project.name,
       scrollController: controller,
+      leading: const _ProjectDetailCheckbox(),
     );
   }
 }
@@ -34,8 +35,12 @@ class _ProjectDetailCheckbox extends StatelessWidget {
       padding: const EdgeInsets.only(right: 6, top: 2),
       child: Consumer(
         builder: (context, ref, child) => AppCheckbox(
-          onChanged: (state) async {},
-          state: AppCheckboxState.checked,
+          onChanged: (state) async => ref.read(projectNotifierProvider.notifier).updateProject(
+                (project) => project.copyWith(status: state.toProjectStatus()),
+              ),
+          state: ref.watch(projectNotifierProvider.select(
+            (value) => value.project.status.toAppCheckboxState(),
+          )),
         ),
       ),
     );

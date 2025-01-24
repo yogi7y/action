@@ -55,4 +55,9 @@ class AssetsV2 {
 
   static const String xmark = '$_base/xmark.svg';
   static const String chevronDown = '$_base/chevron-down.svg';
+
+  static const circle = '$_base/circle.svg';
+  static const circleCheck = '$_base/circle_check.svg';
+  static const circleDashed = '$_base/circle_dashed.svg';
+  static const forwardStep = '$_base/forward_step.svg';
 }

@@ -1,4 +1,5 @@
 import 'package:action/src/modules/projects/domain/entity/project.dart';
+import 'package:action/src/modules/projects/domain/entity/project_status.dart';
 import 'package:action/src/modules/projects/domain/use_case/project_use_case.dart';
 import 'package:action/src/modules/projects/presentation/state/project_detail_provider.dart';
 import 'package:action/src/modules/projects/presentation/view_models/project_view_model.dart';
@@ -32,6 +33,7 @@ void main() {
       name: 'Test Project',
       createdAt: FakeDateTime(),
       updatedAt: FakeDateTime(),
+      status: ProjectStatus.notStarted,
     );
     testViewModel = ProjectViewModel(
       project: testProject,

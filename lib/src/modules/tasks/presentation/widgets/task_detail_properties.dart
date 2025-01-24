@@ -32,7 +32,9 @@ class TaskDetailProperties extends ConsumerWidget {
         labelIcon: AssetsV2.loader,
         valuePlaceholder: 'Status is not set',
         value: StatusWidget(
-          status: StatusType.fromTaskStatus(_task.status),
+          state: _task.status.toAppCheckboxState(),
+          label: _task.status.name,
+          // status: StatusType.fromTaskStatus(_task.status),
         ),
       ),
       PropertyTileData(

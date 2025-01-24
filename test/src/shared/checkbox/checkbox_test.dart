@@ -38,5 +38,13 @@ void main() {
         );
       });
     });
+
+    group('toProjectStatus', () {
+      test('should return correct ProjectStatus', () {
+        expect(AppCheckboxState.checked.toProjectStatus(), ProjectStatus.done);
+        expect(AppCheckboxState.intermediate.toProjectStatus(), ProjectStatus.inProgress);
+        expect(AppCheckboxState.unchecked.toProjectStatus(), ProjectStatus.notStarted);
+      });
+    });
   });
 }

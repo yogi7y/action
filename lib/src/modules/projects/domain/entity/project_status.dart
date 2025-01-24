@@ -1,3 +1,5 @@
+import '../../../../shared/checkbox/checkbox.dart';
+
 enum ProjectStatus {
   notStarted('not_started', 'Not Started'),
   onHold('on_hold', 'On Hold'),
@@ -20,4 +22,7 @@ enum ProjectStatus {
       orElse: () => throw ArgumentError('Invalid project status: $status'),
     );
   }
+
+  /// Convert the project status to an AppCheckboxState.
+  AppCheckboxState toAppCheckboxState() => AppCheckboxState.fromProjectStatus(status: this);
 }
