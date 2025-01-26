@@ -7,10 +7,13 @@ import '../../modules/pages/presentation/screens/pages_screen.dart';
 import '../../modules/projects/domain/entity/project.dart';
 import '../../modules/projects/presentation/screens/project_detail_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
+import '../../modules/projects/presentation/view_models/project_view_model.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
 import '../../modules/tasks/presentation/state/task_detail_provider.dart';
 import '../exceptions/route_exception.dart';
+import 'handlers/project_detail_route_handler.dart';
+import 'route_adapter.dart';
 
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -45,6 +48,8 @@ final pagesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'pages');
 final projectsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'projects');
 final areaNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'area');
 
+final _goRouterAdapter = GoRouterRouteDataAdapter();
+
 final shellBranches = [
   StatefulShellBranch(
     navigatorKey: homeNavigatorKey,
@@ -68,13 +73,13 @@ final shellBranches = [
               name: AppRoute.taskDetail.name,
               path: AppRoute.taskDetail.path,
               builder: (context, state) {
-                final _task = state.extra as TaskDetailRouteData?;
+                final task = state.extra as TaskDetailRouteData?;
 
-                if (_task == null) throw Exception('TaskDetailRouteData is required');
+                if (task == null) throw Exception('TaskDetailRouteData is required');
 
                 return TaskDetailScreen(
-                  taskDataOrId: _task.value!,
-                  index: _task.index,
+                  taskDataOrId: task.value!,
+                  index: task.index,
                 );
               },
             ),
@@ -102,7 +107,10 @@ final shellBranches = [
             GoRoute(
               name: AppRoute.projectDetail.name,
               path: ':id',
-              builder: handleProjectDetailScreenRoute,
+              builder: (context, state) => ProjectDetailRouteHandler().handle(
+                context,
+                _goRouterAdapter.adapt(state),
+              ),
             ),
           ]),
     ],
@@ -120,40 +128,3 @@ final shellBranches = [
 ];
 
 typedef RouteDetails = (BuildContext context, GoRouterState state);
-
-@visibleForTesting
-Widget handleProjectDetailScreenRoute(BuildContext context, GoRouterState state) {
-  if (state.extra is! ProjectEntity?)
-    throw RouteException(
-      exception: 'Data must be of type ProjectEntity or null',
-      stackTrace: StackTrace.current,
-      route: state.fullPath ?? state.path ?? '',
-      uri: state.uri,
-      details: {
-        'projectData': state.extra,
-        'type': state.extra.runtimeType,
-      },
-    );
-
-  final projectData = state.extra as ProjectEntity?;
-  final id = state.pathParameters['id'];
-
-  if (projectData == null && id == null)
-    throw RouteException(
-      exception: 'Either project data or ID is required',
-      stackTrace: StackTrace.current,
-      route: state.fullPath ?? state.path ?? '',
-      uri: state.uri,
-      details: {
-        'projectData': projectData,
-        'id': id,
-      },
-    );
-
-  final projectOrId = (
-    id: id,
-    value: projectData,
-  );
-
-  return ProjectDetailScreen(projectOrId: projectOrId);
-}

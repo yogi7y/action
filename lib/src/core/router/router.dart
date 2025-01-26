@@ -12,8 +12,8 @@ import '../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import 'routes.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final _bottomNavItems = ref.read(bottomNavItemsProvider);
-  final _selectedBottomNavNotifier = ref.read(selectedBottomNavProvider.notifier);
+  final bottomNavItems = ref.read(bottomNavItemsProvider);
+  final selectedBottomNavNotifier = ref.read(selectedBottomNavProvider.notifier);
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -23,8 +23,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       _handleBottomNavFeedback(state);
       _updateBottomNavFromRoute(
         state,
-        _bottomNavItems,
-        _selectedBottomNavNotifier,
+        bottomNavItems,
+        selectedBottomNavNotifier,
       );
 
       return null;

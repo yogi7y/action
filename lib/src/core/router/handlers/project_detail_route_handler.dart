@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../modules/projects/domain/entity/project.dart';
 import '../../../modules/projects/presentation/screens/project_detail_screen.dart';
 import '../../../modules/projects/presentation/state/project_detail_provider.dart';
+import '../../../modules/projects/presentation/view_models/project_view_model.dart';
 import '../../exceptions/route_exception.dart';
 import '../route_data.dart';
 import 'route_handler.dart';
@@ -19,7 +19,7 @@ class ProjectDetailRouteHandler extends RouteHandler<ProjectOrId> {
     final route = data.uri.toString();
     final extra = data.extra;
 
-    if (extra is! ProjectEntity?)
+    if (extra is! ProjectViewModel?)
       throw RouteException(
         exception: 'Data must be of type ProjectEntity or null, but was ${extra.runtimeType}',
         stackTrace: StackTrace.current,
