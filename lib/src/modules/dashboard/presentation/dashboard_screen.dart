@@ -1,19 +1,22 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../core/router/app_router.dart';
-import '../../../design_system/design_system.dart';
 import '../../../shared/bottom_nav/bottom_nav_bar.dart';
 import '../../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import '../../../shared/sticky_component_over_keyboard/sticky_component_over_keyboard.dart';
 import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
+import '../../tasks/presentation/state/new_checklist_provider.dart';
+import '../../tasks/presentation/state/new_task_provider.dart';
+import '../../tasks/presentation/state/task_filter_provider.dart';
 import '../../tasks/presentation/state/tasks_provider.dart';
+import 'state/keyboard_visibility_provider.dart';
 
-@RoutePage()
 class DashboardScreen extends ConsumerStatefulWidget {
-  const DashboardScreen({super.key});
+  const DashboardScreen({required this.navigationShell, super.key});
+
+  final StatefulNavigationShell navigationShell;
 
   @override
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
@@ -25,71 +28,40 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     super.initState();
 
     ref
+      ..listenManual(keyboardVisibilityProvider, (previous, next) {
+        final _previousValue = previous?.valueOrNull ?? false;
+        final _nextValue = next.valueOrNull ?? false;
+
+        if (_previousValue && !_nextValue) {
+          ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((_) => false);
+          ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((_) => false);
+        }
+      })
       ..read(projectsProvider)
-      ..read(contextsProvider)
-      ..read(tasksProvider);
+      ..read(contextsProvider);
+
+    final _currentFilter = ref.read(tasksFilterProvider).first;
+    ref
+      ..read(tasksCountNotifierProvider(_currentFilter))
+      ..read(tasksProvider(_currentFilter));
   }
 
   @override
   Widget build(BuildContext context) {
-    return AutoTabsRouter.pageView(
-      routes: const [
-        HomeRoute(),
-        TasksRoute(),
-        NotesRoute(),
-        ProjectsRoute(),
-        AreaRoute(),
-      ],
-      builder: (context, child, pageController) => _DashboardScreenScaffold(
-        controller: pageController,
-        child: child,
-      ),
-    );
-  }
-}
-
-class _DashboardScreenScaffold extends ConsumerStatefulWidget {
-  const _DashboardScreenScaffold({
-    required this.child,
-    required this.controller,
-  });
-
-  final Widget child;
-  final PageController controller;
-
-  @override
-  ConsumerState<_DashboardScreenScaffold> createState() => _DashboardScreenScaffoldState();
-}
-
-class _DashboardScreenScaffoldState extends ConsumerState<_DashboardScreenScaffold> {
-  @override
-  void initState() {
-    super.initState();
-
-    widget.controller.addListener(() {
-      final _index = widget.controller.page!.round();
-      final _items = ref.read(bottomNavItemsProvider);
-      final _newSelectedItem = _items[_index];
-
-      final _newSelectedItemWithIndex = (index: _index, item: _newSelectedItem);
-
-      ref.read(selectedBottomNavProvider.notifier).update((e) => _newSelectedItemWithIndex);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final _colors = ref.watch(appThemeProvider);
     return Scaffold(
-      backgroundColor: _colors.surface.background,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          widget.child,
+          widget.navigationShell,
           const StickyComponentOverKeyboard(),
         ],
       ),
-      bottomNavigationBar: const BottomNavBar(),
+      bottomNavigationBar: ProviderScope(
+        overrides: [
+          navigatorShellProvider.overrideWithValue(widget.navigationShell),
+        ],
+        child: const BottomNavBar(),
+      ),
     );
   }
 }

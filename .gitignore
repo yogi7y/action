@@ -6,6 +6,8 @@ build
 .claudesync
 
 .env
+.env.staging
+.env.production
 *.g.dart
 
 *.keystore

@@ -8,9 +8,12 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  auto_route: ^9.2.2
   collection: ^1.19.0
-  core_y: ^0.3.1
+  core_y:
+    git:
+      url: https://github.com/Yogi-7y/Project-Y
+      path: packages/core
+      ref: result
   envied: ^1.0.0
   figma_squircle_updated: ^1.0.1
   flutter:
@@ -18,9 +21,12 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   flutter_riverpod: ^2.6.1
   flutter_svg: ^2.0.16
+  go_router: ^14.6.2
   google_sign_in: ^6.2.2
   intl: ^0.20.1
+  just_audio: ^0.9.43
   rxdart: ^0.28.0
+  shimmer: ^3.0.0
   smart_textfield:
     path: ../smart_text_field
   stack_trace: ^1.12.0
@@ -28,18 +34,19 @@ dependencies:
   svg_flutter: ^0.0.1
 
 dev_dependencies:
-  auto_route_generator: ^9.0.0
   build_runner: ^2.4.14
   clock: ^1.1.1
   envied_generator: ^1.0.0
+  flutter_launcher_icons: ^0.14.2
   flutter_test:
     sdk: flutter
   lints_y:
     git:
       url: https://github.com/Yogi-7y/Project-Y
       path: packages/lints
-      ref: main
+      ref: result
   meta: ^1.15.0
+  mock_supabase_http_client: ^0.0.3+1
   mocktail: ^1.0.4
 
 flutter:
@@ -52,3 +59,5 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/brand/
+    - assets/sounds/

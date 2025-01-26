@@ -1,13 +1,10 @@
-import 'dart:async';
-
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/app_router.dart';
+import '../../../../core/router/routes.dart';
 import '../../../../shared/buttons/async_button.dart';
 
-@RoutePage()
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -15,13 +12,13 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Column(
+        spacing: 12,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AsyncButton(
             text: 'Go to Profile',
             onClick: () async {
-              final _router = AutoRouter.of(context);
-              unawaited(_router.push(const ProfileRoute()));
+              await context.pushNamed(AppRoute.profile.name);
             },
           ),
         ],

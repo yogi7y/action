@@ -13,6 +13,15 @@ class AuthUseCase {
 
   Future<UserResult> signInWithGoogle() async => repository.signInWithGoogle();
 
+  Future<UserResult> signInWithEmailAndPassword({
+    required Email email,
+    required Password password,
+  }) async =>
+      repository.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
   bool get isSignedIn => repository.isSignedIn;
 
   Stream<UserCurrentState> get userCurrentState => repository.userCurrentState;

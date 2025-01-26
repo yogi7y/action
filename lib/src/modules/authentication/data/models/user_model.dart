@@ -12,13 +12,13 @@ class UserModel extends UserEntity {
   });
 
   factory UserModel.fromSupabaseUser(User user) {
-    final _userMetaData = user.userMetadata ?? {};
-    final _fullName = _userMetaData['full_name'] as String?;
-    final _name = _userMetaData['name'] as String?;
+    final userMetaData = user.userMetadata ?? {};
+    final fullName = userMetaData['full_name'] as String?;
+    final name = userMetaData['name'] as String?;
 
     return UserModel(
       id: user.id,
-      name: _fullName ?? _name ?? '',
+      name: fullName ?? name ?? '',
       email: user.email ?? '',
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/router/router.dart';
+import '../../core/router/routes.dart';
 import '../../design_system/design_system.dart';
 import '../../modules/dashboard/presentation/state/keyboard_visibility_provider.dart';
 import 'sticky_keyboard_provider.dart';
@@ -14,9 +16,10 @@ class StickyComponentOverKeyboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
+    final isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
+    final currentRoute = ref.watch(routerProvider).state.path;
 
-    if (!_isKeyboardVisible) return const SizedBox.shrink();
+    if (!isKeyboardVisible || currentRoute != AppRoute.tasks.path) return const SizedBox.shrink();
 
     return AnimatedPositioned(
       bottom: 0,
@@ -50,26 +53,26 @@ class _StickComponentDataState extends ConsumerState<_StickComponentData> {
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
-    final _colors = ref.watch(appThemeProvider);
+    final spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
 
-    final _showStickyKeyboard = ref.watch(showStickyTextFieldProvider);
+    final showStickyKeyboard = ref.watch(showStickyTextFieldProvider);
 
-    final _height = ref.watch(stickyComponentHeightProvider);
-    final _size = MediaQuery.of(context).size;
+    final height = ref.watch(stickyComponentHeightProvider);
+    final size = MediaQuery.of(context).size;
 
     return Container(
       key: _key,
-      height: _height,
+      height: height,
       padding: EdgeInsets.symmetric(
-        horizontal: _spacing.md,
-        vertical: _spacing.sm,
+        horizontal: spacing.md,
+        vertical: spacing.sm,
       ),
       decoration: BoxDecoration(
-        color: _colors.surface.backgroundContrast,
+        color: colors.surface.backgroundContrast,
       ),
-      width: _size.width,
-      child: _showStickyKeyboard ? const StickyTextField() : const StickyOptions(),
+      width: size.width,
+      child: showStickyKeyboard ? const StickyTextField() : const StickyOptions(),
     );
   }
 }

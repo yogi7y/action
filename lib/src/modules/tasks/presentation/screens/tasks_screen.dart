@@ -1,89 +1,117 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:figma_squircle_updated/figma_squircle.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/logger/logger.dart';
 import '../../../../design_system/design_system.dart';
-import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
+import '../../../../shared/header/app_header.dart';
+import '../models/task_view.dart';
 import '../sections/task_input_field.dart';
 import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
-import '../state/tasks_provider.dart';
+import '../state/task_filter_provider.dart';
+import '../widgets/add_remove_floating_action_button.dart';
 
-@RoutePage()
-class TasksScreen extends ConsumerWidget {
+class TasksScreen extends ConsumerStatefulWidget {
   const TasksScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _fonts = ref.watch(fontsProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _spacing = ref.watch(spacingProvider);
+  ConsumerState<TasksScreen> createState() => _TasksScreenState();
+}
 
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async => ref.refresh(tasksProvider.future),
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              leadingWidth: 0,
-              pinned: true,
-              elevation: 0,
-              titleSpacing: _spacing.lg,
-              shadowColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              toolbarHeight: kToolbarHeight + _spacing.md,
-              backgroundColor: _colors.surface.background,
-              title: Text(
-                'Tasks',
-                style: _fonts.headline.lg.semibold,
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: SvgPicture.asset(
-                    Assets.search,
-                    height: 24,
-                    width: 24,
-                    colorFilter: ColorFilter.mode(_colors.textTokens.primary, BlendMode.srcIn),
-                  ),
+class _TasksScreenState extends ConsumerState<TasksScreen> {
+  late final _pageController = ref.watch(tasksPageControllerProvider);
+  final _filterKeys = <TaskView, GlobalKey>{};
+
+  @override
+  void initState() {
+    super.initState();
+
+    final _filters = ref.read(tasksFilterProvider);
+    for (final filter in _filters) {
+      _filterKeys[filter] = GlobalKey();
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pageController.addListener(_onPageChanged);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void _onPageChanged() {
+    final controller = ref.read(tasksPageControllerProvider);
+    final page = controller.page?.round() ?? 0;
+    final filters = ref.read(tasksFilterProvider);
+
+    if (page >= 0 && page < filters.length) {
+      _scrollToSelectedFilter(filters[page]);
+    }
+  }
+
+  void _scrollToSelectedFilter(TaskView selectedFilter) {
+    final filterKey = _filterKeys[selectedFilter];
+    if (filterKey?.currentContext == null) return;
+
+    unawaited(
+      Scrollable.ensureVisible(
+        filterKey!.currentContext!,
+        alignment: 0.7,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.linear,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _spacing = ref.watch(spacingProvider);
+    final _filters = ref.watch(tasksFilterProvider);
+
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        logger('on back button pressed');
+        return false;
+      },
+      child: Scaffold(
+        body: NestedScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              const AppHeader(title: 'Tasks'),
+              SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
+              SliverToBoxAdapter(
+                child: TasksFilters(
+                  filterViews: _filters
+                      .map((filter) => (filter: filter, key: _filterKeys[filter]!))
+                      .toList(),
                 ),
-                SizedBox(width: _spacing.xs),
-              ],
-            ),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
-            const SliverToBoxAdapter(child: TasksFilters()),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
-            const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
-            const SliverTasksList(),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
-          ],
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+              const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
+              SliverToBoxAdapter(child: SizedBox(height: _spacing.xs)),
+            ];
+          },
+          body: PageView(
+            controller: _pageController,
+            children: _filters.map((filter) => TasksList(taskView: filter)).toList(),
+            onPageChanged: (value) {
+              unawaited(HapticFeedback.lightImpact());
+              ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
+            },
+          ),
+        ),
+        floatingActionButton: AddRemoveFloatingActionButton(
+          onStateChanged: (state) =>
+              ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value),
         ),
       ),
-      floatingActionButton: Consumer(builder: (context, ref, child) {
-        final _isKeyboardVisible = ref.watch(keyboardVisibilityProvider).value ?? false;
-        final _opacity = _isKeyboardVisible ? 0.0 : 1.0;
-        return AnimatedOpacity(
-          opacity: _opacity,
-          duration: defaultAnimationDuration,
-          child: FloatingActionButton(
-            onPressed: () {
-              ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value);
-            },
-            backgroundColor: _colors.primary,
-            shape: SmoothRectangleBorder(
-              borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
-            ),
-            child: SvgPicture.asset(
-              Assets.add,
-              height: 32,
-              width: 32,
-            ),
-          ),
-        );
-      }),
     );
   }
 }

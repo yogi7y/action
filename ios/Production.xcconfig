@@ -1,0 +1,7 @@
+#include "Generated.xcconfig"
+FLUTTER_TARGET=lib/main_production.dart
+FLUTTER_FLAVOR=Production
+PRODUCT_BUNDLE_IDENTIFIER=com.yogi7y.action
+DISPLAY_NAME=Action
+MARKETING_VERSION=1.0.0
+CURRENT_PROJECT_VERSION=1

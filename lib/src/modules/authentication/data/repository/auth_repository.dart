@@ -1,6 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer' as developer;
 
 import 'package:core_y/core_y.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,43 +12,58 @@ import '../../domain/entity/user.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../models/user_model.dart';
 
+@immutable
 class SupabaseAuthRepository implements AuthRepository {
+  SupabaseAuthRepository({
+    required this.env,
+  });
+
+  final Env env;
+
   late final _supabaseAuth = Supabase.instance.client.auth;
 
   @override
   Future<Result<UserEntity, AppException>> signInWithGoogle() async {
-    final iOSClientId = Env.googleIosClientId;
+    final iOSClientId = env.googleIosClientId;
 
-    final _googleSignIn = GoogleSignIn(
+    final googleSignIn = GoogleSignIn(
       clientId: iOSClientId,
-      serverClientId: Env.googleWebClientId,
+      serverClientId: env.googleWebClientId,
     );
 
-    final _user = await _googleSignIn.signIn();
+    final user = await googleSignIn.signIn();
 
-    final _googleAuth = await _user?.authentication;
-    final _accessToken = _googleAuth?.accessToken;
-    final _idToken = _googleAuth?.idToken;
+    final googleAuth = await user?.authentication;
+    final accessToken = googleAuth?.accessToken;
+    final idToken = googleAuth?.idToken;
 
-    if (_accessToken == null) {
+    if (accessToken == null) {
       return Failure(
         AppException(exception: 'Access token is null', stackTrace: StackTrace.current),
       );
     }
 
-    if (_idToken == null) {
+    if (idToken == null) {
       return Failure(
         AppException(exception: 'Id token is null', stackTrace: StackTrace.current),
       );
     }
 
-    await _supabaseAuth.signInWithIdToken(
+    final response = await _supabaseAuth.signInWithIdToken(
       provider: OAuthProvider.google,
-      idToken: _idToken,
-      accessToken: _accessToken,
+      idToken: idToken,
+      accessToken: accessToken,
     );
 
-    throw UnimplementedError();
+    if (response.user == null)
+      return Failure(AppException(
+        exception: 'User should not be null',
+        stackTrace: StackTrace.current,
+      ));
+
+    final userResult = UserModel.fromSupabaseUser(response.user!);
+
+    return Success(userResult);
   }
 
   @override
@@ -79,5 +96,33 @@ class SupabaseAuthRepository implements AuthRepository {
         .doOnData((event) {
           developer.log('User current state: $event');
         });
+  }
+
+  @override
+  Future<Result<UserEntity, AppException>> signInWithEmailAndPassword({
+    required Email email,
+    required Password password,
+  }) async {
+    try {
+      final response = await _supabaseAuth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (response.user == null) {
+        return Failure(AppException(
+          exception: 'User should not be null',
+          stackTrace: StackTrace.current,
+        ));
+      }
+
+      final userResult = UserModel.fromSupabaseUser(response.user!);
+      return Success(userResult);
+    } catch (e) {
+      return Failure(AppException(
+        exception: e.toString(),
+        stackTrace: StackTrace.current,
+      ));
+    }
   }
 }

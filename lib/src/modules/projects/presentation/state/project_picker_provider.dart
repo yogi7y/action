@@ -1,10 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
-import '../../../../design_system/design_system.dart';
-import '../widgets/project_picker_tile.dart';
-import 'projects_provider.dart';
-
 class ProjectPickerSearchSyncProvider extends SyncSearchProvider {
   ProjectPickerSearchSyncProvider({required super.items});
 
@@ -16,12 +12,5 @@ class ProjectPickerSearchSyncProvider extends SyncSearchProvider {
 }
 
 final projectPickerSearchSourceProvider = Provider<SearchSource>((ref) {
-  final _projects = ref.watch(projectsProvider).valueOrNull ?? [];
-
-  final _fonts = ref.watch(fontsProvider);
-
-  return SearchSource(
-    provider: ProjectPickerSearchSyncProvider(items: _projects),
-    renderer: ProjectPickerTileRenderer(fonts: _fonts),
-  );
+  throw UnimplementedError();
 });

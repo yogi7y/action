@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
 import '../../../../design_system/design_system.dart';
-import '../../../../shared/buttons/icon_button.dart';
+import '../../../../shared/buttons/send_icon.dart';
 import '../../../../shared/checkbox/checkbox.dart';
-import '../mixin/tasks_operations_mixin.dart';
+import '../mixin/task_ui_triggers.dart';
 import '../state/new_task_provider.dart';
 
 class TaskInputFieldVisibility extends ConsumerStatefulWidget {
@@ -69,9 +69,12 @@ class _TaskInputFieldVisibilityState extends ConsumerState<TaskInputFieldVisibil
       builder: (context, child) => ClipRect(
         child: Align(
           heightFactor: _heightFactor.value,
-          child: Opacity(
-            opacity: _opacity.value,
-            child: child,
+          child: Visibility(
+            visible: _heightFactor.value > 0,
+            child: Opacity(
+              opacity: _opacity.value,
+              child: child,
+            ),
           ),
         ),
       ),
@@ -88,7 +91,7 @@ class TaskInputField extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskInputFieldState();
 }
 
-class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOperations {
+class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTriggersMixin {
   late final _controller = ref.watch(newTaskProvider.notifier).controller;
   late final focusNode = ref.watch(newTaskProvider.notifier).focusNode;
 
@@ -103,6 +106,8 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
   }
 
   void _handleTextFieldFocus() {
+    if (ref.read(isTaskTextInputFieldVisibleProvider)) focusNode.requestFocus();
+
     ref.listenManual(isTaskTextInputFieldVisibleProvider, (previous, next) {
       if (next) {
         focusNode.requestFocus();
@@ -151,8 +156,12 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
     return Container(
       margin: EdgeInsets.symmetric(horizontal: _spacing.lg),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppCheckbox(),
+          Transform.translate(
+            offset: const Offset(0, 2),
+            child: const AppCheckbox(),
+          ),
           SizedBox(width: _spacing.xs),
           Expanded(
             child: SmartTextField(
@@ -160,9 +169,13 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
               textFormFieldBuilder: (context, controller) {
                 return TextFormField(
                   focusNode: focusNode,
+                  minLines: 1,
+                  maxLines: 3,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (value) async {
+                    if (value.trim().isEmpty) return;
+
                     focusNode.requestFocus();
                     return addTask(ref: ref);
                   },
@@ -173,6 +186,8 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
                   cursorHeight: 22,
                   decoration: InputDecoration(
                     hintText: 'Use @ to pick projects, # to pick tags',
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
                     hintStyle: _fonts.text.sm.regular.copyWith(
                       color: _colors.textTokens.secondary,
@@ -181,7 +196,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
                       minWidth: 24,
                       minHeight: 24,
                     ),
-                    suffixIcon: const SendIcon(),
+                    suffixIcon: const _TaskSendIcon(),
                   ),
                 );
               },
@@ -193,27 +208,16 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TasksOpera
   }
 }
 
-class SendIcon extends ConsumerWidget with TasksOperations {
-  const SendIcon({super.key});
+class _TaskSendIcon extends ConsumerWidget with TaskUiTriggersMixin {
+  const _TaskSendIcon();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _newTaskText = ref.watch(newTaskProvider.select((value) => value.name));
-    final _colors = ref.watch(appThemeProvider);
+    final _newTaskText = ref.watch(newTaskProvider.select((value) => value.name.trim()));
 
-    final _iconColor = _newTaskText.isEmpty ? _colors.textTokens.secondary : _colors.primary;
-
-    return Consumer(
-      builder: (context, ref, _) {
-        return UnconstrainedBox(
-          child: AppIconButton(
-            svgIconPath: Assets.send,
-            size: 24,
-            color: _iconColor,
-            onClick: () async => addTask(ref: ref),
-          ),
-        );
-      },
+    return SendIcon(
+      onClick: () async => addTask(ref: ref),
+      isEnabled: _newTaskText.isNotEmpty,
     );
   }
 }

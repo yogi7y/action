@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+
+import '../../../modules/projects/presentation/screens/project_detail_screen.dart';
+import '../../../modules/projects/presentation/state/project_detail_provider.dart';
+import '../../../modules/projects/presentation/view_models/project_view_model.dart';
+import '../../exceptions/route_exception.dart';
+import '../route_data.dart';
+import 'route_handler.dart';
+
+@immutable
+class ProjectDetailRouteHandler extends RouteHandler<ProjectOrId> {
+  @override
+  Widget build(BuildContext context, ProjectOrId param) => ProjectDetailScreen(projectOrId: param);
+
+  @override
+  ProjectOrId validateAndTransform({
+    required AppRouteData data,
+  }) {
+    final route = data.uri.toString();
+    final extra = data.extra;
+
+    if (extra is! ProjectViewModel?)
+      throw RouteException(
+        exception: 'Data must be of type ProjectEntity or null, but was ${extra.runtimeType}',
+        stackTrace: StackTrace.current,
+        route: data.uri.toString(),
+        uri: data.uri,
+        details: {
+          'projectData': extra,
+          'type': extra.runtimeType,
+        },
+      );
+
+    final id = data.pathParameters?['id'] ?? '';
+
+    if (extra == null && id.isEmpty)
+      throw RouteException(
+        exception: 'Either of project data or ID is required',
+        stackTrace: StackTrace.current,
+        route: route,
+        uri: data.uri,
+        details: {
+          'projectData': extra,
+          'id': id,
+        },
+      );
+
+    final projectOrId = (
+      id: id,
+      value: extra,
+    );
+
+    return projectOrId;
+  }
+}
