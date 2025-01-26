@@ -24,6 +24,7 @@ dependencies:
   go_router: ^14.6.2
   google_sign_in: ^6.2.2
   intl: ^0.20.1
+  just_audio: ^0.9.43
   rxdart: ^0.28.0
   shimmer: ^3.0.0
   smart_textfield:
@@ -43,7 +44,7 @@ dev_dependencies:
     git:
       url: https://github.com/Yogi-7y/Project-Y
       path: packages/lints
-      ref: main
+      ref: result
   meta: ^1.15.0
   mock_supabase_http_client: ^0.0.3+1
   mocktail: ^1.0.4
@@ -59,3 +60,4 @@ flutter:
   assets:
     - assets/icons/
     - assets/brand/
+    - assets/sounds/

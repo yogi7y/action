@@ -15,18 +15,18 @@ class App extends ConsumerWidget with KeyboardMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _appFlavor = ref.watch(appFlavorProvider);
-    final _router = ref.watch(routerProvider);
+    final colors = ref.watch(appThemeProvider);
+    final appFlavor = ref.watch(appFlavorProvider);
+    final router = ref.watch(routerProvider);
 
     ref.watch(systemUiControllerProvider);
 
     return MaterialApp.router(
-      routerConfig: _router,
-      title: _appFlavor.appName,
+      routerConfig: router,
+      title: appFlavor.appName,
       theme: ThemeData(
         fontFamily: interFontFamily,
-        scaffoldBackgroundColor: _colors.surface.background,
+        scaffoldBackgroundColor: colors.surface.background,
       ),
       builder: (context, child) => PopScope(
         onPopInvokedWithResult: (didPop, result) {
