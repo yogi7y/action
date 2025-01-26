@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import '../../../../core/entity.dart';
 import '../../../../core/exceptions/validation_exception.dart';
 import '../../../../services/database/model_meta_data.dart';

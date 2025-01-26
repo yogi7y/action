@@ -15,11 +15,11 @@ class StickyOptions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _spacing = ref.watch(spacingProvider);
+    final spacing = ref.watch(spacingProvider);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        spacing: _spacing.xs,
+        spacing: spacing.xs,
         children: const [
           _ProjectOption(),
           _ContextOption(),
@@ -35,12 +35,12 @@ class _DueDateOption extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _dueDate = ref.watch(newTaskProvider.select((value) => value.dueDate));
-    final _relativeDueDate = _dueDate?.relativeDate;
+    final dueDate = ref.watch(newTaskProvider.select((value) => value.dueDate));
+    final relativeDueDate = dueDate?.relativeDate;
 
     return AppSelectableChip(
       iconPath: Assets.calendarMonth,
-      value: _relativeDueDate,
+      value: relativeDueDate,
       label: 'Due Date',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(dueDateAsNull: true),
       onClick: () {},
@@ -54,14 +54,14 @@ class _ContextOption extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _selectedContextId = ref.watch(newTaskProvider.select((value) => value.contextId));
-    final _selectedContext = _selectedContextId != null && _selectedContextId.isNotEmpty
-        ? ref.watch(contextByIdProvider(_selectedContextId))
+    final selectedContextId = ref.watch(newTaskProvider.select((value) => value.contextId));
+    final selectedContext = selectedContextId != null && selectedContextId.isNotEmpty
+        ? ref.watch(contextByIdProvider(selectedContextId))
         : null;
     return AppSelectableChip(
       iconPath: Assets.tag,
       label: 'Context',
-      value: _selectedContext?.name,
+      value: selectedContext?.name,
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(contextIdAsNull: true),
       onClick: () => ref
           .read(currentStickyTextFieldTypeProvider.notifier)
@@ -75,14 +75,14 @@ class _ProjectOption extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _selectedProjectId = ref.watch(newTaskProvider.select((value) => value.projectId));
-    final _selectedProject = _selectedProjectId != null && _selectedProjectId.isNotEmpty
-        ? ref.watch(projectByIdProvider(_selectedProjectId))
+    final selectedProjectId = ref.watch(newTaskProvider.select((value) => value.projectId));
+    final selectedProject = selectedProjectId != null && selectedProjectId.isNotEmpty
+        ? ref.watch(projectByIdProvider(selectedProjectId))
         : null;
 
     return AppSelectableChip(
       iconPath: Assets.construction,
-      value: _selectedProject?.project.name,
+      value: selectedProject?.project.name,
       label: 'Project',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(projectIdAsNull: true),
       onClick: () => ref

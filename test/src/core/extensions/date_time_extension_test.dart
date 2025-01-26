@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DateTimeExtension', () {
-    final _baseDateTime = DateTime(2024, 12, 23); // Monday, December 23, 2024
+    final baseDateTime = DateTime(2024, 12, 23); // Monday, December 23, 2024
 
     group('today', () {
       test('returns "Today, 9:00 AM" for same day morning', () {
@@ -26,7 +26,7 @@ void main() {
 
     group('tomorrow', () {
       test('returns "Tomorrow, 9:00 AM" for next day', () {
-        final target = _baseDateTime.add(const Duration(days: 1)).copyWith(hour: 9, minute: 0);
+        final target = baseDateTime.add(const Duration(days: 1)).copyWith(hour: 9, minute: 0);
         expect(
           target.relativeDate,
           'Tomorrow, 9:00 AM'.withNarrowNoBreakSpace,
@@ -34,7 +34,7 @@ void main() {
       });
 
       test('returns "Tomorrow, 12:00 AM" for midnight', () {
-        final target = _baseDateTime.add(const Duration(days: 1)).copyWith(hour: 0, minute: 0);
+        final target = baseDateTime.add(const Duration(days: 1)).copyWith(hour: 0, minute: 0);
         expect(
           target.relativeDate,
           'Tomorrow, 12:00 AM'.withNarrowNoBreakSpace,
@@ -45,7 +45,7 @@ void main() {
     group('within week', () {
       test('returns day name for dates within next 6 days', () {
         final target =
-            _baseDateTime.add(const Duration(days: 3)).copyWith(hour: 9, minute: 0); // Thursday
+            baseDateTime.add(const Duration(days: 3)).copyWith(hour: 9, minute: 0); // Thursday
         expect(
           target.relativeDate,
           'Thursday, 9:00 AM'.withNarrowNoBreakSpace,
@@ -55,7 +55,7 @@ void main() {
 
     group('beyond week', () {
       test('returns full date for dates beyond 6 days', () {
-        final target = _baseDateTime.add(const Duration(days: 7)).copyWith(hour: 9, minute: 0);
+        final target = baseDateTime.add(const Duration(days: 7)).copyWith(hour: 9, minute: 0);
         expect(
           target.relativeDate,
           'Dec 30, 9:00 AM'.withNarrowNoBreakSpace,

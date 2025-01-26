@@ -4,14 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../modules/area/presentation/screens/area_screen.dart';
 import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
-import '../../modules/projects/domain/entity/project.dart';
-import '../../modules/projects/presentation/screens/project_detail_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
-import '../../modules/projects/presentation/view_models/project_view_model.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/tasks_screen.dart';
 import '../../modules/tasks/presentation/state/task_detail_provider.dart';
-import '../exceptions/route_exception.dart';
 import 'handlers/project_detail_route_handler.dart';
 import 'route_adapter.dart';
 

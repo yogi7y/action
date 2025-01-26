@@ -2,6 +2,7 @@ import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide SupabaseQueryBuilder;
 
 import '../../../../core/network/paginated_response.dart';
+import '../../../projects/domain/repository/project_repository.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/entity/task_view_type.dart';
 import '../../domain/repository/task_repository.dart';
@@ -20,9 +21,14 @@ class SupabaseTaskRepository implements TaskRepository {
     TaskQuerySpecification spec, {
     required Cursor? cursor,
     required int limit,
+    ProjectId? projectId,
   }) async {
     try {
       final query = queryBuilder.buildQuery(spec);
+
+      if (projectId != null) {
+        await query.eq('project_id', projectId);
+      }
 
       final paginationQuery = queryBuilder.buildPaginationQuery(
         query,

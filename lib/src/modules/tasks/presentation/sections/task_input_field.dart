@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
 import '../../../../design_system/design_system.dart';
-import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/buttons/send_icon.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../mixin/task_ui_triggers.dart';

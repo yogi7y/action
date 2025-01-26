@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../route_data.dart';
 
 /// A route handler that validates route data and builds widgets with typed parameters.

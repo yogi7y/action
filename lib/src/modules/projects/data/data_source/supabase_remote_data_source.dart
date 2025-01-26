@@ -2,8 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/extensions/list_extension.dart';
 import '../../../../core/logger/logger.dart';
-import '../../../../core/network/paginated_response.dart';
-import '../../../tasks/data/models/task.dart';
 import '../../domain/repository/project_repository.dart';
 import '../models/project_model.dart';
 import '../models/project_relation_metadata_model.dart';

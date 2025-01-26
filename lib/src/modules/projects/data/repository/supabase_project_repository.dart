@@ -8,7 +8,6 @@ import '../../domain/entity/project.dart';
 import '../../domain/repository/project_repository.dart';
 import '../../presentation/view_models/project_view_model.dart';
 import '../data_source/project_remote_data_source.dart';
-import '../models/project_model.dart';
 
 class SupabaseProjectRepository with ConnectivityCheckerMixin implements ProjectRepository {
   SupabaseProjectRepository({

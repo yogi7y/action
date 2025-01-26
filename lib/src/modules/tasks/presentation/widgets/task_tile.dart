@@ -11,7 +11,6 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
-import '../../domain/entity/task.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/task_filter_provider.dart';
 import '../state/tasks_provider.dart';
@@ -22,13 +21,13 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _task = ref.watch(scopedTaskProvider);
-    final _spacing = ref.watch(spacingProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _colors = ref.watch(appThemeProvider);
+    final task = ref.watch(scopedTaskProvider);
+    final spacing = ref.watch(spacingProvider);
+    final fonts = ref.watch(fontsProvider);
+    final colors = ref.watch(appThemeProvider);
 
-    final _topPadding = _spacing.xs;
-    final _bottomPadding = _spacing.sm;
+    final topPadding = spacing.xs;
+    final bottomPadding = spacing.sm;
 
     return Stack(
       children: [
@@ -36,32 +35,32 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           behavior: HitTestBehavior.opaque,
           onTap: () async => context.goNamed(
             AppRoute.taskDetail.name,
-            extra: (value: (data: _task.value, id: null), index: 1),
-            pathParameters: {'id': _task.value.id},
+            extra: (value: (data: task.value, id: null), index: 1),
+            pathParameters: {'id': task.value.id},
           ),
           child: Container(
             padding: EdgeInsets.only(
-              right: _spacing.lg,
+              right: spacing.lg,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppCheckbox(
                   padding: EdgeInsets.only(
-                    right: _spacing.xs,
-                    top: 4 + _topPadding,
-                    left: _spacing.lg,
-                    bottom: _bottomPadding,
+                    right: spacing.xs,
+                    top: 4 + topPadding,
+                    left: spacing.lg,
+                    bottom: bottomPadding,
                   ),
-                  state: AppCheckboxState.fromTaskStatus(status: _task.value.status),
+                  state: AppCheckboxState.fromTaskStatus(status: task.value.status),
                   onChanged: (state) async {
-                    final _currentFilter = ref.read(selectedTaskFilterProvider);
+                    final currentFilter = ref.read(selectedTaskFilterProvider);
 
-                    return ref.read(tasksProvider(_currentFilter).notifier).updateTask(
-                          task: _task.value.copyWith(
+                    return ref.read(tasksProvider(currentFilter).notifier).updateTask(
+                          task: task.value.copyWith(
                             status: TaskStatus.fromAppCheckboxState(state),
                           ),
-                          index: _task.index,
+                          index: task.index,
                         );
                   },
                 ),
@@ -70,10 +69,10 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(right: 60, top: _topPadding),
+                        padding: EdgeInsets.only(right: 60, top: topPadding),
                         child: const AnimatedTaskName(),
                       ),
-                      SizedBox(height: _spacing.xxs),
+                      SizedBox(height: spacing.xxs),
                       const Padding(
                         padding: EdgeInsets.only(right: 10),
                         child: _TaskMetaDataRow(),
@@ -86,14 +85,14 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           ),
         ),
         Positioned(
-          top: _spacing.xs,
-          right: _spacing.lg,
+          top: spacing.xs,
+          right: spacing.lg,
           child: Text(
-            _task.value.createdAt.timeAgo,
-            style: _fonts.text.xs.regular.copyWith(
+            task.value.createdAt.timeAgo,
+            style: fonts.text.xs.regular.copyWith(
               fontSize: 10,
               height: 16 / 10,
-              color: _colors.textTokens.secondary,
+              color: colors.textTokens.secondary,
             ),
           ),
         ),
@@ -108,26 +107,25 @@ class AnimatedTaskName extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _fonts = ref.watch(fontsProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _task = ref.watch(scopedTaskProvider);
+    final fonts = ref.watch(fontsProvider);
+    final colors = ref.watch(appThemeProvider);
+    final task = ref.watch(scopedTaskProvider);
 
     return AnimatedDefaultTextStyle(
       duration: defaultAnimationDuration,
-      style: _fonts.text.md.regular.copyWith(
+      style: fonts.text.md.regular.copyWith(
         fontSize: 15,
         fontVariations: [
           const FontVariation.weight(450),
         ],
-        decoration: _task.value.status == TaskStatus.done
-            ? TextDecoration.lineThrough
-            : TextDecoration.none,
+        decoration:
+            task.value.status == TaskStatus.done ? TextDecoration.lineThrough : TextDecoration.none,
         decorationThickness: 1,
-        color: _task.value.status == TaskStatus.done
-            ? _colors.textTokens.secondary
-            : _colors.textTokens.primary,
+        color: task.value.status == TaskStatus.done
+            ? colors.textTokens.secondary
+            : colors.textTokens.primary,
       ),
-      child: Text(_task.value.name),
+      child: Text(task.value.name),
     );
   }
 }
@@ -137,32 +135,32 @@ class _TaskMetaDataRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _spacing = ref.watch(spacingProvider);
-    final _task = ref.watch(scopedTaskProvider);
+    final spacing = ref.watch(spacingProvider);
+    final task = ref.watch(scopedTaskProvider);
 
-    final _project = ref.watch(projectByIdProvider(_task.value.projectId ?? ''))?.project;
-    final _context = ref.watch(contextByIdProvider(_task.value.contextId ?? ''));
-    final _dueDate = _task.value.dueDate;
+    final project = ref.watch(projectByIdProvider(task.value.projectId ?? ''))?.project;
+    final context0 = ref.watch(contextByIdProvider(task.value.contextId ?? ''));
+    final dueDate = task.value.dueDate;
 
     return Wrap(
-      spacing: _spacing.xs,
+      spacing: spacing.xs,
       children: [
-        if (_project != null)
+        if (project != null)
           _TaskMetaData(
             iconPath: Assets.hardware,
-            value: _project.name,
+            value: project.name,
             onClick: () {},
           ),
-        if (_context != null)
+        if (context0 != null)
           _TaskMetaData(
             iconPath: Assets.tag,
-            value: _context.name,
+            value: context0.name,
             onClick: () {},
           ),
-        if (_dueDate != null)
+        if (dueDate != null)
           _TaskMetaData(
             iconPath: Assets.calendarMonth,
-            value: _dueDate.relativeDate,
+            value: dueDate.relativeDate,
             onClick: () {},
           ),
       ],
@@ -183,8 +181,8 @@ class _TaskMetaData extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -197,15 +195,15 @@ class _TaskMetaData extends ConsumerWidget {
             height: 14,
             width: 14,
             colorFilter: ColorFilter.mode(
-              _colors.textTokens.secondary,
+              colors.textTokens.secondary,
               BlendMode.srcIn,
             ),
           ),
           const SizedBox(width: 2),
           Text(
             value,
-            style: _fonts.text.xs.medium.copyWith(
-              color: _colors.textTokens.secondary,
+            style: fonts.text.xs.medium.copyWith(
+              color: colors.textTokens.secondary,
             ),
           )
         ],

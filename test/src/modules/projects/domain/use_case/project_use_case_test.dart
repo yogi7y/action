@@ -1,10 +1,7 @@
-import 'package:action/src/core/network/paginated_response.dart';
 import 'package:action/src/modules/projects/domain/entity/project.dart';
 import 'package:action/src/modules/projects/domain/entity/project_relation_metadata.dart';
 import 'package:action/src/modules/projects/domain/repository/project_repository.dart';
 import 'package:action/src/modules/projects/domain/use_case/project_use_case.dart';
-import 'package:action/src/modules/tasks/domain/entity/task.dart';
-import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -73,63 +70,6 @@ void main() {
       await systemUnderTest.getProjectRelationMetadata(projectId);
 
       verify(() => mockRepository.getProjectRelationMetadata(projectId)).called(1);
-    });
-  });
-
-  group('getProjectTasks', () {
-    const projectId = 'test-project-id';
-    final tasks = [
-      TaskEntity(
-        id: '1',
-        name: 'Task 1',
-        projectId: 'test-project-id',
-        createdAt: DateTime(2024),
-        updatedAt: DateTime(2024),
-        status: TaskStatus.todo,
-      ),
-    ];
-
-    test('returns Success with paginated tasks when repository call succeeds', () async {
-      final paginatedResponse = PaginatedResponse(results: tasks);
-
-      when(() => mockRepository.getProjectTasks(
-            projectId,
-            cursor: any(named: 'cursor'),
-            limit: any(named: 'limit'),
-          )).thenAnswer((_) async => Success(paginatedResponse));
-
-      final result = await systemUnderTest.getProjectTasks(
-        projectId,
-        limit: 20,
-      );
-
-      expect(result, isA<Success<PaginatedResponse<TaskEntity>, AppException>>());
-      expect((result as Success<PaginatedResponse<TaskEntity>, AppException>).value.results, tasks);
-      verify(() => mockRepository.getProjectTasks(
-            projectId,
-            cursor: null,
-            limit: 20,
-          )).called(1);
-    });
-
-    test('returns Failure when repository call fails', () async {
-      when(() => mockRepository.getProjectTasks(
-            projectId,
-            cursor: any(named: 'cursor'),
-            limit: any(named: 'limit'),
-          )).thenAnswer((_) async => Failure(FakeAppException()));
-
-      final result = await systemUnderTest.getProjectTasks(
-        projectId,
-        limit: 20,
-      );
-
-      expect(result, isA<Failure<PaginatedResponse<TaskEntity>, AppException>>());
-      verify(() => mockRepository.getProjectTasks(
-            projectId,
-            cursor: null,
-            limit: 20,
-          )).called(1);
     });
   });
 }

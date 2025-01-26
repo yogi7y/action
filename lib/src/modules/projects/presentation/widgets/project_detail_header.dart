@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../../shared/header/detail_header.dart';
-import '../../domain/entity/project_status.dart';
 import '../state/project_detail_provider.dart';
 
 class ProjectDetailTitle extends ConsumerWidget {
