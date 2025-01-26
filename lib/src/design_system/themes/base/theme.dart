@@ -22,15 +22,15 @@ final appThemeProvider = NotifierProvider<AppThemeNotifier, AppTheme>(AppThemeNo
 class AppThemeNotifier extends Notifier<AppTheme> {
   @override
   AppTheme build() {
-    final _darkTheme = ref.watch(darkThemeColorsProvider);
-    return _darkTheme;
+    final darkTheme = ref.watch(darkThemeColorsProvider);
+    return darkTheme;
   }
 
   void toggle() {
-    final _darkTheme = ref.watch(darkThemeColorsProvider);
-    final _lightTheme = ref.watch(lightThemeColorsProvider);
+    final darkTheme = ref.watch(darkThemeColorsProvider);
+    final lightTheme = ref.watch(lightThemeColorsProvider);
 
-    state = state is LightTheme ? _darkTheme : _lightTheme;
+    state = state is LightTheme ? darkTheme : lightTheme;
   }
 }
 

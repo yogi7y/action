@@ -27,8 +27,8 @@ import 'semantics/task_detail_overview_tile_token.dart';
 import 'semantics/text.dart';
 
 final darkThemeColorsProvider = Provider<DarkTheme>((ref) {
-  final _primitiveTokens = ref.watch(primitiveTokensProvider);
-  return DarkTheme(primitiveTokens: _primitiveTokens);
+  final primitiveTokens = ref.watch(primitiveTokensProvider);
+  return DarkTheme(primitiveTokens: primitiveTokens);
 });
 
 @immutable

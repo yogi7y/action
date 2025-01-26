@@ -6,8 +6,8 @@ import 'mobile_fonts.dart';
 import 'weights.dart';
 
 final fontsProvider = Provider<Fonts>((ref) {
-  final _colors = ref.watch(appThemeProvider);
-  return MobileFonts(colors: _colors);
+  final colors = ref.watch(appThemeProvider);
+  return MobileFonts(colors: colors);
 });
 
 @immutable
