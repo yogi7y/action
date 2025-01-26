@@ -6,8 +6,8 @@ import '../../../../shared/header/detail_header.dart';
 import '../../domain/entity/project_status.dart';
 import '../state/project_detail_provider.dart';
 
-class ProjectDetailHeader extends ConsumerWidget {
-  const ProjectDetailHeader({
+class ProjectDetailTitle extends ConsumerWidget {
+  const ProjectDetailTitle({
     required this.controller,
     super.key,
   });

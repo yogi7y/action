@@ -6,7 +6,7 @@ import 'package:action/src/modules/projects/data/models/project_relation_metadat
 import 'package:action/src/modules/projects/data/repository/supabase_project_repository.dart';
 import 'package:action/src/modules/projects/domain/entity/project.dart';
 import 'package:action/src/modules/projects/domain/entity/project_relation_metadata.dart';
-import 'package:action/src/services/connectivity/connetivity_checker.dart';
+import 'package:action/src/services/connectivity/connectivity_checker.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -11,9 +11,9 @@ class SupabaseQueryBuilder {
   final SupabaseClient client;
 
   PostgrestFilterBuilder<PostgrestList> buildQuery(TaskQuerySpecification spec) {
-    final _baseQuery = client.from('tasks').select();
+    final baseQuery = client.from('tasks').select();
 
-    return _applySpecification(_baseQuery, spec);
+    return _applySpecification(baseQuery, spec);
   }
 
   PostgrestTransformBuilder<List<Map<String, dynamic>>> buildPaginationQuery(

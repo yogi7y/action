@@ -13,25 +13,25 @@ mixin AuthMixin {
     required WidgetRef ref,
     required SignInCallback signInCallback,
   }) async {
-    final _router = ref.read(routerProvider);
+    final router = ref.read(routerProvider);
 
-    final _result = await signInCallback();
+    final result = await signInCallback();
 
-    if (_result.isFailure) return;
+    if (result.isFailure) return;
 
     /// Just for testing. Revert back to home
-    _router.goNamed(AppRoute.tasks.name);
+    router.goNamed(AppRoute.tasks.name);
   }
 
   Future<void> signOut({
     required BuildContext context,
     required WidgetRef ref,
   }) async {
-    final _router = ref.read(routerProvider);
-    final _authUseCase = ref.read(authUseCaseProvider);
+    final router = ref.read(routerProvider);
+    final authUseCase = ref.read(authUseCaseProvider);
 
-    await _authUseCase.signOut();
+    await authUseCase.signOut();
 
-    _router.goNamed(AppRoute.auth.name);
+    router.goNamed(AppRoute.auth.name);
   }
 }

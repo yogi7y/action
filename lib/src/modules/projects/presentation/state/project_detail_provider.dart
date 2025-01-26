@@ -4,11 +4,11 @@ import '../../domain/entity/project.dart';
 import '../../domain/use_case/project_use_case.dart';
 import '../view_models/project_view_model.dart';
 
-typedef ProjectOrId = ({String? id, ProjectEntity? value});
+typedef ProjectOrId = ({String? id, ProjectViewModel? value});
 typedef UpdateProjectCallback = ProjectEntity Function(ProjectEntity project);
 
 final projectDetailProvider =
-    FutureProvider.autoDispose.family<ProjectEntity, ProjectOrId>((ref, dataOrId) async {
+    FutureProvider.autoDispose.family<ProjectViewModel, ProjectOrId>((ref, dataOrId) async {
   // If we have data, return it directly
   if (dataOrId.value != null) return dataOrId.value!;
 
@@ -18,7 +18,7 @@ final projectDetailProvider =
     final result = await useCase.getProjectById(dataOrId.id!);
 
     return result.fold(
-      onSuccess: (project) => project,
+      onSuccess: (project) => ProjectViewModel(project: project, metadata: null),
       onFailure: (error) => throw error,
     );
   }

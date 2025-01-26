@@ -14,7 +14,7 @@ class ProjectViewModel {
   final ProjectEntity project;
 
   /// Metadata about project relations (tasks, pages, etc.)
-  final ProjectRelationMetadata metadata;
+  final ProjectRelationMetadata? metadata;
 
   String get completedAndTotalTasks => '$metadata.completedTasks/$metadata.totalTasks';
 

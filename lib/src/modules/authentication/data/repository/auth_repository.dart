@@ -26,44 +26,44 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<Result<UserEntity, AppException>> signInWithGoogle() async {
     final iOSClientId = env.googleIosClientId;
 
-    final _googleSignIn = GoogleSignIn(
+    final googleSignIn = GoogleSignIn(
       clientId: iOSClientId,
       serverClientId: env.googleWebClientId,
     );
 
-    final _user = await _googleSignIn.signIn();
+    final user = await googleSignIn.signIn();
 
-    final _googleAuth = await _user?.authentication;
-    final _accessToken = _googleAuth?.accessToken;
-    final _idToken = _googleAuth?.idToken;
+    final googleAuth = await user?.authentication;
+    final accessToken = googleAuth?.accessToken;
+    final idToken = googleAuth?.idToken;
 
-    if (_accessToken == null) {
+    if (accessToken == null) {
       return Failure(
         AppException(exception: 'Access token is null', stackTrace: StackTrace.current),
       );
     }
 
-    if (_idToken == null) {
+    if (idToken == null) {
       return Failure(
         AppException(exception: 'Id token is null', stackTrace: StackTrace.current),
       );
     }
 
-    final _response = await _supabaseAuth.signInWithIdToken(
+    final response = await _supabaseAuth.signInWithIdToken(
       provider: OAuthProvider.google,
-      idToken: _idToken,
-      accessToken: _accessToken,
+      idToken: idToken,
+      accessToken: accessToken,
     );
 
-    if (_response.user == null)
+    if (response.user == null)
       return Failure(AppException(
         exception: 'User should not be null',
         stackTrace: StackTrace.current,
       ));
 
-    final _userResult = UserModel.fromSupabaseUser(_response.user!);
+    final userResult = UserModel.fromSupabaseUser(response.user!);
 
-    return Success(_userResult);
+    return Success(userResult);
   }
 
   @override
@@ -104,20 +104,20 @@ class SupabaseAuthRepository implements AuthRepository {
     required Password password,
   }) async {
     try {
-      final _response = await _supabaseAuth.signInWithPassword(
+      final response = await _supabaseAuth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      if (_response.user == null) {
+      if (response.user == null) {
         return Failure(AppException(
           exception: 'User should not be null',
           stackTrace: StackTrace.current,
         ));
       }
 
-      final _userResult = UserModel.fromSupabaseUser(_response.user!);
-      return Success(_userResult);
+      final userResult = UserModel.fromSupabaseUser(response.user!);
+      return Success(userResult);
     } catch (e) {
       return Failure(AppException(
         exception: e.toString(),

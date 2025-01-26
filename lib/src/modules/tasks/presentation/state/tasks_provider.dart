@@ -20,22 +20,22 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
   Future<List<TaskEntity>> build(TaskView arg) async => _fetchTasks(arg);
 
   Future<Tasks> _fetchTasks(TaskView arg) async {
-    var _previousPageState = <TaskEntity>[];
+    var previousPageState = <TaskEntity>[];
 
     state = const AsyncLoading();
 
     if (arg.pageCount > 1) {
-      _previousPageState =
+      previousPageState =
           ref.read(tasksProvider(arg.copyWithPage(arg.pageCount - 1))).valueOrNull ?? [];
     }
 
-    final _cursor =
-        _previousPageState.isNotEmpty ? _previousPageState.last.createdAt.toIso8601String() : null;
+    final cursor =
+        previousPageState.isNotEmpty ? previousPageState.last.createdAt.toIso8601String() : null;
 
     final result = await useCase.fetchTasks(
       arg.toQuerySpecification(),
       limit: TasksCountNotifier.limit,
-      cursor: _cursor,
+      cursor: cursor,
     );
 
     return result.fold(
@@ -48,44 +48,44 @@ class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
       ref.read(taskMovementProvider).getAnimatedListKey(arg.label);
 
   Future<void> addTask() async {
-    final _task = ref.read(newTaskProvider);
+    final task = ref.read(newTaskProvider);
 
-    final _previousState = state;
+    final previousState = state;
 
-    const _id = '';
-    final _createdAt = DateTime.now();
-    final _updatedAt = _createdAt;
-    final _tempTask = TaskEntity.fromTaskProperties(
-      task: _task,
-      createdAt: _createdAt,
-      updatedAt: _updatedAt,
-      id: _id,
+    const id = '';
+    final createdAt = DateTime.now();
+    final updatedAt = createdAt;
+    final tempTask = TaskEntity.fromTaskProperties(
+      task: task,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      id: id,
     );
 
-    state = AsyncData([_tempTask, ...state.valueOrNull ?? []]);
+    state = AsyncData([tempTask, ...state.valueOrNull ?? []]);
     _animatedListKey.currentState?.insertItem(0);
     _clearInput();
 
     try {
-      final result = await useCase.createTask(_task);
+      final result = await useCase.createTask(task);
 
       await result.fold(
         onSuccess: (task) async {
           final currentTasks = state.valueOrNull ?? [];
 
           final updatedTasks = currentTasks
-              .map((taskItem) => taskItem.name == _tempTask.name ? task : taskItem)
+              .map((taskItem) => taskItem.name == tempTask.name ? task : taskItem)
               .toList();
 
           state = AsyncData(updatedTasks);
         },
         onFailure: (error) async {
-          state = _previousState;
+          state = previousState;
           throw error;
         },
       );
     } catch (e) {
-      state = _previousState;
+      state = previousState;
       rethrow;
     } finally {
       ref.invalidate(newTaskProvider);

@@ -4,15 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
-class TestGoRouterAdapter with GoRouterRouteDataAdapter {}
-
 class MockRouteConfiguration extends Mock implements RouteConfiguration {}
 
 void main() {
-  late TestGoRouterAdapter adapter;
+  late GoRouterRouteDataAdapter adapter;
 
   setUp(() {
-    adapter = TestGoRouterAdapter();
+    adapter = GoRouterRouteDataAdapter();
   });
 
   group('GoRouterRouteDataAdapter', () {
@@ -21,9 +19,9 @@ void main() {
 
       final result = adapter.adapt(state);
 
-      expect(result?.uri, Uri(path: '/home'));
-      expect(result?.pathParameters, isEmpty);
-      expect(result?.queryParameters, isEmpty);
+      expect(result.uri, Uri(path: '/home'));
+      expect(result.pathParameters, isEmpty);
+      expect(result.queryParameters, isEmpty);
     });
 
     test('adapts route with path parameters', () {
@@ -34,9 +32,9 @@ void main() {
 
       final result = adapter.adapt(state);
 
-      expect(result?.uri, Uri(path: '/users/123'));
-      expect(result?.pathParameters, {'id': '123'});
-      expect(result?.queryParameters, isEmpty);
+      expect(result.uri, Uri(path: '/users/123'));
+      expect(result.pathParameters, {'id': '123'});
+      expect(result.queryParameters, isEmpty);
     });
 
     test('adapts route with query parameters', () {
@@ -48,13 +46,13 @@ void main() {
       final result = adapter.adapt(state);
 
       expect(
-          result?.uri,
+          result.uri,
           Uri(
             path: '/search',
             queryParameters: {'q': 'flutter', 'page': '1'},
           ));
-      expect(result?.pathParameters, isEmpty);
-      expect(result?.queryParameters, {'q': 'flutter', 'page': '1'});
+      expect(result.pathParameters, isEmpty);
+      expect(result.queryParameters, {'q': 'flutter', 'page': '1'});
     });
 
     test('adapts route with both path and query parameters', () {
@@ -70,14 +68,14 @@ void main() {
       final result = adapter.adapt(state);
 
       expect(
-        result?.uri,
+        result.uri,
         Uri(
           path: '/users/123/posts/456',
           queryParameters: {'sort': 'date'},
         ),
       );
-      expect(result?.pathParameters, {'id': '123', 'postId': '456'});
-      expect(result?.queryParameters, {'sort': 'date'});
+      expect(result.pathParameters, {'id': '123', 'postId': '456'});
+      expect(result.queryParameters, {'sort': 'date'});
     });
   });
 }

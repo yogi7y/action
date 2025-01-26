@@ -104,12 +104,12 @@ class ProjectCard extends ConsumerWidget {
                   Row(
                     children: [
                       _IconWithText(
-                        label: relationMetaData.totalTasks.toString(),
+                        label: relationMetaData?.totalTasks.toString() ?? '',
                         iconPath: AssetsV2.addTask,
                       ),
                       const Spacer(),
                       _IconWithText(
-                        label: relationMetaData.totalPages.toString(),
+                        label: relationMetaData?.totalPages.toString() ?? '',
                         iconPath: AssetsV2.bookmarkAdd,
                       ),
                     ],
@@ -133,22 +133,22 @@ class _IconWithText extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _projectCardTheme = _colors.projectCard;
-    final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final projectCardTheme = colors.projectCard;
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
     return Row(
       children: [
         AppIconButton(
           svgIconPath: iconPath,
-          color: _projectCardTheme.subtitleForeground,
+          color: projectCardTheme.subtitleForeground,
           size: 16,
         ),
-        SizedBox(width: _spacing.xxs),
+        SizedBox(width: spacing.xxs),
         Text(
           label,
-          style: _fonts.text.xs.medium.copyWith(
-            color: _projectCardTheme.subtitleForeground,
+          style: fonts.text.xs.medium.copyWith(
+            color: projectCardTheme.subtitleForeground,
             height: 1,
           ),
         ),

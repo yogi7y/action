@@ -22,25 +22,25 @@ class SupabaseTaskRepository implements TaskRepository {
     required int limit,
   }) async {
     try {
-      final _query = queryBuilder.buildQuery(spec);
+      final query = queryBuilder.buildQuery(spec);
 
-      final _paginationQuery = queryBuilder.buildPaginationQuery(
-        _query,
+      final paginationQuery = queryBuilder.buildPaginationQuery(
+        query,
         cursor,
         limit,
       );
 
-      final _response = await _paginationQuery.select();
+      final response = await paginationQuery.select();
 
-      final tasks = (_response as List<dynamic>)
+      final tasks = (response as List<dynamic>)
           .map((task) => TaskModel.fromMap(task as Map<String, dynamic>))
           .toList();
 
-      final _paginatedResponse = PaginatedResponse<TaskEntity>(
+      final paginatedResponse = PaginatedResponse<TaskEntity>(
         results: tasks,
       );
 
-      return Success(_paginatedResponse);
+      return Success(paginatedResponse);
     } catch (e, stackTrace) {
       return Failure(
         AppException(
@@ -54,15 +54,15 @@ class SupabaseTaskRepository implements TaskRepository {
   @override
   Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) async {
     try {
-      final _response = await client
+      final response = await client
           .from('tasks') //
           .insert(task.toMap())
           .select()
           .single();
 
-      final _task = TaskModel.fromMap(_response as Map<String, Object?>? ?? {});
+      final task0 = TaskModel.fromMap(response as Map<String, Object?>? ?? {});
 
-      return Success(_task);
+      return Success(task0);
     } catch (e, stackTrace) {
       return Failure(
         AppException(
@@ -76,18 +76,18 @@ class SupabaseTaskRepository implements TaskRepository {
   @override
   Future<Result<TaskEntity, AppException>> updateTask(TaskEntity task) async {
     try {
-      final _id = task.id;
-      final _data = task.toMap();
+      final id = task.id;
+      final data = task.toMap();
 
-      final _response = await client
+      final response = await client
           .from('tasks') //
-          .update(_data)
-          .eq('id', _id)
+          .update(data)
+          .eq('id', id)
           .select()
           .single();
 
-      final _result = TaskModel.fromMap(_response as Map<String, Object?>);
-      return Success(_result);
+      final result = TaskModel.fromMap(response as Map<String, Object?>);
+      return Success(result);
     } catch (e, stackTrace) {
       return Failure(
         AppException(
@@ -106,10 +106,10 @@ class SupabaseTaskRepository implements TaskRepository {
   @override
   AsyncTaskCountResult getTotalTasks(TaskQuerySpecification spec) async {
     try {
-      final _query = queryBuilder.buildQuery(spec);
-      final _response = await _query.count();
+      final query = queryBuilder.buildQuery(spec);
+      final response = await query.count();
 
-      return Success(_response.count);
+      return Success(response.count);
     } catch (e, stackTrace) {
       return Failure(
         AppException(

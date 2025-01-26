@@ -4,11 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
-import '../../../../shared/header/detail_header.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
 import '../state/project_detail_provider.dart';
-import '../view_models/project_view_model.dart';
 import '../widgets/project_detail_header.dart';
 
 class ProjectDetailScreen extends ConsumerStatefulWidget {
@@ -34,20 +32,14 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _project = ref.watch(projectDetailProvider(widget.projectOrId));
+    final projectViewModel = ref.watch(projectDetailProvider(widget.projectOrId));
 
     return ProviderScope(
       child: Scaffold(
-        body: switch (_project) {
+        body: switch (projectViewModel) {
           AsyncData(value: final project) => ProviderScope(
               overrides: [
-                // projectNotifierProvider.overrideWith(
-                //   () => ProjectNotifier(
-                //     ProjectViewModel(
-                //       project: project,
-                //     ),
-                //   ),
-                // ),
+                projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
               ],
               child: _ProjectDetailDataState(controller: scrollController),
             ),
@@ -69,10 +61,8 @@ class _ProjectDetailDataState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final project = ref.watch(projectNotifierProvider);
     final colors = ref.watch(appThemeProvider);
     final spacing = ref.watch(spacingProvider);
-    final fonts = ref.watch(fontsProvider);
 
     return Scaffold(
       backgroundColor: colors.surface.background,
@@ -82,7 +72,7 @@ class _ProjectDetailDataState extends ConsumerWidget {
         },
         child: CustomScrollView(
           slivers: [
-            ProjectDetailHeader(controller: controller),
+            ProjectDetailTitle(controller: controller),
             SliverToBoxAdapter(
               child: Container(
                 height: spacing.sm,
@@ -97,8 +87,9 @@ class _ProjectDetailDataState extends ConsumerWidget {
               ),
             ),
             const SliverToBoxAdapter(
-              child: _ProjectDetailMetaData(),
-            )
+              child: _ProjectRelationDetailMetaData(),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: spacing.lg))
           ],
         ),
       ),
@@ -106,8 +97,8 @@ class _ProjectDetailDataState extends ConsumerWidget {
   }
 }
 
-class _ProjectDetailMetaData extends ConsumerWidget {
-  const _ProjectDetailMetaData();
+class _ProjectRelationDetailMetaData extends ConsumerWidget {
+  const _ProjectRelationDetailMetaData();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -125,11 +116,11 @@ class _ProjectDetailMetaData extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _ProjectMetaDataItem(
-            label: '${project.metadata.completedTasks}/${project.metadata.totalTasks} Tasks',
+            label: '${project.metadata?.completedTasks}/${project.metadata?.totalTasks} Tasks',
             iconPath: AssetsV2.addTask,
           ),
           _ProjectMetaDataItem(
-            label: '${project.metadata.totalPages} Pages',
+            label: '${project.metadata?.totalPages} Pages',
             iconPath: AssetsV2.bookmarkAdd,
           ),
           const _ProjectMetaDataItem(

@@ -1,23 +1,23 @@
 // ignore_for_file: avoid_implementing_value_types
 
 import 'package:action/src/core/exceptions/route_exception.dart';
-import 'package:action/src/core/router/handlers/project_detail_handler.dart';
+import 'package:action/src/core/router/handlers/project_detail_route_handler.dart';
 import 'package:action/src/core/router/route_data.dart';
-import 'package:action/src/modules/projects/domain/entity/project.dart';
 import 'package:action/src/modules/projects/presentation/screens/project_detail_screen.dart';
+import 'package:action/src/modules/projects/presentation/view_models/project_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class FakeBuildContext extends Fake implements BuildContext {}
 
-class FakeProjectEntity extends Fake implements ProjectEntity {}
+class FakeProjectViewModel extends Fake implements ProjectViewModel {}
 
 void main() {
   late ProjectDetailRouteHandler handler;
 
   setUpAll(() {
-    registerFallbackValue(FakeProjectEntity());
+    registerFallbackValue(FakeProjectViewModel());
     registerFallbackValue(FakeBuildContext());
   });
 
@@ -105,38 +105,38 @@ void main() {
     });
 
     test('successfully returns projectOrId when only project is provided', () {
-      final project = FakeProjectEntity();
+      final projectViewModel = FakeProjectViewModel();
       final data = AppRouteData(
         uri: Uri.parse('/projects/new'),
         pathParameters: const {'id': ''},
-        extra: project,
+        extra: projectViewModel,
       );
 
       final result = handler.validateAndTransform(data: data);
 
       expect(result.id, isEmpty);
-      expect(result.value, project);
+      expect(result.value, projectViewModel);
     });
 
     test('successfully returns projectOrId when both id and project are provided', () {
-      final project = FakeProjectEntity();
+      final projectViewModel = FakeProjectViewModel();
       final data = AppRouteData(
         uri: Uri.parse('/projects/123'),
         pathParameters: const {'id': '123'},
-        extra: project,
+        extra: projectViewModel,
       );
 
       final result = handler.validateAndTransform(data: data);
 
       expect(result.id, '123');
-      expect(result.value, project);
+      expect(result.value, projectViewModel);
     });
   });
 
   group('ProjectDetailRouteHandler.build', () {
     test('returns ProjectDetailScreen with provided parameters', () {
-      final project = FakeProjectEntity();
-      final param = (id: '123', value: project);
+      final projectViewModel = FakeProjectViewModel();
+      final param = (id: '123', value: projectViewModel);
 
       final result = handler.build(FakeBuildContext(), param);
 
@@ -146,7 +146,7 @@ void main() {
 
   group('ProjectDetailRouteHandler.handle', () {
     test('successfully creates ProjectDetailScreen when data is valid', () {
-      final project = FakeProjectEntity();
+      final project = FakeProjectViewModel();
       final data = AppRouteData(
         uri: Uri.parse('/projects/123'),
         pathParameters: const {'id': '123'},

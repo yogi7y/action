@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/strings.dart';
 import '../../../../core/logger/logger.dart';
-import '../../../../services/connectivity/connetivity_checker.dart';
+import '../../../../services/connectivity/connectivity_checker.dart';
 import '../../domain/entity/project.dart';
 import '../../domain/repository/project_repository.dart';
 import '../../presentation/view_models/project_view_model.dart';
