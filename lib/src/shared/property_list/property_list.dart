@@ -152,25 +152,25 @@ class _PropertyTileValue extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _spacing = ref.watch(spacingProvider);
-    final _color = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _hasValue = data.value != null;
+    final spacing = ref.watch(spacingProvider);
+    final color = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final hasValue = data.value != null;
 
-    final _theme =
-        _hasValue ? _color.textDetailOverviewTileHasValue : _color.textDetailOverviewTileNoValue;
+    final theme =
+        hasValue ? color.textDetailOverviewTileHasValue : color.textDetailOverviewTileNoValue;
 
     return Row(
       children: [
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(left: _spacing.sm),
+            margin: EdgeInsets.only(left: spacing.sm),
             alignment: Alignment.centerLeft,
-            child: _hasValue
+            child: hasValue
                 ? data.value
                 : _placeholderWidget(
-                    fonts: _fonts,
-                    color: _theme,
+                    fonts: fonts,
+                    color: theme,
                     ref: ref,
                   ),
           ),
@@ -179,7 +179,7 @@ class _PropertyTileValue extends ConsumerWidget {
           AppIconButton(
             svgIconPath: AssetsV2.xmark,
             size: 20,
-            color: _color.textTokens.tertiary,
+            color: color.textTokens.tertiary,
             onClick: data.onRemove,
           ),
       ],
@@ -191,7 +191,7 @@ class _PropertyTileValue extends ConsumerWidget {
     required TextDetailOverviewTileTokens color,
     required WidgetRef ref,
   }) {
-    final _colors = ref.watch(appThemeProvider);
+    final colors = ref.watch(appThemeProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -204,7 +204,7 @@ class _PropertyTileValue extends ConsumerWidget {
         AppIconButton(
           svgIconPath: AssetsV2.chevronDown,
           size: 20,
-          color: _colors.textTokens.tertiary,
+          color: colors.textTokens.tertiary,
         )
       ],
     );
@@ -219,31 +219,31 @@ class _PropertyTileLabel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _spacing = ref.watch(spacingProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
 
-    final _theme = data.value != null
-        ? _colors.textDetailOverviewTileHasValue
-        : _colors.textDetailOverviewTileNoValue;
+    final theme = data.value != null
+        ? colors.textDetailOverviewTileHasValue
+        : colors.textDetailOverviewTileNoValue;
 
     return Container(
-      padding: EdgeInsets.symmetric(vertical: _spacing.sm),
+      padding: EdgeInsets.symmetric(vertical: spacing.sm),
       decoration: BoxDecoration(
-        border: Border(right: BorderSide(color: _theme.border, width: .7)),
+        border: Border(right: BorderSide(color: theme.border, width: .7)),
       ),
       child: Row(
-        spacing: _spacing.xxs,
+        spacing: spacing.xxs,
         children: [
           AppIconButton(
             svgIconPath: data.labelIcon,
-            color: _theme.labelForeground.withValues(alpha: .8),
+            color: theme.labelForeground.withValues(alpha: .8),
             size: 16,
           ),
           Text(
             data.label,
-            style: _fonts.text.sm.regular
-                .copyWith(color: _theme.labelForeground.withValues(alpha: .8)),
+            style:
+                fonts.text.sm.regular.copyWith(color: theme.labelForeground.withValues(alpha: .8)),
           ),
         ],
       ),

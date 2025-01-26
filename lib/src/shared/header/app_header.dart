@@ -14,22 +14,22 @@ class AppHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _spacing = ref.watch(spacingProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
 
     return SliverAppBar(
       leadingWidth: 0,
       pinned: true,
       elevation: 0,
-      titleSpacing: _spacing.lg,
+      titleSpacing: spacing.lg,
       shadowColor: Colors.transparent,
       automaticallyImplyLeading: false,
-      toolbarHeight: kToolbarHeight + _spacing.md,
-      backgroundColor: _colors.surface.background,
+      toolbarHeight: kToolbarHeight + spacing.md,
+      backgroundColor: colors.surface.background,
       title: Text(
         title,
-        style: _fonts.headline.lg.semibold,
+        style: fonts.headline.lg.semibold,
       ),
       actions: [
         IconButton(
@@ -38,10 +38,10 @@ class AppHeader extends ConsumerWidget {
             Assets.search,
             height: 24,
             width: 24,
-            colorFilter: ColorFilter.mode(_colors.textTokens.primary, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(colors.textTokens.primary, BlendMode.srcIn),
           ),
         ),
-        SizedBox(width: _spacing.xs),
+        SizedBox(width: spacing.xs),
       ],
     );
   }

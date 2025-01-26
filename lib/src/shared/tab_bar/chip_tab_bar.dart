@@ -53,15 +53,15 @@ class _ChipTabBarState extends ConsumerState<ChipTabBar> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _screenWidth = MediaQuery.of(context).size.width;
-    final _tabWidth = (_screenWidth - (_spacing.lg * 2)) / widget.items.length;
+    final spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tabWidth = (screenWidth - (spacing.lg * 2)) / widget.items.length;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: _spacing.lg),
+      margin: EdgeInsets.symmetric(horizontal: spacing.lg),
       decoration: ShapeDecoration(
-        color: _colors.surface.modals,
+        color: colors.surface.modals,
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(cornerRadius: 9999, cornerSmoothing: 1),
         ),
@@ -72,16 +72,16 @@ class _ChipTabBarState extends ConsumerState<ChipTabBar> with SingleTickerProvid
             return AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
-                final _left = _animationController.value * _tabWidth;
+                final left = _animationController.value * tabWidth;
 
                 return Positioned(
                   top: 0,
-                  left: _left,
+                  left: left,
                   bottom: 0,
                   child: Container(
-                    width: _tabWidth,
+                    width: tabWidth,
                     decoration: ShapeDecoration(
-                      color: _colors.primary,
+                      color: colors.primary,
                       shape: SmoothRectangleBorder(
                         borderRadius: SmoothBorderRadius(
                           cornerRadius: 9999,
@@ -131,12 +131,12 @@ class TabBarChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _spacing = ref.watch(spacingProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _primitiveTokens = ref.watch(primitiveTokensProvider);
+    final spacing = ref.watch(spacingProvider);
+    final fonts = ref.watch(fontsProvider);
+    final colors = ref.watch(appThemeProvider);
+    final primitiveTokens = ref.watch(primitiveTokensProvider);
 
-    final _textColor = isSelected ? _primitiveTokens.white : _colors.textTokens.primary;
+    final textColor = isSelected ? primitiveTokens.white : colors.textTokens.primary;
 
     return Container(
       decoration: ShapeDecoration(
@@ -145,14 +145,14 @@ class TabBarChip extends ConsumerWidget {
           borderRadius: SmoothBorderRadius(cornerRadius: 9999, cornerSmoothing: 1),
         ),
       ),
-      padding: EdgeInsets.symmetric(vertical: _spacing.xs),
+      padding: EdgeInsets.symmetric(vertical: spacing.xs),
       alignment: Alignment.center,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (icon?.isNotEmpty ?? false)
             Padding(
-              padding: EdgeInsets.only(right: _spacing.xxs),
+              padding: EdgeInsets.only(right: spacing.xxs),
               child: AppIconButton(
                 svgIconPath: icon!,
                 size: 18,
@@ -160,8 +160,8 @@ class TabBarChip extends ConsumerWidget {
             ),
           Text(
             label,
-            style: _fonts.text.md.medium.copyWith(
-              color: _textColor,
+            style: fonts.text.md.medium.copyWith(
+              color: textColor,
             ),
           ),
         ],

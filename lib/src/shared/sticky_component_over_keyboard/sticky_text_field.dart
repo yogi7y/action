@@ -19,32 +19,32 @@ class StickyTextField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _sources = ref.watch(stickyTextFieldSourcesProvider);
-    final _spacing = ref.watch(spacingProvider);
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
+    final sources = ref.watch(stickyTextFieldSourcesProvider);
+    final spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
 
-    final _isProjectVisible =
+    final isProjectVisible =
         ref.watch(currentStickyTextFieldTypeProvider) == StickyTextFieldType.project;
 
-    final _hintText = _isProjectVisible ? 'Select Project' : 'Select Context';
+    final hintText = isProjectVisible ? 'Select Project' : 'Select Context';
 
     return SearchableDropdownField(
-      sources: _sources,
+      sources: sources,
       requestFocusOnCreated: true,
       searchableDropdownFieldData: SearchableDropdownFieldData(
-        padding: EdgeInsets.all(_spacing.md),
+        padding: EdgeInsets.all(spacing.md),
         margin: const EdgeInsets.only(bottom: 16),
-        verticalSpacing: _spacing.md,
+        verticalSpacing: spacing.md,
         inputFieldDecoration: SearchableInputFieldDecoration(
-          hintText: _hintText,
-          hintTextStyle: _fonts.text.md.medium.copyWith(
-            color: _colors.textTokens.secondary,
+          hintText: hintText,
+          hintTextStyle: fonts.text.md.medium.copyWith(
+            color: colors.textTokens.secondary,
           ),
           prefix: _PrefixIcon(),
         ),
         overlayDecoration: ShapeDecoration(
-          color: _colors.surface.backgroundContrast,
+          color: colors.surface.backgroundContrast,
           shape: SmoothRectangleBorder(
             borderRadius: SmoothBorderRadius(cornerRadius: 12),
           ),
@@ -57,38 +57,38 @@ class StickyTextField extends ConsumerWidget {
   List<BoxShadow> _getShadows({
     required WidgetRef ref,
   }) {
-    final _currentTheme = ref.watch(appThemeProvider);
-    final _primitiveTokens = ref.watch(primitiveTokensProvider);
+    final currentTheme = ref.watch(appThemeProvider);
+    final primitiveTokens = ref.watch(primitiveTokensProvider);
 
-    final _lightShadow = [
+    final lightShadow = [
       BoxShadow(
-        color: _primitiveTokens.neutral.shade500.withValues(alpha: .15),
+        color: primitiveTokens.neutral.shade500.withValues(alpha: .15),
         blurRadius: 6,
         spreadRadius: 4,
         offset: const Offset(0, 6),
       ),
     ];
 
-    final _darkShadow = [
+    final darkShadow = [
       BoxShadow(
-        color: _primitiveTokens.dark.withValues(alpha: .2),
+        color: primitiveTokens.dark.withValues(alpha: .2),
         blurRadius: 6,
         spreadRadius: 4,
         offset: const Offset(0, 6),
       ),
     ];
 
-    return _currentTheme is DarkTheme ? _darkShadow : _lightShadow;
+    return currentTheme is DarkTheme ? darkShadow : lightShadow;
   }
 }
 
 class _PrefixIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _isStickyTextFieldVisible = ref.watch(currentStickyTextFieldTypeProvider) != null;
+    final colors = ref.watch(appThemeProvider);
+    final isStickyTextFieldVisible = ref.watch(currentStickyTextFieldTypeProvider) != null;
 
-    final _icon = _isStickyTextFieldVisible ? Assets.arrowBack : Assets.arrowBack;
+    final icon = isStickyTextFieldVisible ? Assets.arrowBack : Assets.arrowBack;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -98,8 +98,8 @@ class _PrefixIcon extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.only(right: 8),
         child: AppIconButton(
-          svgIconPath: _icon,
-          color: _colors.textTokens.secondary,
+          svgIconPath: icon,
+          color: colors.textTokens.secondary,
         ),
       ),
     );
@@ -107,17 +107,17 @@ class _PrefixIcon extends ConsumerWidget {
 }
 
 final stickyTextFieldSourcesProvider = Provider<List<SearchSource>>((ref) {
-  final _sources = <SearchSource>[];
-  final _currentStickyTextFieldType = ref.watch(currentStickyTextFieldTypeProvider);
+  final sources = <SearchSource>[];
+  final currentStickyTextFieldType = ref.watch(currentStickyTextFieldTypeProvider);
 
-  final _isProjectTextFieldVisible = _currentStickyTextFieldType == StickyTextFieldType.project;
-  final _isContextTextFieldVisible = _currentStickyTextFieldType == StickyTextFieldType.context;
+  final isProjectTextFieldVisible = currentStickyTextFieldType == StickyTextFieldType.project;
+  final isContextTextFieldVisible = currentStickyTextFieldType == StickyTextFieldType.context;
 
-  if (_isProjectTextFieldVisible) {
-    _sources.add(ref.watch(projectPickerSearchSourceProvider));
-  } else if (_isContextTextFieldVisible) {
-    _sources.add(ref.watch(contextPickerSearchSourceProvider));
+  if (isProjectTextFieldVisible) {
+    sources.add(ref.watch(projectPickerSearchSourceProvider));
+  } else if (isContextTextFieldVisible) {
+    sources.add(ref.watch(contextPickerSearchSourceProvider));
   }
 
-  return _sources;
+  return sources;
 });

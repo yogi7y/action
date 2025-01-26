@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../design_system/design_system.dart';
 import '../../modules/projects/domain/entity/project_status.dart';
 import '../../modules/tasks/domain/entity/task_status.dart';
+import '../../services/audio/audio_service.dart';
 
 typedef AppCheckboxChangedCallback = void Function(AppCheckboxState state);
 
@@ -88,28 +89,37 @@ class AppCheckbox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _primitiveColors = ref.watch(primitiveTokensProvider);
+    final colors = ref.watch(appThemeProvider);
+    final primitiveColors = ref.watch(primitiveTokensProvider);
 
-    final _isUnchecked = state == AppCheckboxState.unchecked;
-    final _isIntermediate = state == AppCheckboxState.intermediate;
-    final _isChecked = state == AppCheckboxState.checked;
+    final isUnchecked = state == AppCheckboxState.unchecked;
+    final isIntermediate = state == AppCheckboxState.intermediate;
+    final isChecked = state == AppCheckboxState.checked;
 
-    final _checkboxTheme = _isChecked
-        ? _colors.selectedCheckbox
-        : _isIntermediate
-            ? _colors.intermediateCheckbox
-            : _colors.unselectedCheckbox;
+    final checkboxTheme = isChecked
+        ? colors.selectedCheckbox
+        : isIntermediate
+            ? colors.intermediateCheckbox
+            : colors.unselectedCheckbox;
+
+    final audioService = ref.watch(audioServiceProvider);
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        unawaited(HapticFeedback.lightImpact());
-        final _newState = state == AppCheckboxState.checked
+        final newState = state == AppCheckboxState.checked
             ? AppCheckboxState.unchecked
             : AppCheckboxState.checked;
 
-        onChanged?.call(_newState);
+        unawaited(HapticFeedback.lightImpact());
+
+        if (newState == AppCheckboxState.unchecked) {
+          unawaited(audioService.playAudio(AssetsV2.whoosh));
+        } else {
+          unawaited(audioService.playAudio(AssetsV2.bubbleBurst1));
+        }
+
+        onChanged?.call(newState);
       },
       onLongPress: () {
         unawaited(HapticFeedback.lightImpact());
@@ -123,22 +133,22 @@ class AppCheckbox extends ConsumerWidget {
           width: size,
           height: size,
           decoration: ShapeDecoration(
-            color: _isUnchecked ? null : _checkboxTheme.background,
+            color: isUnchecked ? null : checkboxTheme.background,
             shape: SmoothRectangleBorder(
               borderRadius: SmoothBorderRadius(cornerRadius: 6, cornerSmoothing: 1),
               side: BorderSide(
-                color: _checkboxTheme.border,
+                color: checkboxTheme.border,
               ),
             ),
           ),
-          child: _isChecked
+          child: isChecked
               ? Stack(
                   alignment: Alignment.center,
                   children: [
                     SvgPicture.asset(
                       Assets.check,
                       colorFilter: ColorFilter.mode(
-                        _primitiveColors.neutral.shade100,
+                        primitiveColors.neutral.shade100,
                         BlendMode.srcIn,
                       ),
                     ),
@@ -148,20 +158,20 @@ class AppCheckbox extends ConsumerWidget {
                       child: SvgPicture.asset(
                         Assets.check,
                         colorFilter: ColorFilter.mode(
-                          _primitiveColors.neutral.shade100,
+                          primitiveColors.neutral.shade100,
                           BlendMode.srcIn,
                         ),
                       ),
                     ),
                   ],
                 )
-              : _isIntermediate
+              : isIntermediate
                   ? Center(
                       child: Container(
                         height: 2.5,
                         margin: const EdgeInsets.symmetric(horizontal: 3),
                         decoration: ShapeDecoration(
-                          color: _primitiveColors.neutral.shade100,
+                          color: primitiveColors.neutral.shade100,
                           shape: SmoothRectangleBorder(
                             borderRadius: SmoothBorderRadius(cornerRadius: 4, cornerSmoothing: 1),
                           ),
