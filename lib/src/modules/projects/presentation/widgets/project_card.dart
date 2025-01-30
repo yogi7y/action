@@ -31,13 +31,14 @@ class ProjectCard extends ConsumerWidget {
     const borderRadiusValue = 12.0;
 
     return GestureDetector(
-      onTap: () => unawaited(
-        context.pushNamed(
-          AppRoute.projectDetail.name,
-          pathParameters: {'id': project.id},
-          extra: projectViewModel,
-        ),
-      ),
+      onTap: () {
+        // unawaited(
+        // context.pushNamed(
+        //   AppRoute.projectDetail.name,
+        //   pathParameters: {'id': project.id},
+        //   extra: projectViewModel,
+        // ),
+      },
       child: DecoratedBox(
         decoration: ShapeDecoration(
           color: projectCardTheme.background,

@@ -8,19 +8,23 @@ import '../state/project_detail_provider.dart';
 class ProjectDetailTitle extends ConsumerWidget {
   const ProjectDetailTitle({
     required this.controller,
+    required this.tabIndex,
     super.key,
   });
 
   final ScrollController controller;
+  final int tabIndex;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final project = ref.watch(projectNotifierProvider);
 
+    final showCheckbox = tabIndex == 0;
+
     return DetailHeader(
       title: project.project.name,
       scrollController: controller,
-      leading: const _ProjectDetailCheckbox(),
+      leading: showCheckbox ? const _ProjectDetailCheckbox() : null,
     );
   }
 }

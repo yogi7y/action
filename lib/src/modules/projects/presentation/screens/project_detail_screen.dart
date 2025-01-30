@@ -21,12 +21,18 @@ class ProjectDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<ProjectDetailScreen> createState() => _ProjectDetailScreenState();
 }
 
-class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
+class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
+    with SingleTickerProviderStateMixin {
   late final ScrollController scrollController = ScrollController();
+  late final TabController tabController = TabController(
+    length: 2,
+    vsync: this,
+  );
 
   @override
   void dispose() {
     scrollController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 
@@ -41,7 +47,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               overrides: [
                 projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
               ],
-              child: _ProjectDetailDataState(controller: scrollController),
+              child: _ProjectDetailDataState(
+                controller: scrollController,
+                tabController: tabController,
+              ),
             ),
           AsyncError(error: final error) => Center(child: Text(error.toString())),
           _ => const Center(child: CircularProgressIndicator()),
@@ -55,9 +64,11 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 class _ProjectDetailDataState extends ConsumerWidget {
   const _ProjectDetailDataState({
     required this.controller,
+    required this.tabController,
   });
 
   final ScrollController controller;
+  final TabController tabController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,6 +99,21 @@ class _ProjectDetailDataState extends ConsumerWidget {
             ),
             const SliverToBoxAdapter(
               child: _ProjectRelationDetailMetaData(),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: spacing.lg)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: spacing.lg),
+                child: TabBar(
+                  controller: tabController,
+                  isScrollable: true,
+                  padding: EdgeInsets.zero,
+                  tabs: const [
+                    Tab(text: 'Tasks'),
+                    Tab(text: 'Pages'),
+                  ],
+                ),
+              ),
             ),
             SliverToBoxAdapter(child: SizedBox(height: spacing.lg))
           ],
