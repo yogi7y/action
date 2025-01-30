@@ -24,6 +24,7 @@ class ProjectDetailScreen extends ConsumerStatefulWidget {
 class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
     with SingleTickerProviderStateMixin {
   late final ScrollController scrollController = ScrollController();
+
   late final TabController tabController = TabController(
     length: 2,
     vsync: this,
@@ -73,6 +74,7 @@ class _ProjectDetailDataState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
     final spacing = ref.watch(spacingProvider);
 
     return Scaffold(
@@ -81,9 +83,13 @@ class _ProjectDetailDataState extends ConsumerWidget {
         onRefresh: () async {
           await Future<void>.delayed(const Duration(milliseconds: 1000));
         },
-        child: CustomScrollView(
-          slivers: [
-            ProjectDetailTitle(controller: controller),
+        child: NestedScrollView(
+          controller: controller,
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            ProjectDetailTitle(
+              controller: controller,
+              tabIndex: tabController.index,
+            ),
             SliverToBoxAdapter(
               child: Container(
                 height: spacing.sm,
@@ -97,17 +103,27 @@ class _ProjectDetailDataState extends ConsumerWidget {
                 color: colors.l2Screen.background,
               ),
             ),
-            const SliverToBoxAdapter(
-              child: _ProjectRelationDetailMetaData(),
-            ),
+            const SliverToBoxAdapter(child: _ProjectRelationDetailMetaData()),
             SliverToBoxAdapter(child: SizedBox(height: spacing.lg)),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: spacing.lg),
-                child: TabBar(
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _SliverAppBarDelegate(
+                TabBar(
                   controller: tabController,
                   isScrollable: true,
+                  labelPadding: EdgeInsets.zero,
                   padding: EdgeInsets.zero,
+                  dividerColor: colors.tabBar.underlineBorder,
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(
+                      width: 1.5,
+                      color: colors.tabBar.indicator,
+                    ),
+                  ),
+                  labelStyle: fonts.headline.xs.medium,
+                  unselectedLabelStyle: fonts.headline.xs.medium,
+                  labelColor: colors.tabBar.selectedTextColor,
+                  unselectedLabelColor: colors.tabBar.unselectedTextColor,
                   tabs: const [
                     Tab(text: 'Tasks'),
                     Tab(text: 'Pages'),
@@ -115,12 +131,63 @@ class _ProjectDetailDataState extends ConsumerWidget {
                 ),
               ),
             ),
-            SliverToBoxAdapter(child: SizedBox(height: spacing.lg))
           ],
+          body: TabBarView(
+            controller: tabController,
+            children: [
+              // Tasks tab
+              ListView.builder(
+                padding: EdgeInsets.only(bottom: spacing.lg),
+                itemCount: 15,
+                itemBuilder: (context, index) => ListTile(
+                  leading: const Icon(Icons.check_box_outline_blank),
+                  title: Text('Task ${index + 1}'),
+                  subtitle: Text('Task description ${index + 1}'),
+                  trailing: const Icon(Icons.more_vert),
+                ),
+              ),
+              // Pages tab
+              ListView.builder(
+                padding: EdgeInsets.only(bottom: spacing.lg),
+                itemCount: 3,
+                itemBuilder: (context, index) => ListTile(
+                  leading: const Icon(Icons.description),
+                  title: Text('Page ${index + 1}'),
+                  subtitle: const Text('Last edited 2 days ago'),
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final container = ProviderScope.containerOf(context);
+    final spacing = container.read(spacingProvider);
+
+    return Container(
+      padding: EdgeInsets.zero,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }
 
 class _ProjectRelationDetailMetaData extends ConsumerWidget {
