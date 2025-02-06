@@ -146,13 +146,10 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
             unselectedLabelStyle: textStyle,
             labelColor: colors.tabBar.selectedTextColor,
             unselectedLabelColor: colors.tabBar.unselectedTextColor,
-            // dividerColor: colors.tabBar.underlineBorder,
             dividerColor: Colors.transparent,
             indicatorColor: colors.tabBar.indicator,
             tabs: const [
-              Tab(
-                text: 'Tasks',
-              ),
+              Tab(text: 'Tasks'),
               Tab(text: 'Pages'),
             ],
           ),
@@ -161,7 +158,7 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
     );
   }
 
-  static const _topPadding = 12.0;
+  static const _topPadding = 0.0;
 
   @override
   double get maxExtent => 48 + _topPadding;
