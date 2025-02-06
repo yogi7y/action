@@ -20,12 +20,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoute.splash.path,
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      _handleBottomNavFeedback(state);
-      _updateBottomNavFromRoute(
-        state,
-        bottomNavItems,
-        selectedBottomNavNotifier,
-      );
+      // Wrapping with Duration.zero as otherwise it was throwing error whenever I was opening
+      // the widget inspector that trying to modify state when widget tree was building.
+      Future.delayed(Duration.zero, () {
+        _handleBottomNavFeedback(state);
+        _updateBottomNavFromRoute(
+          state,
+          bottomNavItems,
+          selectedBottomNavNotifier,
+        );
+      });
 
       return null;
     },
