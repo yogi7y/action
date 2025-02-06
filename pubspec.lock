@@ -959,9 +959,11 @@ packages:
   smart_textfield:
     dependency: "direct main"
     description:
-      path: "../smart_text_field"
-      relative: true
-    source: path
+      path: "."
+      ref: searchable-dropdown
+      resolved-ref: ddf6afb351bf39b7d702b05f6fb405f122df60b1
+      url: "https://github.com/Yogi7y/smart-text-field"
+    source: git
     version: "1.1.0"
   source_gen:
     dependency: transitive

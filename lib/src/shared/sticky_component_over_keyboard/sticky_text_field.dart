@@ -31,25 +31,25 @@ class StickyTextField extends ConsumerWidget {
 
     return SearchableDropdownField(
       sources: sources,
-      requestFocusOnCreated: true,
+      // requestFocusOnCreated: true,
       searchableDropdownFieldData: SearchableDropdownFieldData(
         padding: EdgeInsets.all(spacing.md),
         margin: const EdgeInsets.only(bottom: 16),
-        verticalSpacing: spacing.md,
-        inputFieldDecoration: SearchableInputFieldDecoration(
-          hintText: hintText,
-          hintTextStyle: fonts.text.md.medium.copyWith(
-            color: colors.textTokens.secondary,
-          ),
-          prefix: _PrefixIcon(),
-        ),
-        overlayDecoration: ShapeDecoration(
-          color: colors.surface.backgroundContrast,
-          shape: SmoothRectangleBorder(
-            borderRadius: SmoothBorderRadius(cornerRadius: 12),
-          ),
-          shadows: _getShadows(ref: ref),
-        ),
+        // verticalSpacing: spacing.md,
+        // inputFieldDecoration: SearchableInputFieldDecoration(
+        //   hintText: hintText,
+        //   hintTextStyle: fonts.text.md.medium.copyWith(
+        //     color: colors.textTokens.secondary,
+        //   ),
+        //   prefix: _PrefixIcon(),
+        // ),
+        // overlayDecoration: ShapeDecoration(
+        //   color: colors.surface.backgroundContrast,
+        //   shape: SmoothRectangleBorder(
+        //     borderRadius: SmoothBorderRadius(cornerRadius: 12),
+        //   ),
+        //   shadows: _getShadows(ref: ref),
+        // ),
       ),
     );
   }

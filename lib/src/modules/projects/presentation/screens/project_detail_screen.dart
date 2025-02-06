@@ -21,12 +21,15 @@ class ProjectDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<ProjectDetailScreen> createState() => _ProjectDetailScreenState();
 }
 
-class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
+class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
+    with SingleTickerProviderStateMixin {
   late final ScrollController scrollController = ScrollController();
+  late final TabController tabController = TabController(length: 2, vsync: this);
 
   @override
   void dispose() {
     scrollController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 
@@ -41,7 +44,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
               overrides: [
                 projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
               ],
-              child: _ProjectDetailDataState(controller: scrollController),
+              child: _ProjectDetailDataState(
+                tabController: tabController,
+                controller: scrollController,
+              ),
             ),
           AsyncError(error: final error) => Center(child: Text(error.toString())),
           _ => const Center(child: CircularProgressIndicator()),
@@ -55,9 +61,11 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
 class _ProjectDetailDataState extends ConsumerWidget {
   const _ProjectDetailDataState({
     required this.controller,
+    required this.tabController,
   });
 
   final ScrollController controller;
+  final TabController tabController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,11 +75,10 @@ class _ProjectDetailDataState extends ConsumerWidget {
     return Scaffold(
       backgroundColor: colors.surface.background,
       body: RefreshIndicator(
-        onRefresh: () async {
-          await Future<void>.delayed(const Duration(milliseconds: 1000));
-        },
-        child: CustomScrollView(
-          slivers: [
+        onRefresh: () async => Future<void>.delayed(const Duration(milliseconds: 1000)),
+        child: NestedScrollView(
+          controller: controller,
+          headerSliverBuilder: (context, innerBoxScrolled) => [
             ProjectDetailTitle(controller: controller),
             SliverToBoxAdapter(
               child: Container(
@@ -89,12 +96,81 @@ class _ProjectDetailDataState extends ConsumerWidget {
             const SliverToBoxAdapter(
               child: _ProjectRelationDetailMetaData(),
             ),
-            SliverToBoxAdapter(child: SizedBox(height: spacing.lg))
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _SliverTabBarDelegate(tabController: tabController),
+            ),
           ],
+          body: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: TabBarView(
+              controller: tabController,
+              children: const [
+                Center(child: Text('Tasks')),
+                Center(child: Text('Pages')),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
+}
+
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  const _SliverTabBarDelegate({
+    required this.tabController,
+  });
+
+  final TabController tabController;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final colors = ref.watch(appThemeProvider);
+        final fonts = ref.watch(fontsProvider);
+
+        final textStyle = fonts.headline.xs.medium;
+
+        return Container(
+          color: colors.l2Screen.background,
+          padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(top: _topPadding),
+          child: TabBar(
+            tabAlignment: TabAlignment.start,
+            isScrollable: true,
+            controller: tabController,
+            labelPadding: const EdgeInsets.only(right: 20),
+            indicatorSize: TabBarIndicatorSize.label,
+            labelStyle: textStyle,
+            unselectedLabelStyle: textStyle,
+            labelColor: colors.tabBar.selectedTextColor,
+            unselectedLabelColor: colors.tabBar.unselectedTextColor,
+            // dividerColor: colors.tabBar.underlineBorder,
+            dividerColor: Colors.transparent,
+            indicatorColor: colors.tabBar.indicator,
+            tabs: const [
+              Tab(
+                text: 'Tasks',
+              ),
+              Tab(text: 'Pages'),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  static const _topPadding = 12.0;
+
+  @override
+  double get maxExtent => 48 + _topPadding;
+
+  @override
+  double get minExtent => 48 + _topPadding;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }
 
 class _ProjectRelationDetailMetaData extends ConsumerWidget {

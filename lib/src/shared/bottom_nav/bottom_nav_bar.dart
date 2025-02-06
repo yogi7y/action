@@ -13,17 +13,17 @@ class BottomNavBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _items = ref.watch(bottomNavItemsProvider);
-    final _selectedItem = ref.watch(selectedBottomNavProvider);
+    final colors = ref.watch(appThemeProvider);
+    final items = ref.watch(bottomNavItemsProvider);
+    final selectedItem = ref.watch(selectedBottomNavProvider);
 
     return UnconstrainedBox(
       child: Container(
         decoration: BoxDecoration(
-          color: _colors.unselectedBottomNavigationItem.background,
+          color: colors.unselectedBottomNavigationItem.background,
           boxShadow: [
             BoxShadow(
-              color: _colors.surface.backgroundContrast.withValues(alpha: .2),
+              color: colors.surface.backgroundContrast.withValues(alpha: .2),
               blurRadius: 8,
               offset: const Offset(0, -4),
             ),
@@ -31,13 +31,13 @@ class BottomNavBar extends ConsumerWidget {
         ),
         width: MediaQuery.of(context).size.width,
         child: Row(
-          children: _items
+          children: items
               .mapIndexed((index, item) => Expanded(
                     child: GestureDetector(
                       onTap: () => _onTap(index: index, data: item, ref: ref),
                       child: BottomNavItem(
                         data: item,
-                        isSelected: item == _selectedItem.item,
+                        isSelected: item == selectedItem.item,
                       ),
                     ),
                   ))
@@ -68,31 +68,31 @@ class BottomNavItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
 
-    final _backgroundColor = isSelected
-        ? _colors.selectedBottomNavigationItem.background
-        : _colors.unselectedBottomNavigationItem.background;
+    final backgroundColor = isSelected
+        ? colors.selectedBottomNavigationItem.background
+        : colors.unselectedBottomNavigationItem.background;
 
-    final _labelStyle = isSelected
-        ? _fonts.text.xs.semibold.copyWith(
-            color: _colors.selectedBottomNavigationItem.text,
+    final labelStyle = isSelected
+        ? fonts.text.xs.semibold.copyWith(
+            color: colors.selectedBottomNavigationItem.text,
           )
-        : _fonts.text.xs.medium.copyWith(
-            color: _colors.unselectedBottomNavigationItem.text,
+        : fonts.text.xs.medium.copyWith(
+            color: colors.unselectedBottomNavigationItem.text,
           );
 
     return Container(
       decoration: ShapeDecoration(
-        color: _backgroundColor,
+        color: backgroundColor,
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(cornerRadius: isSelected ? 8 : 0, cornerSmoothing: 1),
         ),
       ),
       padding: EdgeInsets.symmetric(
-        vertical: _spacing.sm,
+        vertical: spacing.sm,
       ),
       child: Column(
         children: [
@@ -100,15 +100,15 @@ class BottomNavItem extends ConsumerWidget {
             data.iconPath,
             colorFilter: ColorFilter.mode(
               isSelected
-                  ? _colors.selectedBottomNavigationItem.text
-                  : _colors.unselectedBottomNavigationItem.text,
+                  ? colors.selectedBottomNavigationItem.text
+                  : colors.unselectedBottomNavigationItem.text,
               BlendMode.srcIn,
             ),
           ),
-          SizedBox(height: _spacing.xxs),
+          SizedBox(height: spacing.xxs),
           Text(
             data.label,
-            style: _labelStyle,
+            style: labelStyle,
             maxLines: 1,
           ),
         ],
