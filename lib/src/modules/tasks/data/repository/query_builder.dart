@@ -37,6 +37,8 @@ class SupabaseQueryBuilder {
         ),
       final StatusTaskSpecification s => query //
           .eq('status', s.status.value),
+      final ProjectTaskSpecification p => query //
+          .eq('project_id', p.projectId),
       final OrganizedStatusSpecification o => query.eq(
           'is_organized',
           o.isOrganized,

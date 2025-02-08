@@ -42,9 +42,7 @@ class SupabaseTaskRepository implements TaskRepository {
           .map((task) => TaskModel.fromMap(task as Map<String, dynamic>))
           .toList();
 
-      final paginatedResponse = PaginatedResponse<TaskEntity>(
-        results: tasks,
-      );
+      final paginatedResponse = PaginatedResponse<TaskEntity>(results: tasks);
 
       return Success(paginatedResponse);
     } catch (e, stackTrace) {

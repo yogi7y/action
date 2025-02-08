@@ -101,9 +101,8 @@ final class UnOrganizedTaskView extends TaskView {
   bool canContainTask(TaskEntity entity) => !entity.isOrganized;
 
   @override
-  TaskQuerySpecification toQuerySpecification() => const OrganizedStatusSpecification(
-        isOrganized: false,
-      );
+  TaskQuerySpecification toQuerySpecification() =>
+      const OrganizedStatusSpecification(isOrganized: false);
 
   @override
   UnOrganizedTaskView copyWithPage(PageCount pageCount) => UnOrganizedTaskView(

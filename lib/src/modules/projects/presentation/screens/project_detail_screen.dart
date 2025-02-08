@@ -6,6 +6,7 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
+import '../../../tasks/presentation/state/tasks_provider.dart';
 import '../state/project_detail_provider.dart';
 import '../widgets/project_detail_header.dart';
 
@@ -106,7 +107,7 @@ class _ProjectDetailDataState extends ConsumerWidget {
             child: TabBarView(
               controller: tabController,
               children: const [
-                Center(child: Text('Tasks')),
+                ProjectTaskView(),
                 Center(child: Text('Pages')),
               ],
             ),
@@ -114,6 +115,17 @@ class _ProjectDetailDataState extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class ProjectTaskView extends ConsumerWidget {
+  const ProjectTaskView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    throw UnimplementedError();
   }
 }
 

@@ -21,18 +21,15 @@ class TasksList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _count = ref.watch(tasksCountNotifierProvider(taskView));
+    final count = ref.watch(tasksCountNotifierProvider(taskView));
 
-    return _count.when(
+    return count.when(
       error: (error, _) => PlaceholderWidget(text: error.toString()),
       loading: _TaskListLoadingState.new,
-      data: (count) {
-        logger('rebuilding count: $count for ${taskView.label}');
-        return _TaskListDataState(
-          taskView: taskView,
-          count: count,
-        );
-      },
+      data: (count) => _TaskListDataState(
+        taskView: taskView,
+        count: count,
+      ),
     );
   }
 }
@@ -86,9 +83,9 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
           ..invalidate(tasksFilterProvider)
           ..invalidate(tasksCountNotifierProvider);
 
-        final _currentTaskView = ref.read(selectedTaskFilterProvider);
+        final currentTaskView = ref.read(selectedTaskFilterProvider);
 
-        return ref.refresh(tasksProvider(_currentTaskView).future);
+        return ref.refresh(tasksProvider(currentTaskView).future);
       },
       child: Stack(
         children: [
@@ -102,19 +99,19 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
             key: _animatedListKey,
             initialItemCount: widget.count,
             itemBuilder: (context, index, animation) {
-              final _page = index ~/ TasksCountNotifier.limit + 1;
-              final _itemIndex = index % TasksCountNotifier.limit;
+              final page = index ~/ TasksCountNotifier.limit + 1;
+              final itemIndex = index % TasksCountNotifier.limit;
 
-              final _value = ref.watch(tasksProvider(widget.taskView.copyWithPage(_page)));
+              final value = ref.watch(tasksProvider(widget.taskView.copyWithPage(page)));
 
-              return _value.when(
+              return value.when(
                 data: (tasks) {
-                  if (_itemIndex >= tasks.length) return const SizedBox.shrink();
+                  if (itemIndex >= tasks.length) return const SizedBox.shrink();
 
                   return ProviderScope(
                     overrides: [
                       scopedTaskProvider.overrideWithValue(
-                        (value: tasks[_itemIndex], index: index),
+                        (value: tasks[itemIndex], index: index),
                       ),
                     ],
                     child: FadeTransition(

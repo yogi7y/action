@@ -184,11 +184,7 @@ class TasksCountNotifier extends FamilyAsyncNotifier<int, TaskView> {
     );
   }
 
-  void increment() {
-    state = AsyncData(state.value! + 1);
-  }
+  void increment() => state = AsyncData(state.value! + 1);
 
-  void decrement() {
-    state = AsyncData(state.value! - 1);
-  }
+  void decrement() => state = AsyncData(state.value! - 1);
 }
