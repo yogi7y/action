@@ -4,8 +4,8 @@ import '../filter.dart';
 import '../filter_visitor.dart';
 
 @immutable
-class EqualsFilter implements Filter {
-  const EqualsFilter({
+class GreaterThanFilter implements Filter {
+  const GreaterThanFilter({
     required this.key,
     required this.value,
   });
@@ -17,5 +17,5 @@ class EqualsFilter implements Filter {
   final Object value;
 
   @override
-  V accept<V>(FilterOperations<V> visitor) => visitor.visitEquals(this);
+  V accept<V>(FilterOperations<V> visitor) => visitor.visitGreaterThan(this);
 }

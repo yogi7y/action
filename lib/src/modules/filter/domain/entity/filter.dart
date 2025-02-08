@@ -8,23 +8,23 @@ import 'filter_visitor.dart';
 /// It uses the Visitor pattern through [FilterOperations] to allow different implementations
 /// of filter operations.
 ///
-/// The type parameter [T] represents the type of the filter value.
-/// For example, if you want to filter a string, boolean, number, etc.
+/// The filter value is of type [Object] to support filtering on any value type
+/// like strings, booleans, numbers, etc.
 ///
 /// ```dart
-/// final allOrganizedTasks = EqualsFilter<bool>(key: 'isOrganized', value: true);
+/// final allOrganizedTasks = EqualsFilter(key: 'isOrganized', value: true);
 /// ```
 ///
 /// If you want to filter a string, you can do the following:
 /// ```dart
-///  final allTasksForJohn = EqualsFilter<String>(key: 'assignee', value: 'John');
+///  final allTasksForJohn = EqualsFilter(key: 'assignee', value: 'John');
 /// ```
 @immutable
-abstract class Filter<T> {
+abstract class Filter {
   /// Creates a new filter with the specified [key] and [value].
   ///
   /// [key] represents the field or property to filter on.
-  /// [value] represents the value to filter by, of type [T].
+  /// [value] represents the value to filter by, of type [Object].
   const Filter({
     required this.key,
     required this.value,
@@ -34,7 +34,7 @@ abstract class Filter<T> {
   final String key;
 
   /// The value to filter by.
-  final T value;
+  final Object value;
 
   /// Accepts a visitor to implement the specific filter operation.
   ///

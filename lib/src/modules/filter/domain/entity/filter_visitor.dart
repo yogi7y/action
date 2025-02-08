@@ -1,5 +1,6 @@
 import 'filter.dart';
 import 'variants/equals_filter.dart';
+import 'variants/greater_than_filter.dart';
 
 /// Visitor interface for implementing filter operations.
 ///
@@ -29,6 +30,15 @@ abstract class FilterOperations<V> {
   /// [filter] The equals filter to process
   /// Returns a value of type [V] based on the visitor implementation
   V visitEquals(EqualsFilter filter);
+
+  /// Processes a greater than filter operation.
+  ///
+  /// This method is called when visiting a [GreaterThanFilter] to process
+  /// a greater than comparison filter operation.
+  ///
+  /// [filter] The greater than filter to process
+  /// Returns a value of type [V] based on the visitor implementation
+  V visitGreaterThan(GreaterThanFilter filter);
 }
 
 /// Base class for implementing in-memory filter operations using the Visitor pattern.
@@ -74,4 +84,10 @@ abstract class InMemoryFilterOperations<T> implements FilterOperations<bool> {
 
   /// The entity instance to be evaluated against filter criteria.
   final T item;
+
+  /// Validates all filters against the item.
+  ///
+  /// [filters] is a list of [Filter] to validate against the item.
+  /// Returns `true` if all filters are valid, `false` otherwise.
+  bool validateAll(List<Filter> filters) => filters.every((filter) => filter.accept(this));
 }
