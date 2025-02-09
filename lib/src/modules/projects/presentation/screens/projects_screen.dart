@@ -28,9 +28,9 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
+    final spacing = ref.watch(spacingProvider);
 
-    final _selectedTab = ref.watch(projectAndContextProvider);
+    final selectedTab = ref.watch(projectAndContextProvider);
 
     return Scaffold(
       body: NestedScrollView(
@@ -40,7 +40,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             SliverToBoxAdapter(
               child: ChipTabBar(
                 pageController: _pageController,
-                selectedIndex: _selectedTab.indexValue,
+                selectedIndex: selectedTab.indexValue,
                 onTabChanged: (index) {
                   ref
                       .read(projectAndContextProvider.notifier)
@@ -58,12 +58,12 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                   ),
                   ChipTabBarItem(
                     label: 'Context',
-                    icon: Assets.tag,
+                    icon: AssetsV2.tag,
                   ),
                 ],
               ),
             ),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
+            SliverToBoxAdapter(child: SizedBox(height: spacing.xxl)),
           ];
         },
         body: PageView(

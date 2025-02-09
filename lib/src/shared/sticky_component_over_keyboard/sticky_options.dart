@@ -39,7 +39,7 @@ class _DueDateOption extends ConsumerWidget {
     final relativeDueDate = dueDate?.relativeDate;
 
     return AppSelectableChip(
-      iconPath: Assets.calendarMonth,
+      iconPath: AssetsV2.calendarOutlined,
       value: relativeDueDate,
       label: 'Due Date',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(dueDateAsNull: true),
@@ -59,7 +59,7 @@ class _ContextOption extends ConsumerWidget {
         ? ref.watch(contextByIdProvider(selectedContextId))
         : null;
     return AppSelectableChip(
-      iconPath: Assets.tag,
+      iconPath: AssetsV2.tag,
       label: 'Context',
       value: selectedContext?.name,
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(contextIdAsNull: true),
@@ -81,7 +81,7 @@ class _ProjectOption extends ConsumerWidget {
         : null;
 
     return AppSelectableChip(
-      iconPath: Assets.construction,
+      iconPath: AssetsV2.hammerOutlined,
       value: selectedProject?.project.name,
       label: 'Project',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(projectIdAsNull: true),

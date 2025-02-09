@@ -35,7 +35,7 @@ class AppHeader extends ConsumerWidget {
         IconButton(
           onPressed: () {},
           icon: SvgPicture.asset(
-            Assets.search,
+            AssetsV2.search,
             height: 24,
             width: 24,
             colorFilter: ColorFilter.mode(colors.textTokens.primary, BlendMode.srcIn),

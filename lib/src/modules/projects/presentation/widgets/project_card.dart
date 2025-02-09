@@ -98,7 +98,7 @@ class ProjectCard extends ConsumerWidget {
                   SizedBox(height: spacing.xs),
                   const _IconWithText(
                     label: '14th Jan, 2025',
-                    iconPath: Assets.calendarMonth,
+                    iconPath: AssetsV2.calendarLinesOutlined,
                   ),
                   SizedBox(height: spacing.xs),
                   Row(

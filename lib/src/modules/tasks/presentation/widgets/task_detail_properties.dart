@@ -38,7 +38,7 @@ class TaskDetailProperties extends ConsumerWidget {
       ),
       PropertyData(
         label: 'Due',
-        labelIcon: AssetsV2.calendar,
+        labelIcon: AssetsV2.calendarOutlined,
         valuePlaceholder: 'Empty',
         isRemovable: true,
         value: task.dueDate != null

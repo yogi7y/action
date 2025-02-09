@@ -272,7 +272,7 @@ class _ProjectDetailProperties extends ConsumerWidget {
         ),
         PropertyData(
           label: 'Due',
-          labelIcon: AssetsV2.calendar,
+          labelIcon: AssetsV2.calendarOutlined,
           valuePlaceholder: 'Empty',
           isRemovable: true,
           value: project.dueDate != null

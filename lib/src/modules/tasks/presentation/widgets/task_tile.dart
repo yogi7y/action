@@ -150,19 +150,19 @@ class _TaskMetaDataRow extends ConsumerWidget {
       children: [
         if (project != null)
           _TaskMetaData(
-            iconPath: Assets.hardware,
+            iconPath: AssetsV2.hammerOutlined,
             value: project.name,
             onClick: () {},
           ),
         if (context0 != null)
           _TaskMetaData(
-            iconPath: Assets.tag,
+            iconPath: AssetsV2.tag,
             value: context0.name,
             onClick: () {},
           ),
         if (dueDate != null)
           _TaskMetaData(
-            iconPath: Assets.calendarMonth,
+            iconPath: AssetsV2.calendarOutlined,
             value: dueDate.relativeDate,
             onClick: () {},
           ),

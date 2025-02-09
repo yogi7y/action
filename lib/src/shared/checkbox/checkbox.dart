@@ -146,7 +146,7 @@ class AppCheckbox extends ConsumerWidget {
                   alignment: Alignment.center,
                   children: [
                     SvgPicture.asset(
-                      Assets.check,
+                      AssetsV2.check,
                       colorFilter: ColorFilter.mode(
                         primitiveColors.neutral.shade100,
                         BlendMode.srcIn,
@@ -156,7 +156,7 @@ class AppCheckbox extends ConsumerWidget {
                     Transform.translate(
                       offset: const Offset(0.4, 0.4),
                       child: SvgPicture.asset(
-                        Assets.check,
+                        AssetsV2.check,
                         colorFilter: ColorFilter.mode(
                           primitiveColors.neutral.shade100,
                           BlendMode.srcIn,

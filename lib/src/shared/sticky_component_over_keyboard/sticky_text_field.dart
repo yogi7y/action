@@ -86,9 +86,8 @@ class _PrefixIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(appThemeProvider);
-    final isStickyTextFieldVisible = ref.watch(currentStickyTextFieldTypeProvider) != null;
 
-    final icon = isStickyTextFieldVisible ? Assets.arrowBack : Assets.arrowBack;
+    const icon = AssetsV2.chevronLeft;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

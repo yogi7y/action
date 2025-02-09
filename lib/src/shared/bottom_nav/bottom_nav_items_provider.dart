@@ -16,11 +16,11 @@ typedef SelectedBottomNavItem = ({
 });
 
 final bottomNavItemsProvider = Provider<List<BottomNavItemData>>((ref) => [
-      (iconPath: Assets.home, label: 'Home', path: AppRoute.home.path),
-      (iconPath: Assets.addTask, label: 'Tasks', path: AppRoute.tasks.path),
-      (iconPath: Assets.bookmarkAdd, label: 'Pages', path: AppRoute.pages.path),
+      (iconPath: AssetsV2.home, label: 'Home', path: AppRoute.home.path),
+      (iconPath: AssetsV2.addTask, label: 'Tasks', path: AppRoute.tasks.path),
+      (iconPath: AssetsV2.bookmarkAdd, label: 'Pages', path: AppRoute.pages.path),
       (iconPath: AssetsV2.hammerOutlined, label: 'Projects', path: AppRoute.projects.path),
-      (iconPath: Assets.explore, label: 'Area', path: AppRoute.area.path),
+      (iconPath: AssetsV2.area, label: 'Area', path: AppRoute.area.path),
     ]);
 
 final selectedBottomNavProvider = StateProvider<SelectedBottomNavItem>(

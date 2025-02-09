@@ -23,17 +23,16 @@ class SendIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final _newTaskText = ref.watch(newTaskProvider.select((value) => value.name.trim()));
-    final _colors = ref.watch(appThemeProvider);
+    final colors = ref.watch(appThemeProvider);
 
-    final _iconColor = isEnabled ? _colors.primary : _colors.textTokens.secondary;
+    final iconColor = isEnabled ? colors.primary : colors.textTokens.secondary;
 
     return Consumer(
       builder: (context, ref, _) {
         return AppIconButton(
-          svgIconPath: Assets.send,
+          svgIconPath: AssetsV2.chevronLeft,
           size: size,
-          color: _iconColor,
+          color: iconColor,
           onClick: () async {
             unawaited(HapticFeedback.lightImpact());
             return onClick();
