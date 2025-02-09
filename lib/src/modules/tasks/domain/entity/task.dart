@@ -156,10 +156,10 @@ class TaskEntity extends TaskPropertiesEntity implements ModelMetaData, Entity {
       );
 
   @override
-  final DateTime createdAt;
+  final Id id;
 
   @override
-  final Id id;
+  final DateTime createdAt;
 
   @override
   final DateTime updatedAt;

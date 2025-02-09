@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/validators/serialization_validators.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/entity/task_status.dart';
 
@@ -18,16 +19,30 @@ class TaskModel extends TaskEntity {
   });
 
   factory TaskModel.fromMap(Map<String, Object?> map) {
+    final validator = FieldTypeValidator(map, StackTrace.current);
+
+    final id = validator.isOfType<String>('id');
+    final name = validator.isOfType<String>('name');
+    final statusStr = validator.isOfType<String>('status');
+    final isOrganized = validator.isOfType<bool>('is_organized', fallback: false);
+    final createdAt = validator.isOfType<String>('created_at');
+    final updatedAt = validator.isOfType<String>('updated_at');
+
+    // Optional fields
+    final dueDateStr = validator.isOfType<String?>('due_date');
+    final projectId = validator.isOfType<String?>('project_id');
+    final contextId = validator.isOfType<String?>('context_id');
+
     return TaskModel(
-      id: map['id'] as String,
-      name: map['name'] as String,
-      status: TaskStatus.fromString(map['status'] as String),
-      dueDate: map['due_date'] != null ? DateTime.parse(map['due_date'] as String) : null,
-      projectId: map['project_id'] as String?,
-      contextId: map['context_id'] as String?,
-      isOrganized: map['is_organized'] as bool? ?? false,
-      createdAt: DateTime.parse(map['created_at'] as String),
-      updatedAt: DateTime.parse(map['updated_at'] as String),
+      id: id,
+      name: name,
+      status: TaskStatus.fromString(statusStr),
+      createdAt: DateTime.parse(createdAt),
+      updatedAt: DateTime.parse(updatedAt),
+      dueDate: dueDateStr != null ? DateTime.parse(dueDateStr) : null,
+      projectId: projectId,
+      contextId: contextId,
+      isOrganized: isOrganized,
     );
   }
 }
