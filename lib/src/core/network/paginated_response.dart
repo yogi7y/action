@@ -2,14 +2,24 @@ import 'package:flutter/foundation.dart';
 
 typedef Cursor = String;
 
+/// A class representing a paginated response.
+///
+/// [T] is the type of the items in the results list.
 @immutable
 class PaginatedResponse<T> {
+  /// Creates a new instance of [PaginatedResponse].
+  ///
+  /// [results] is the list of result.
+  /// [total] is the total number of results available.
   const PaginatedResponse({
     required this.results,
     required this.total,
   });
 
+  /// The list of result.
   final List<T> results;
+
+  /// The total number of results available.
   final int total;
 
   @override
