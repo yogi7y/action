@@ -87,6 +87,23 @@ void main() {
       );
     });
 
+    test('returns fallback value when type does not match', () {
+      expect(
+        validator.isOfType<int>('stringField', fallback: 0),
+        equals(0),
+      );
+    });
+
+    test(
+      'returns fallback when value is null',
+      () {
+        expect(
+          validator.isOfType<int>('nullField', fallback: 0),
+          equals(0),
+        );
+      },
+    );
+
     test('throws InvalidTypeException with custom stackTrace', () {
       final customStackTrace = StackTrace.current;
       expect(

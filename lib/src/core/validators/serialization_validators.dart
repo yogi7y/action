@@ -32,14 +32,17 @@ class FieldTypeValidator {
   T isOfType<T>(
     String key, {
     StackTrace? stackTrace,
+    T? fallback,
   }) {
     final value = _payload[key];
+
     if (value is! T) {
-      throw InvalidTypeException(
-        exception: '$key must be of type $T, but got ${value.runtimeType}',
-        stackTrace: stackTrace ?? _stackTrace,
-        payload: _payload,
-      );
+      return fallback ??
+          (throw InvalidTypeException(
+            exception: '$key must be of type $T, but got ${value.runtimeType}',
+            stackTrace: stackTrace ?? _stackTrace,
+            payload: _payload,
+          ));
     }
     return value;
   }
