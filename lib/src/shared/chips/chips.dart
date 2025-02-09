@@ -7,7 +7,7 @@ import '../../design_system/design_system.dart';
 class AppChips extends ConsumerWidget {
   const AppChips({
     required this.label,
-    required this.iconPath,
+    this.iconPath,
     this.count = 0,
     this.isSelected = false,
     this.onClick,
@@ -17,7 +17,7 @@ class AppChips extends ConsumerWidget {
   final bool isSelected;
   final String label;
   final int count;
-  final String iconPath;
+  final String? iconPath;
   final VoidCallback? onClick;
 
   @override
@@ -44,12 +44,13 @@ class AppChips extends ConsumerWidget {
         child: Row(
           spacing: spacing.xs,
           children: [
-            SvgPicture.asset(
-              iconPath,
-              height: 16,
-              width: 16,
-              colorFilter: ColorFilter.mode(chipsTheme.text, BlendMode.srcIn),
-            ),
+            if (iconPath != null && iconPath!.isNotEmpty)
+              SvgPicture.asset(
+                iconPath!,
+                height: 16,
+                width: 16,
+                colorFilter: ColorFilter.mode(chipsTheme.text, BlendMode.srcIn),
+              ),
             Text(
               label,
               style: labelStyle.copyWith(color: chipsTheme.text),

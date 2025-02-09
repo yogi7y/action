@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
 import '../../../../shared/placeholder_widget.dart';
 import '../models/task_view.dart';
-import '../state/task_filter_provider.dart';
-import '../state/task_movement.dart';
+import '../state/scoped_task_provider.dart';
 import '../state/tasks_provider.dart';
 import '../widgets/task_loading_tile.dart';
 import '../widgets/task_tile.dart';
 
 @immutable
-class TasksList extends ConsumerWidget {
-  const TasksList({
+class TasksListView extends ConsumerWidget {
+  const TasksListView({
     required this.taskView,
     super.key,
   });
@@ -20,123 +18,67 @@ class TasksList extends ConsumerWidget {
   final TaskView taskView;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final count = ref.watch(tasksCountNotifierProvider(taskView));
-
-    return count.when(
-      error: (error, _) => PlaceholderWidget(text: error.toString()),
-      loading: _TaskListLoadingState.new,
-      data: (count) => _TaskListDataState(
-        taskView: taskView,
-        count: count,
-      ),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(tasksNotifierProvider(taskView)).when(
+            error: (error, _) => PlaceholderWidget(text: error.toString()),
+            loading: () => const _TaskListLoadingState(),
+            data: (tasks) => _TaskListViewDataState(taskView: taskView),
+          );
 }
 
 @immutable
-class _TaskListDataState extends ConsumerStatefulWidget {
-  const _TaskListDataState({
+class _TaskListViewDataState extends ConsumerStatefulWidget {
+  const _TaskListViewDataState({
     required this.taskView,
-    required this.count,
   });
 
   final TaskView taskView;
-  final int count;
 
   @override
-  ConsumerState<_TaskListDataState> createState() => _TaskListDataStateState();
+  ConsumerState<_TaskListViewDataState> createState() => _TaskListDataStateState();
 }
 
-class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
+class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
     with AutomaticKeepAliveClientMixin {
   late final _animatedListKey = GlobalKey<AnimatedListState>();
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(taskMovementProvider).addAnimatedListKey(
-            widget.taskView.label,
-            _animatedListKey,
-          );
-
-      if (widget.count == 0) {
-        ref.read(tasksProvider(widget.taskView.copyWithPage(1)));
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant _TaskListDataState oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    logger('did update widget called with ${widget.taskView.label} and ${widget.count}');
-  }
+  /// For easier `taskView` access rather than writing `widget.taskView` each time.
+  late final _taskView = widget.taskView;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    final tasks = ref.watch(tasksNotifierProvider(_taskView)).valueOrNull ?? [];
+
     return RefreshIndicator(
-      onRefresh: () async {
-        ref
-          ..invalidate(tasksFilterProvider)
-          ..invalidate(tasksCountNotifierProvider);
-
-        final currentTaskView = ref.read(selectedTaskFilterProvider);
-
-        return ref.refresh(tasksProvider(currentTaskView).future);
-      },
+      onRefresh: () async {},
       child: Stack(
         children: [
-          Visibility(
-            visible: widget.count <= 0 &&
-                (ref.watch(tasksProvider(widget.taskView)).valueOrNull ?? []).isEmpty,
-            child: const PlaceholderWidget(text: 'No tasks found'),
-          ),
           AnimatedList(
             padding: EdgeInsets.zero,
             key: _animatedListKey,
-            initialItemCount: widget.count,
-            itemBuilder: (context, index, animation) {
-              final page = index ~/ TasksCountNotifier.limit + 1;
-              final itemIndex = index % TasksCountNotifier.limit;
-
-              final value = ref.watch(tasksProvider(widget.taskView.copyWithPage(page)));
-
-              return value.when(
-                data: (tasks) {
-                  if (itemIndex >= tasks.length) return const SizedBox.shrink();
-
-                  return ProviderScope(
-                    overrides: [
-                      scopedTaskProvider.overrideWithValue(
-                        (value: tasks[itemIndex], index: index),
-                      ),
-                    ],
-                    child: FadeTransition(
-                      opacity: CurvedAnimation(
-                        parent: animation,
-                        curve: const Interval(0.2, 1),
-                      ),
-                      child: SlideTransition(
-                        position: animation.drive(
-                          Tween(
-                            begin: const Offset(0, -0.3),
-                            end: Offset.zero,
-                          ).chain(
-                            CurveTween(curve: Curves.easeInOut),
-                          ),
-                        ),
-                        child: const TaskTile(),
-                      ),
-                    ),
-                  );
-                },
-                loading: () => const TasksLoadingTile(),
-                error: (error, _) => Center(child: Text(error.toString())),
-              );
-            },
+            initialItemCount: tasks.length,
+            itemBuilder: (context, index, animation) => ProviderScope(
+              overrides: [
+                scopedTaskProvider.overrideWithValue(tasks[index]),
+              ],
+              child: FadeTransition(
+                opacity: CurvedAnimation(
+                  parent: animation,
+                  curve: const Interval(0.2, 1),
+                ),
+                child: SlideTransition(
+                  position: animation.drive(
+                    Tween(
+                      begin: const Offset(0, -0.3),
+                      end: Offset.zero,
+                    ).chain(CurveTween(curve: Curves.easeInOut)),
+                  ),
+                  child: const TaskTile(),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -148,9 +90,7 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
 }
 
 class _TaskListLoadingState extends StatelessWidget {
-  const _TaskListLoadingState({
-    super.key,
-  });
+  const _TaskListLoadingState();
 
   @override
   Widget build(BuildContext context) {

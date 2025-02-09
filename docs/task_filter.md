@@ -31,3 +31,22 @@
 
 - Return all tasks for a given project/context and are of specific status.
   Tasks = ProjectId is X + Status is Y
+
+# Supabase
+
+An RPC to return tasks with pagination.
+Name: `tasks`
+Params:
+
+- `page`: number
+- `page_size`: number
+- `filter`: jsonb
+
+## Payload
+
+```json
+{
+  "tasks": [{}, {}, {}, {}],
+  "total": 100
+}
+```

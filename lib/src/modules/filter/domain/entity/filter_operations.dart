@@ -1,6 +1,9 @@
+import 'composite/and_filter.dart';
+import 'composite/or_filter.dart';
 import 'filter.dart';
 import 'variants/equals_filter.dart';
 import 'variants/greater_than_filter.dart';
+import 'variants/select_filter.dart';
 
 /// Visitor interface for implementing filter operations.
 ///
@@ -39,6 +42,33 @@ abstract class FilterOperations<V> {
   /// [filter] The greater than filter to process
   /// Returns a value of type [V] based on the visitor implementation
   V visitGreaterThan(GreaterThanFilter filter);
+
+  /// Processes an AND filter operation.
+  ///
+  /// This method is called when visiting an [AndFilter] to process
+  /// a logical AND operation between multiple filters.
+  ///
+  /// [filter] The AND filter to process
+  /// Returns a value of type [V] based on the visitor implementation
+  V visitAnd(AndFilter filter);
+
+  /// Processes an OR filter operation.
+  ///
+  /// This method is called when visiting an [OrFilter] to process
+  /// a logical OR operation between multiple filters.
+  ///
+  /// [filter] The OR filter to process
+  /// Returns a value of type [V] based on the visitor implementation
+  V visitOr(OrFilter filter);
+
+  /// Processes a select filter operation.
+  ///
+  /// This method is called when visiting a [SelectFilter] to process
+  /// a filter that returns the value as-is without modifications.
+  ///
+  /// [filter] The select filter to process
+  /// Returns a value of type [V] based on the visitor implementation
+  V visitSelect(SelectFilter filter);
 }
 
 /// Base class for implementing in-memory filter operations using the Visitor pattern.
@@ -85,9 +115,12 @@ abstract class InMemoryFilterOperations<T> implements FilterOperations<bool> {
   /// The entity instance to be evaluated against filter criteria.
   final T item;
 
-  /// Validates all filters against the item.
-  ///
-  /// [filters] is a list of [Filter] to validate against the item.
-  /// Returns `true` if all filters are valid, `false` otherwise.
-  bool validateAll(List<Filter> filters) => filters.every((filter) => filter.accept(this));
+  @override
+  bool visitAnd(AndFilter filter) => filter.filters.every((f) => f.accept(this));
+
+  @override
+  bool visitOr(OrFilter filter) => filter.filters.any((f) => f.accept(this));
+
+  @override
+  bool visitSelect(SelectFilter filter) => true;
 }

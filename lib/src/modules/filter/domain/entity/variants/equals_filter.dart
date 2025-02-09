@@ -1,20 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 import '../filter.dart';
-import '../filter_visitor.dart';
+import '../filter_operations.dart';
 
 @immutable
-class EqualsFilter implements Filter {
+class EqualsFilter extends PropertyFilter {
   const EqualsFilter({
-    required this.key,
-    required this.value,
+    required super.key,
+    required super.value,
   });
-
-  @override
-  final String key;
-
-  @override
-  final Object value;
 
   @override
   V accept<V>(FilterOperations<V> visitor) => visitor.visitEquals(this);

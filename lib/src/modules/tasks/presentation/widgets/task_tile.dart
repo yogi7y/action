@@ -12,8 +12,10 @@ import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
+import '../state/scoped_task_provider.dart';
 import '../state/task_filter_provider.dart';
 import '../state/tasks_provider.dart';
+import '../state/tasks_provider_old.dart';
 
 @immutable
 class TaskTile extends ConsumerWidget with KeyboardMixin {
@@ -35,8 +37,8 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           behavior: HitTestBehavior.opaque,
           onTap: () async => context.goNamed(
             AppRoute.taskDetail.name,
-            extra: (value: (data: task.value, id: null), index: 1),
-            pathParameters: {'id': task.value.id},
+            extra: (value: (data: task, id: null), index: 1),
+            pathParameters: {'id': task.id},
           ),
           child: Container(
             padding: EdgeInsets.only(
@@ -52,16 +54,17 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                     left: spacing.lg,
                     bottom: bottomPadding,
                   ),
-                  state: AppCheckboxState.fromTaskStatus(status: task.value.status),
+                  state: AppCheckboxState.fromTaskStatus(status: task.status),
                   onChanged: (state) async {
-                    final currentFilter = ref.read(selectedTaskFilterProvider);
+                    // final currentFilter = ref.read(selectedTaskFilterProvider);
 
-                    return ref.read(tasksProvider(currentFilter).notifier).updateTask(
-                          task: task.value.copyWith(
-                            status: TaskStatus.fromAppCheckboxState(state),
-                          ),
-                          index: task.index,
-                        );
+                    // return ref.read(tasksProvider(currentFilter).notifier).updateTask(
+                    //     task: task.copyWith(
+                    //       status: TaskStatus.fromAppCheckboxState(state),
+                    //     ),
+                    //     index: 0
+                    //     // index: task.index,
+                    //     );
                   },
                 ),
                 Expanded(
@@ -88,7 +91,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           top: spacing.xs,
           right: spacing.lg,
           child: Text(
-            task.value.createdAt.timeAgo,
+            task.createdAt.timeAgo,
             style: fonts.text.xs.regular.copyWith(
               fontSize: 10,
               height: 16 / 10,
@@ -119,13 +122,13 @@ class AnimatedTaskName extends ConsumerWidget {
           const FontVariation.weight(450),
         ],
         decoration:
-            task.value.status == TaskStatus.done ? TextDecoration.lineThrough : TextDecoration.none,
+            task.status == TaskStatus.done ? TextDecoration.lineThrough : TextDecoration.none,
         decorationThickness: 1,
-        color: task.value.status == TaskStatus.done
+        color: task.status == TaskStatus.done
             ? colors.textTokens.secondary
             : colors.textTokens.primary,
       ),
-      child: Text(task.value.name),
+      child: Text(task.name),
     );
   }
 }
@@ -138,9 +141,9 @@ class _TaskMetaDataRow extends ConsumerWidget {
     final spacing = ref.watch(spacingProvider);
     final task = ref.watch(scopedTaskProvider);
 
-    final project = ref.watch(projectByIdProvider(task.value.projectId ?? ''))?.project;
-    final context0 = ref.watch(contextByIdProvider(task.value.contextId ?? ''));
-    final dueDate = task.value.dueDate;
+    final project = ref.watch(projectByIdProvider(task.projectId ?? ''))?.project;
+    final context0 = ref.watch(contextByIdProvider(task.contextId ?? ''));
+    final dueDate = task.dueDate;
 
     return Wrap(
       spacing: spacing.xs,

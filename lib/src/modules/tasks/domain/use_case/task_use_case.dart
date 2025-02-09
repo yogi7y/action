@@ -2,36 +2,26 @@ import 'package:core_y/core_y.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/paginated_response.dart';
+import '../../../filter/domain/entity/filter.dart';
+import '../../data/repository/supabase_task_repository.dart';
 import '../entity/task.dart';
-import '../entity/task_view_type.dart';
 import '../repository/task_repository.dart';
 
+/// TaskId is the id of the task.
 typedef TaskId = String;
-typedef Tasks = List<TaskEntity>;
-typedef TaskResult = Result<Tasks, AppException>;
-typedef AsyncTasksResult = Future<Result<PaginatedResponse<TaskEntity>, AppException>>;
+
+/// Single [TaskEntity] wrapped within [Result]
 typedef AsyncTaskResult = Future<Result<TaskEntity, AppException>>;
-typedef AsyncTaskCountResult = Future<Result<int, AppException>>;
+
+/// List of tasks wrapped within [PaginatedResponse] and [Result] to get tasks + total count
+typedef AsyncTaskPaginatedResult = Future<Result<PaginatedResponse<TaskEntity>, AppException>>;
 
 class TaskUseCase {
   const TaskUseCase(this.repository);
 
   final TaskRepository repository;
 
-  AsyncTasksResult fetchTasks(
-    TaskQuerySpecification querySpecification, {
-    required int limit,
-    Cursor? cursor,
-  }) =>
-      repository.fetchTasks(
-        querySpecification,
-        cursor: cursor,
-        limit: limit,
-      );
-
-  AsyncTaskCountResult getTotalTasks(TaskQuerySpecification spec) => repository.getTotalTasks(spec);
-
-  AsyncTaskResult getTaskById(TaskId id) => repository.getTaskById(id);
+  AsyncTaskPaginatedResult fetchTasks(Filter filter) => repository.fetchTasks(filter: filter);
 
   Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) {
     task.validate();

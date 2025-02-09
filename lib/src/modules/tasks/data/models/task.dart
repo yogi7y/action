@@ -28,7 +28,6 @@ class TaskModel extends TaskEntity {
     final createdAt = validator.isOfType<String>('created_at');
     final updatedAt = validator.isOfType<String>('updated_at');
 
-    // Optional fields
     final dueDateStr = validator.isOfType<String?>('due_date');
     final projectId = validator.isOfType<String?>('project_id');
     final contextId = validator.isOfType<String?>('context_id');

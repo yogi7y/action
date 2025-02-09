@@ -3,14 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_status.dart';
 import '../models/task_view.dart';
+import '../models/task_view_variants.dart';
 
 final tasksFilterProvider = Provider<List<TaskView>>((ref) {
   return [
-    const StatusTaskView(status: TaskStatus.inProgress, label: 'In Progress'),
-    const StatusTaskView(label: 'Todo'),
-    const StatusTaskView(label: 'Done', status: TaskStatus.done),
-    const AllTasksView(),
-    const UnOrganizedTaskView(label: 'Unorganized'),
+    StatusTaskView(status: TaskStatus.inProgress, ui: const TaskViewUI(label: 'In Progress')),
+    StatusTaskView(status: TaskStatus.todo, ui: const TaskViewUI(label: 'Todo')),
+    StatusTaskView(status: TaskStatus.done, ui: const TaskViewUI(label: 'Done')),
+    const AllTasksView(ui: TaskViewUI(label: 'All')),
+    const UnorganizedTaskView(ui: TaskViewUI(label: 'Unorganized')),
   ];
 });
 

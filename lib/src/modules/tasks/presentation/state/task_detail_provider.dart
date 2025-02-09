@@ -6,26 +6,27 @@ import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../mixin/tasks_operations_mixin.dart';
 import 'task_filter_provider.dart';
-import 'tasks_provider.dart';
+import 'tasks_provider_old.dart';
 
 typedef TaskDataOrId = ({String? id, TaskEntity? data});
 typedef UpdateTaskCallback = TaskEntity Function(TaskEntity task);
 
 final taskDetailProvider =
     FutureProvider.autoDispose.family<TaskEntity, TaskDataOrId>((ref, dataOrId) async {
+  throw UnimplementedError('');
   // If we have data, return it directly
-  if (dataOrId.data != null) return dataOrId.data!;
+  // if (dataOrId.data != null) return dataOrId.data!;
 
-  // Otherwise fetch using ID
-  if (dataOrId.id != null) {
-    final useCase = ref.watch(taskUseCaseProvider);
-    final result = await useCase.getTaskById(dataOrId.id!);
+  // // Otherwise fetch using ID
+  // if (dataOrId.id != null) {
+  //   final useCase = ref.watch(taskUseCaseProvider);
+  //   final result = await useCase.getTaskById(dataOrId.id!);
 
-    return result.fold(
-      onSuccess: (task) => task,
-      onFailure: (error) => throw error,
-    );
-  }
+  //   return result.fold(
+  //     onSuccess: (task) => task,
+  //     onFailure: (error) => throw error,
+  //   );
+  // }
 
   throw Exception('Either id or data must be provided');
 });
@@ -54,11 +55,11 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
     final _currentFilter = ref.read(selectedTaskFilterProvider);
 
     final _index = ref.read(taskDetailIndexProvider);
-    await ref.read(tasksProvider(_currentFilter).notifier).updateTask(
-          task: current,
-          index: _index ?? 0,
-          onlyOptimisticUpdate: true,
-        );
+    // await ref.read(tasksProvider(_currentFilter).notifier).updateTask(
+    //       task: current,
+    //       index: _index ?? 0,
+    //       onlyOptimisticUpdate: true,
+    //     );
   }
 
   @override

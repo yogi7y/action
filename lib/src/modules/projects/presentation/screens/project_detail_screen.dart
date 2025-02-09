@@ -6,7 +6,7 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/buttons/icon_button.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
-import '../../../tasks/presentation/state/tasks_provider.dart';
+import '../../../tasks/presentation/state/tasks_provider_old.dart';
 import '../state/project_detail_provider.dart';
 import '../widgets/project_detail_header.dart';
 

@@ -1,12 +1,28 @@
 import 'package:flutter/foundation.dart';
 
-import 'filter_visitor.dart';
+import 'filter_operations.dart';
 
-/// Base class for implementing filter criteria using the Visitor pattern.
+/// Base class for all filters in the system.
 ///
-/// [Filter] is used to define filtering conditions that can be applied to data queries.
-/// It uses the Visitor pattern through [FilterOperations] to allow different implementations
-/// of filter operations.
+/// This is the root of the filter hierarchy that supports both
+/// property-based filters (like equals, greater than) and composite
+/// filters (like AND, OR).
+@immutable
+abstract class Filter {
+  const Filter();
+
+  /// Accepts a visitor to implement the specific filter operation.
+  ///
+  /// This method is part of the Visitor pattern implementation.
+  /// [visitor] is the [FilterOperations] that will process this filter.
+  /// Returns a value of type [V] as determined by the visitor implementation.
+  V accept<V>(FilterOperations<V> visitor);
+}
+
+/// Base class for implementing property-based filter criteria.
+///
+/// [PropertyFilter] is used to define filtering conditions that operate on a specific
+/// property/field with a value. Examples include equals, greater than, less than, etc.
 ///
 /// The filter value is of type [Object] to support filtering on any value type
 /// like strings, booleans, numbers, etc.
@@ -20,12 +36,12 @@ import 'filter_visitor.dart';
 ///  final allTasksForJohn = EqualsFilter(key: 'assignee', value: 'John');
 /// ```
 @immutable
-abstract class Filter {
-  /// Creates a new filter with the specified [key] and [value].
+abstract class PropertyFilter extends Filter {
+  /// Creates a new property filter with the specified [key] and [value].
   ///
   /// [key] represents the field or property to filter on.
   /// [value] represents the value to filter by, of type [Object].
-  const Filter({
+  const PropertyFilter({
     required this.key,
     required this.value,
   });
@@ -35,11 +51,4 @@ abstract class Filter {
 
   /// The value to filter by.
   final Object value;
-
-  /// Accepts a visitor to implement the specific filter operation.
-  ///
-  /// This method is part of the Visitor pattern implementation.
-  /// [visitor] is the [FilterOperations] that will process this filter.
-  /// Returns a value of type [V] as determined by the visitor implementation.
-  V accept<V>(FilterOperations<V> visitor);
 }

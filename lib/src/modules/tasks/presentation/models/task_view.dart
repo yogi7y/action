@@ -1,113 +1,77 @@
 import 'package:flutter/material.dart';
 
-import '../../../../design_system/design_system.dart';
-import '../../domain/entity/task.dart';
-import '../../domain/entity/task_status.dart';
-import '../../domain/entity/task_view_type.dart';
+import '../../../filter/domain/entity/filter.dart';
 
-typedef PageCount = int;
-
+/// Combination of things like [Filter] and [TaskViewUI], etc. combining which
+/// a task view will be eventually shown.
 @immutable
-sealed class TaskView {
+class TaskView {
   const TaskView({
-    required this.label,
-    required this.icon,
-    this.status = TaskStatus.todo,
-    this.pageCount = 1,
+    required this.operations,
+    required this.ui,
   });
 
-  final String label;
-  final String icon;
-  final TaskStatus status;
-  final PageCount pageCount;
-
-  /// Given a task, it checks if it can be a part of the current view or not.
-  /// Clients implementing this provider the query.
-  bool canContainTask(TaskEntity entity);
-
-  TaskQuerySpecification toQuerySpecification();
-
-  TaskView copyWithPage(PageCount pageCount);
-
-  TaskView incrementPage() => copyWithPage(pageCount + 1);
-
-  TaskView resetPage() => copyWithPage(1);
+  final TaskViewOperations operations;
+  final TaskViewUI ui;
 
   @override
-  String toString() => 'TaskView(label: $label, icon: $icon, pageCount: $pageCount)';
+  String toString() => 'TaskView(operations: $operations, ui: $ui)';
 
   @override
   bool operator ==(covariant TaskView other) {
     if (identical(this, other)) return true;
 
-    return other.label == label && other.icon == icon && other.pageCount == pageCount;
+    return other.operations == operations && other.ui == ui;
   }
 
   @override
-  int get hashCode => label.hashCode ^ icon.hashCode ^ pageCount.hashCode;
+  int get hashCode => operations.hashCode ^ ui.hashCode;
 }
 
-final class AllTasksView extends TaskView {
-  const AllTasksView({super.pageCount = 1})
-      : super(
-          label: 'All Tasks',
-          icon: Assets.inbox,
-        );
+/// [TaskViewUI] is to hold some UI properties like what label to show, what icon to show, etc.
+@immutable
+class TaskViewUI {
+  const TaskViewUI({
+    required this.label,
+    this.icon,
+  });
+  final String label;
+  final String? icon;
 
   @override
-  TaskQuerySpecification toQuerySpecification() => const AllTasksSpecification();
+  String toString() => 'TaskViewUi(label: $label, icon: $icon)';
 
   @override
-  AllTasksView copyWithPage(PageCount pageCount) => AllTasksView(pageCount: pageCount);
+  bool operator ==(covariant TaskViewUI other) {
+    if (identical(this, other)) return true;
+
+    return other.label == label && other.icon == icon;
+  }
 
   @override
-  bool canContainTask(TaskEntity entity) => true;
+  int get hashCode => label.hashCode ^ icon.hashCode;
 }
 
-final class StatusTaskView extends TaskView {
-  const StatusTaskView({
-    super.label = 'Status',
-    super.icon = Assets.inbox,
-    super.pageCount = 1,
-    super.status,
-  }) : super();
+/// [TaskViewOperations] is a combination of things like [Filter] and sort.
+/// Anything that can decide which all tasks should be visible.
+@immutable
+class TaskViewOperations {
+  const TaskViewOperations({
+    required this.filter,
+  });
+
+  final Filter filter;
 
   @override
-  TaskQuerySpecification toQuerySpecification() => CompositeSpecification([
-        StatusTaskSpecification(status),
-        const OrganizedStatusSpecification(),
-      ]);
+  String toString() => 'TaskViewOperations(filter: $filter)';
 
   @override
-  StatusTaskView copyWithPage(PageCount pageCount) => StatusTaskView(
-        status: status,
-        label: label,
-        icon: icon,
-        pageCount: pageCount,
-      );
+  bool operator ==(covariant TaskViewOperations other) {
+    if (identical(this, other)) return true;
+
+    return other.filter == filter;
+  }
 
   @override
-  bool canContainTask(TaskEntity entity) => entity.status == status && entity.isOrganized;
-}
-
-final class UnOrganizedTaskView extends TaskView {
-  const UnOrganizedTaskView({
-    required super.label,
-    super.icon = Assets.inbox,
-    super.pageCount = 1,
-  }) : super();
-
-  @override
-  bool canContainTask(TaskEntity entity) => !entity.isOrganized;
-
-  @override
-  TaskQuerySpecification toQuerySpecification() =>
-      const OrganizedStatusSpecification(isOrganized: false);
-
-  @override
-  UnOrganizedTaskView copyWithPage(PageCount pageCount) => UnOrganizedTaskView(
-        label: label,
-        icon: icon,
-        pageCount: pageCount,
-      );
+  int get hashCode => filter.hashCode;
 }

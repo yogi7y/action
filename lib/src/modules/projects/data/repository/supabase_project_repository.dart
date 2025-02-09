@@ -34,16 +34,6 @@ class SupabaseProjectRepository with ConnectivityCheckerMixin implements Project
         },
         onFailure: Failure.new,
       );
-    } on SerializationException catch (e) {
-      return Failure(e);
-    } on PostgrestException catch (e, stackTrace) {
-      return Failure(
-        AppException(
-          exception: e.message,
-          stackTrace: stackTrace,
-          userFriendlyMessage: AppStrings.failedToFetchProjects,
-        ),
-      );
     } catch (e, stackTrace) {
       return Failure(
         AppException(

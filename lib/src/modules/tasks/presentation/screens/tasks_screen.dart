@@ -30,8 +30,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   void initState() {
     super.initState();
 
-    final _filters = ref.read(tasksFilterProvider);
-    for (final filter in _filters) {
+    final filters = ref.read(tasksFilterProvider);
+    for (final filter in filters) {
       _filterKeys[filter] = GlobalKey();
     }
 
@@ -71,36 +71,32 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
-    final _filters = ref.watch(tasksFilterProvider);
+    final spacing = ref.watch(spacingProvider);
+    final filters = ref.watch(tasksFilterProvider);
 
     return BackButtonListener(
-      onBackButtonPressed: () async {
-        logger('on back button pressed');
-        return false;
-      },
+      onBackButtonPressed: () async => false,
       child: Scaffold(
         body: NestedScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               const AppHeader(title: 'Tasks'),
-              SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
+              SliverToBoxAdapter(child: SizedBox(height: spacing.xxs)),
               SliverToBoxAdapter(
                 child: TasksFilters(
-                  filterViews: _filters
-                      .map((filter) => (filter: filter, key: _filterKeys[filter]!))
-                      .toList(),
+                  filterViews:
+                      filters.map((filter) => (filter: filter, key: _filterKeys[filter]!)).toList(),
                 ),
               ),
-              SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+              SliverToBoxAdapter(child: SizedBox(height: spacing.lg)),
               const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
-              SliverToBoxAdapter(child: SizedBox(height: _spacing.xs)),
+              SliverToBoxAdapter(child: SizedBox(height: spacing.xs)),
             ];
           },
           body: PageView(
             controller: _pageController,
-            children: _filters.map((filter) => TasksList(taskView: filter)).toList(),
+            children: filters.map((filter) => TasksListView(taskView: filter)).toList(),
             onPageChanged: (value) {
               unawaited(HapticFeedback.lightImpact());
               ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
