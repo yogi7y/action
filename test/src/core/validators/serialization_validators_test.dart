@@ -104,6 +104,13 @@ void main() {
       },
     );
 
+    test('returns null for nullable type when value is not present', () {
+      expect(
+        validator.isOfType<String?>('nonExistentField'),
+        isNull,
+      );
+    });
+
     test('throws InvalidTypeException with custom stackTrace', () {
       final customStackTrace = StackTrace.current;
       expect(
