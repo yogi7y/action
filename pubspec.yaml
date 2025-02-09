@@ -25,6 +25,7 @@ dependencies:
   google_sign_in: ^6.2.2
   intl: ^0.20.1
   just_audio: ^0.9.43
+  meta: ^1.15.0
   rxdart: ^0.28.0
   shimmer: ^3.0.0
   smart_textfield:
@@ -47,7 +48,6 @@ dev_dependencies:
       url: https://github.com/Yogi-7y/Project-Y
       path: packages/lints
       ref: result
-  meta: ^1.15.0
   mock_supabase_http_client: ^0.0.3+1
   mocktail: ^1.0.4
 

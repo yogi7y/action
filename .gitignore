@@ -16,3 +16,4 @@ key.properties
 .DS_Store
 .env.production
 .env.staging
+coverage
