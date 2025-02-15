@@ -1,21 +1,19 @@
 import 'package:core_y/src/extensions/time_ago.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../core/mixin/keyboard_mixin.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../design_system/design_system.dart';
+import '../../../../design_system/icons/app_icons.dart';
+import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../../shared/checkbox/checkbox.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/scoped_task_provider.dart';
-import '../state/task_filter_provider.dart';
-import '../state/tasks_provider.dart';
-import '../state/tasks_provider_old.dart';
 
 @immutable
 class TaskTile extends ConsumerWidget with KeyboardMixin {
@@ -24,6 +22,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final task = ref.watch(scopedTaskProvider);
+
     final spacing = ref.watch(spacingProvider);
     final fonts = ref.watch(fontsProvider);
     final colors = ref.watch(appThemeProvider);
@@ -55,17 +54,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                     bottom: bottomPadding,
                   ),
                   state: AppCheckboxState.fromTaskStatus(status: task.status),
-                  onChanged: (state) async {
-                    // final currentFilter = ref.read(selectedTaskFilterProvider);
-
-                    // return ref.read(tasksProvider(currentFilter).notifier).updateTask(
-                    //     task: task.copyWith(
-                    //       status: TaskStatus.fromAppCheckboxState(state),
-                    //     ),
-                    //     index: 0
-                    //     // index: task.index,
-                    //     );
-                  },
+                  onChanged: (state) async {},
                 ),
                 Expanded(
                   child: Column(
@@ -171,6 +160,7 @@ class _TaskMetaDataRow extends ConsumerWidget {
   }
 }
 
+@immutable
 class _TaskMetaData extends ConsumerWidget {
   const _TaskMetaData({
     required this.iconPath,
@@ -193,14 +183,10 @@ class _TaskMetaData extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(
-            iconPath,
-            height: 14,
-            width: 14,
-            colorFilter: ColorFilter.mode(
-              colors.textTokens.secondary,
-              BlendMode.srcIn,
-            ),
+          AppIconButton(
+            icon: AppIcons.hammerOutlined,
+            size: 14,
+            color: colors.textTokens.secondary,
           ),
           const SizedBox(width: 2),
           Text(

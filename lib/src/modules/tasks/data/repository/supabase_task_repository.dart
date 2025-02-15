@@ -7,7 +7,6 @@ import '../../domain/entity/task.dart';
 import '../../domain/repository/task_repository.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../data_source/task_remote_data_source.dart';
-import 'query_builder.dart';
 
 class SupabaseTaskRepository implements TaskRepository {
   const SupabaseTaskRepository({
@@ -42,6 +41,17 @@ class SupabaseTaskRepository implements TaskRepository {
   @override
   AsyncTaskResult getTaskById(TaskId id) {
     throw UnimplementedError();
+  }
+
+  @override
+  AsyncTaskResult upsertTask(TaskPropertiesEntity task) async {
+    try {
+      final response = await remoteDataSource.upsertTask(task: task);
+
+      return Success(response);
+    } catch (e, stackTrace) {
+      return Failure(AppException(exception: e, stackTrace: stackTrace));
+    }
   }
 }
 

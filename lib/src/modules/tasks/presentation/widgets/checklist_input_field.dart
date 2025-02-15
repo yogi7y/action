@@ -75,9 +75,9 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistU
 
   @override
   Widget build(BuildContext context) {
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +85,7 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistU
         Transform.translate(
           offset: const Offset(0, 2),
           child: AppCheckbox(
-            padding: EdgeInsets.only(right: _spacing.xs),
+            padding: EdgeInsets.only(right: spacing.xs),
           ),
         ),
         Expanded(
@@ -96,16 +96,16 @@ class _ChecklistInputState extends ConsumerState<ChecklistInput> with ChecklistU
             textInputAction: TextInputAction.done,
             textCapitalization: TextCapitalization.sentences,
             focusNode: ref.watch(newChecklistProvider.notifier).focusNode,
-            style: _fonts.text.md.regular.copyWith(
-              color: _colors.textTokens.primary,
+            style: fonts.text.md.regular.copyWith(
+              color: colors.textTokens.primary,
             ),
             decoration: InputDecoration(
               hintText: 'Add checklist item',
               border: InputBorder.none,
               isDense: true,
               contentPadding: EdgeInsets.zero,
-              hintStyle: _fonts.text.md.regular.copyWith(
-                color: _colors.textTokens.secondary.withValues(alpha: .8),
+              hintStyle: fonts.text.md.regular.copyWith(
+                color: colors.textTokens.secondary.withValues(alpha: .8),
               ),
               suffixIcon: const _ChecklistSendIcon(),
               suffixIconConstraints: const BoxConstraints(
@@ -135,14 +135,14 @@ class _ChecklistSendIcon extends ConsumerWidget with ChecklistUiTriggerMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _title = ref.watch(newChecklistProvider.select((value) => value.title.trim()));
+    final title = ref.watch(newChecklistProvider.select((value) => value.title.trim()));
 
     return SendIcon(
       onClick: () async => addChecklist(
         ref: ref,
-        checklistText: _title,
+        checklistText: title,
       ),
-      isEnabled: _title.isNotEmpty,
+      isEnabled: title.isNotEmpty,
     );
   }
 }

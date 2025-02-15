@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/placeholder_widget.dart';
 import '../models/task_view.dart';
 import '../state/scoped_task_provider.dart';
@@ -51,6 +52,8 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
 
     final tasks = ref.watch(tasksNotifierProvider(_taskView)).valueOrNull ?? [];
 
+    if (tasks.isEmpty) return const _EmptyState();
+
     return RefreshIndicator(
       onRefresh: () async {},
       child: Stack(
@@ -87,6 +90,24 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _EmptyState extends ConsumerWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fonts = ref.watch(fontsProvider);
+
+    return Center(
+      child: Center(
+        child: Text(
+          'No tasks found',
+          style: fonts.headline.xs.medium,
+        ),
+      ),
+    );
+  }
 }
 
 class _TaskListLoadingState extends StatelessWidget {

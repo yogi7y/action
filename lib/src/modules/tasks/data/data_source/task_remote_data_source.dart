@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import '../../../../core/network/paginated_response.dart';
 import '../../../../services/database/supabase_provider.dart';
 import '../../../filter/domain/entity/filter.dart';
+import '../../domain/entity/task.dart';
 import '../models/task.dart';
 import 'supabase_task_data_source.dart';
 
@@ -20,6 +21,11 @@ abstract class TaskRemoteDataSource {
   /// ```
   Future<PaginatedResponse<TaskModel>> fetchTasks({
     required Filter filter,
+  });
+
+  /// Creates a task in the remote data source.
+  Future<TaskEntity> upsertTask({
+    required TaskPropertiesEntity task,
   });
 }
 

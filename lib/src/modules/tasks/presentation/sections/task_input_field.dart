@@ -118,19 +118,19 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
   }
 
   void _onTextChanged() {
-    final _dateTime = _controller.highlightedDateTime;
+    final dateTime = _controller.highlightedDateTime;
 
-    final _existingDateTime = ref.read(newTaskProvider);
+    final existingDateTime = ref.read(newTaskProvider);
 
-    if (_dateTime?.millisecondsSinceEpoch == _existingDateTime.dueDate?.millisecondsSinceEpoch)
+    if (dateTime?.millisecondsSinceEpoch == existingDateTime.dueDate?.millisecondsSinceEpoch)
       return;
 
-    if (_dateTime == null) {
+    if (dateTime == null) {
       ref.read(newTaskProvider.notifier).mark(dueDateAsNull: true);
       return;
     }
 
-    ref.read(newTaskProvider.notifier).updateValue(dueDate: _dateTime);
+    ref.read(newTaskProvider.notifier).updateValue(dueDate: dateTime);
   }
 
   @override
@@ -141,12 +141,12 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _colors = ref.watch(appThemeProvider);
+    final spacing = ref.watch(spacingProvider);
+    final fonts = ref.watch(fontsProvider);
+    final colors = ref.watch(appThemeProvider);
 
-    final _style = _fonts.text.md.regular.copyWith(
-      color: _colors.textTokens.primary,
+    final style = fonts.text.md.regular.copyWith(
+      color: colors.textTokens.primary,
       fontSize: 15,
       fontVariations: [
         const FontVariation.weight(450),
@@ -154,7 +154,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
     );
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: _spacing.lg),
+      margin: EdgeInsets.symmetric(horizontal: spacing.lg),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -162,7 +162,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
             offset: const Offset(0, 2),
             child: const AppCheckbox(),
           ),
-          SizedBox(width: _spacing.xs),
+          SizedBox(width: spacing.xs),
           Expanded(
             child: SmartTextField(
               controller: _controller,
@@ -179,9 +179,9 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
                     focusNode.requestFocus();
                     return addTask(ref: ref);
                   },
-                  style: _style,
+                  style: style,
                   controller: controller,
-                  cursorColor: _colors.textTokens.secondary,
+                  cursorColor: colors.textTokens.secondary,
                   cursorOpacityAnimates: true,
                   cursorHeight: 22,
                   decoration: InputDecoration(
@@ -189,8 +189,8 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
-                    hintStyle: _fonts.text.sm.regular.copyWith(
-                      color: _colors.textTokens.secondary,
+                    hintStyle: fonts.text.sm.regular.copyWith(
+                      color: colors.textTokens.secondary,
                     ),
                     suffixIconConstraints: const BoxConstraints(
                       minWidth: 24,
@@ -213,11 +213,11 @@ class _TaskSendIcon extends ConsumerWidget with TaskUiTriggersMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _newTaskText = ref.watch(newTaskProvider.select((value) => value.name.trim()));
+    final newTaskText = ref.watch(newTaskProvider.select((value) => value.name.trim()));
 
     return SendIcon(
       onClick: () async => addTask(ref: ref),
-      isEnabled: _newTaskText.isNotEmpty,
+      isEnabled: newTaskText.isNotEmpty,
     );
   }
 }

@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../design_system/design_system.dart';
-import '../../../../shared/buttons/icon_button.dart';
+import '../../../../design_system/icons/app_icons.dart';
+import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
 import '../../../context/presentation/state/context_provider.dart';
@@ -29,7 +30,7 @@ class TaskDetailProperties extends ConsumerWidget {
     final properties = <PropertyData>[
       PropertyData(
         label: 'Status',
-        labelIcon: AssetsV2.loader,
+        labelIcon: AppIcons.loaderOutlined,
         valuePlaceholder: 'Status is not set',
         value: StatusWidget(
           state: task.status.toAppCheckboxState(),
@@ -38,7 +39,7 @@ class TaskDetailProperties extends ConsumerWidget {
       ),
       PropertyData(
         label: 'Due',
-        labelIcon: AssetsV2.calendarOutlined,
+        labelIcon: AppIcons.calendarOutlined,
         valuePlaceholder: 'Empty',
         isRemovable: true,
         value: task.dueDate != null
@@ -49,24 +50,24 @@ class TaskDetailProperties extends ConsumerWidget {
       ),
       PropertyData(
         label: 'Project',
-        labelIcon: AssetsV2.hammerOutlined,
+        labelIcon: AppIcons.hammerOutlined,
         valuePlaceholder: 'Empty',
         isRemovable: true,
         value: project?.name != null
             ? SelectedValueWidget(
-                iconPath: AssetsV2.hammerOutlined,
+                icon: AppIcons.hammerOutlined,
                 label: project?.name ?? '',
               )
             : null,
       ),
       PropertyData(
         label: 'Context',
-        labelIcon: AssetsV2.tag,
+        labelIcon: AppIcons.tagOutlined,
         valuePlaceholder: 'Empty',
         isRemovable: true,
         value: context?.name != null
             ? SelectedValueWidget(
-                iconPath: AssetsV2.tag,
+                icon: AppIcons.tagOutlined,
                 label: context?.name ?? '',
               )
             : null,
@@ -80,7 +81,7 @@ class TaskDetailProperties extends ConsumerWidget {
           spacing: 2,
           children: [
             AppIconButton(
-              svgIconPath: AssetsV2.clock,
+              icon: AppIcons.clockOutlined,
               size: 12,
               color: colors.textTokens.tertiary,
             ),

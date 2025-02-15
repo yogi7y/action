@@ -1,9 +1,12 @@
+import 'package:core_y/core_y.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/constants/database.dart';
 import '../../../../core/extensions/list_extension.dart';
 import '../../../../core/network/paginated_response.dart';
 import '../../../filter/data/models/supabase_filter_operations.dart';
 import '../../../filter/domain/entity/filter.dart';
+import '../../domain/entity/task.dart';
 import '../models/task.dart';
 import 'task_remote_data_source.dart';
 
@@ -32,5 +35,23 @@ class SupabaseRemoteTaskDataSource implements TaskRemoteDataSource {
     );
 
     return paginatedResponse;
+  }
+
+  @override
+  Future<TaskEntity> upsertTask({
+    required TaskPropertiesEntity task,
+  }) async {
+    final response = await client.from(DatabaseConstants.tasksTable).upsert(task.toMap()).select();
+
+    final first = response.first as Map<String, Object?>?;
+
+    if (first == null) {
+      throw AppException(
+        exception: 'Got empty response from the server. $response',
+        stackTrace: StackTrace.current,
+      );
+    }
+
+    return TaskModel.fromMap(first);
   }
 }

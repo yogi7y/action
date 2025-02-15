@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/header/app_header.dart';
 import '../models/task_view.dart';
@@ -97,10 +95,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
           body: PageView(
             controller: _pageController,
             children: filters.map((filter) => TasksListView(taskView: filter)).toList(),
-            onPageChanged: (value) {
-              unawaited(HapticFeedback.lightImpact());
-              ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
-            },
+            onPageChanged: (value) => ref.read(selectedTaskView.notifier).selectByIndex(value),
           ),
         ),
         floatingActionButton: AddRemoveFloatingActionButton(

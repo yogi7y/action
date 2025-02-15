@@ -26,21 +26,21 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
   }
 
   Future<void> addChecklist(String checklistTitle) async {
-    final _previousState = state;
-    final _createdAt = DateTime.now();
-    final _updatedAt = _createdAt;
+    final previousState = state;
+    final createdAt = DateTime.now();
+    final updatedAt = createdAt;
 
-    final _tempChecklist = ChecklistEntity(
+    final tempChecklist = ChecklistEntity(
       id: '', // Empty ID for temp item, just like tasks
       taskId: arg,
       title: checklistTitle,
       status: ChecklistStatus.todo,
-      createdAt: _createdAt,
-      updatedAt: _updatedAt,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
 
     // Update state and animate
-    state = AsyncData([_tempChecklist, ...state.valueOrNull ?? []]);
+    state = AsyncData([tempChecklist, ...state.valueOrNull ?? []]);
     ref.read(checklistAnimatedListKeyProvider).currentState?.insertItem(0);
     ref.read(newChecklistProvider.notifier).clear();
 
@@ -57,17 +57,17 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
         onSuccess: (checklist) async {
           final currentChecklists = state.valueOrNull ?? [];
           final updatedChecklists = currentChecklists
-              .map((item) => item.title == _tempChecklist.title ? checklist : item)
+              .map((item) => item.title == tempChecklist.title ? checklist : item)
               .toList();
           state = AsyncData(updatedChecklists);
         },
         onFailure: (error) async {
-          state = _previousState;
+          state = previousState;
           throw error;
         },
       );
     } catch (e) {
-      state = _previousState;
+      state = previousState;
       rethrow;
     }
   }

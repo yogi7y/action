@@ -22,4 +22,6 @@ abstract class TaskRepository {
   AsyncTaskResult getTaskById(TaskId id);
 
   AsyncTaskResult updateTask(TaskEntity task);
+
+  AsyncTaskResult upsertTask(TaskPropertiesEntity task);
 }

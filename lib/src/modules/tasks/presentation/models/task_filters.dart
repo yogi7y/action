@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../../../filter/domain/entity/filter.dart';
 import '../../../filter/domain/entity/variants/equals_filter.dart';
 import '../../domain/entity/filters/task_filter_operations.dart';
 import '../../domain/entity/task_status.dart';
@@ -17,10 +18,10 @@ class OrganizedFilter extends EqualsFilter {
   String toString() => 'OrganizedFilter(isOrganized: $isOrganized)';
 
   @override
-  bool operator ==(covariant OrganizedFilter other) {
+  bool operator ==(covariant Filter other) {
     if (identical(this, other)) return true;
 
-    return other.isOrganized == isOrganized;
+    return other is OrganizedFilter && other.isOrganized == isOrganized;
   }
 
   @override
@@ -29,11 +30,11 @@ class OrganizedFilter extends EqualsFilter {
 
 @immutable
 class StatusFilter extends EqualsFilter {
-  const StatusFilter(
+  StatusFilter(
     this.status,
   ) : super(
           key: InMemoryTaskFilterOperations.statusKey,
-          value: status,
+          value: status.value,
         );
 
   final TaskStatus status;
@@ -42,10 +43,10 @@ class StatusFilter extends EqualsFilter {
   String toString() => 'StatusFilter(status: $status)';
 
   @override
-  bool operator ==(covariant StatusFilter other) {
+  bool operator ==(covariant Filter other) {
     if (identical(this, other)) return true;
 
-    return other.status == status;
+    return other is StatusFilter && other.status == status;
   }
 
   @override

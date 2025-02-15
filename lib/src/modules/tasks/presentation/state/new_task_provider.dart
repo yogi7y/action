@@ -20,12 +20,12 @@ class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
   @override
   TaskPropertiesEntity build() {
     _syncControllerAndState();
-    final _selectedTaskView = ref.read(selectedTaskFilterProvider);
+    final _selectedTaskView = ref.read(selectedTaskView);
 
-    const task = TaskPropertiesEntity(
+    final task = TaskPropertiesEntity(
       name: '',
-      // status: _selectedTaskView.status,
       status: TaskStatus.inProgress,
+      // status: _selectedTaskView.operations.filter.,
     );
 
     return task;

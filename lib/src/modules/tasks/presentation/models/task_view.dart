@@ -36,7 +36,7 @@ class TaskViewUI {
     this.icon,
   });
   final String label;
-  final String? icon;
+  final IconData? icon;
 
   @override
   String toString() => 'TaskViewUi(label: $label, icon: $icon)';

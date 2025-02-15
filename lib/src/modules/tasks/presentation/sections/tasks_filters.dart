@@ -34,7 +34,7 @@ class TasksFilters extends ConsumerWidget {
         children: filterViews
             .mapIndexed((index, filterView) => AppChips(
                   onClick: () {
-                    ref.read(selectedTaskFilterProvider.notifier).selectByIndex(index);
+                    ref.read(selectedTaskView.notifier).selectByIndex(index);
                     unawaited(ref.read(tasksPageControllerProvider).animateToPage(
                           index,
                           duration: const Duration(milliseconds: 1),
@@ -43,9 +43,8 @@ class TasksFilters extends ConsumerWidget {
                   },
                   key: filterView.key,
                   label: filterView.filter.ui.label,
-                  iconPath: filterView.filter.ui.icon ?? '',
-                  isSelected:
-                      filterView.filter.ui.label == ref.watch(selectedTaskFilterProvider).ui.label,
+                  icon: filterView.filter.ui.icon,
+                  isSelected: filterView.filter.ui.label == ref.watch(selectedTaskView).ui.label,
                 ))
             .toList(),
       ),

@@ -15,10 +15,9 @@ final tasksFilterProvider = Provider<List<TaskView>>((ref) {
   ];
 });
 
-final selectedTaskFilterProvider =
-    NotifierProvider<SelectedTaskFilterNotifier, TaskView>(SelectedTaskFilterNotifier.new);
+final selectedTaskView = NotifierProvider<SelectedTaskView, TaskView>(SelectedTaskView.new);
 
-class SelectedTaskFilterNotifier extends Notifier<TaskView> {
+class SelectedTaskView extends Notifier<TaskView> {
   @override
   TaskView build() => ref.read(tasksFilterProvider).first;
 

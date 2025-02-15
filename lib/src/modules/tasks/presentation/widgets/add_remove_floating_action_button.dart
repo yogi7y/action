@@ -5,9 +5,10 @@ import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../../design_system/design_system.dart';
+import '../../../../design_system/icons/app_icons.dart';
+import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
 
 enum AddRemoveFloatingActionButtonState {
@@ -58,18 +59,19 @@ class _AddTaskFloatingActionButtonState extends ConsumerState<AddRemoveFloatingA
 
   @override
   Widget build(BuildContext context) {
-    final _colors = ref.watch(appThemeProvider);
+    final colors = ref.watch(appThemeProvider);
+    final primitiveColors = ref.watch(primitiveTokensProvider);
 
-    final _isKeyboardOpen = ref.watch(keyboardVisibilityProvider).value ?? false;
+    final isKeyboardOpen = ref.watch(keyboardVisibilityProvider).value ?? false;
 
-    if (_isKeyboardOpen) return const SizedBox.shrink();
+    if (isKeyboardOpen) return const SizedBox.shrink();
 
     return FloatingActionButton(
       onPressed: () async {
         unawaited(HapticFeedback.lightImpact());
-        final _isAddFlow = _animationController.status == AnimationStatus.dismissed;
+        final isAddFlow = _animationController.status == AnimationStatus.dismissed;
 
-        if (_isAddFlow) {
+        if (isAddFlow) {
           widget.onStateChanged?.call(AddRemoveFloatingActionButtonState.add);
           unawaited(_animationController.forward());
         } else {
@@ -77,7 +79,7 @@ class _AddTaskFloatingActionButtonState extends ConsumerState<AddRemoveFloatingA
           unawaited(_animationController.reverse());
         }
       },
-      backgroundColor: _colors.primary,
+      backgroundColor: colors.primary,
       shape: SmoothRectangleBorder(
         borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
       ),
@@ -85,10 +87,10 @@ class _AddTaskFloatingActionButtonState extends ConsumerState<AddRemoveFloatingA
         animation: _rotationAnimation,
         builder: (context, child) => Transform.rotate(
           angle: _rotationAnimation.value,
-          child: SvgPicture.asset(
-            AssetsV2.plus,
-            height: 32,
-            width: 32,
+          child: AppIconButton(
+            icon: AppIcons.plusOutlined,
+            size: 32,
+            color: primitiveColors.white,
           ),
         ),
       ),
