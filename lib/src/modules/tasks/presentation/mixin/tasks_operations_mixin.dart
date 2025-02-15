@@ -30,7 +30,7 @@ mixin BaseTaskOperationsMixin<State extends Object> {
     if (onlyOptimisticUpdate) return;
 
     try {
-      final result = await useCase.upsertTask(task: task);
+      final result = await useCase.upsertTask(task);
 
       await result.fold(
         onSuccess: (updatedTask) async {

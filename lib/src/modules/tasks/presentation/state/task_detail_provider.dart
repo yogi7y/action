@@ -52,7 +52,7 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
     if (current == null || previous == null) return;
     if (previous == current) return;
 
-    final _currentFilter = ref.read(selectedTaskView);
+    final _currentFilter = ref.read(selectedTaskViewProvider);
 
     final _index = ref.read(taskDetailIndexProvider);
     // await ref.read(tasksProvider(_currentFilter).notifier).updateTask(

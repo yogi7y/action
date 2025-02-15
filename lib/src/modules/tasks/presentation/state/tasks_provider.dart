@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../models/task_view.dart';
+import 'new_task_provider.dart';
 
 final tasksNotifierProvider =
     AsyncNotifierProviderFamily<TasksNotifier, List<TaskEntity>, TaskView>(TasksNotifier.new);
@@ -45,7 +46,10 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     /// Optimistically update the state.
     state = AsyncData([tempOptimisticTask, ...state.valueOrNull ?? []]);
 
-    final result = await useCase.upsertTask(task: task);
+    /// Hide the text field after the task is successfully added.
+    ref.read(isTaskTextInputFieldVisibleProvider.notifier).state = false;
+
+    final result = await useCase.upsertTask(task);
 
     result.fold(
       onSuccess: (taskResult) {

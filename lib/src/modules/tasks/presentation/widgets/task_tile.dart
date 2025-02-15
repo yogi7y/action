@@ -139,19 +139,19 @@ class _TaskMetaDataRow extends ConsumerWidget {
       children: [
         if (project != null)
           _TaskMetaData(
-            iconPath: AssetsV2.hammerOutlined,
+            icon: AppIcons.hammerOutlined,
             value: project.name,
             onClick: () {},
           ),
         if (context0 != null)
           _TaskMetaData(
-            iconPath: AssetsV2.tag,
+            icon: AppIcons.tagOutlined,
             value: context0.name,
             onClick: () {},
           ),
         if (dueDate != null)
           _TaskMetaData(
-            iconPath: AssetsV2.calendarOutlined,
+            icon: AppIcons.calendarOutlined,
             value: dueDate.relativeDate,
             onClick: () {},
           ),
@@ -163,12 +163,12 @@ class _TaskMetaDataRow extends ConsumerWidget {
 @immutable
 class _TaskMetaData extends ConsumerWidget {
   const _TaskMetaData({
-    required this.iconPath,
+    required this.icon,
     required this.value,
     this.onClick,
   });
 
-  final String iconPath;
+  final IconData icon;
   final String value;
   final VoidCallback? onClick;
 
@@ -184,7 +184,7 @@ class _TaskMetaData extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AppIconButton(
-            icon: AppIcons.hammerOutlined,
+            icon: icon,
             size: 14,
             color: colors.textTokens.secondary,
           ),

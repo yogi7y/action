@@ -30,7 +30,7 @@ class SendIcon extends ConsumerWidget {
     return Consumer(
       builder: (context, ref, _) {
         return AppIconButton(
-          icon: AppIcons.chevronLeft,
+          icon: AppIcons.sendAlt2,
           size: size,
           color: iconColor,
           onClick: () async {

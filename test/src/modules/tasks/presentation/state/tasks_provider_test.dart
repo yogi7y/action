@@ -4,6 +4,7 @@ import 'package:action/src/modules/tasks/domain/entity/task.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
+import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,13 +52,14 @@ void main() {
             status: TaskStatus.todo,
           );
 
-          when(() => mockTaskUseCase.createTask(any())).thenAnswer(
+          when(() => mockTaskUseCase.upsertTask(any())).thenAnswer(
             (_) async => Success(taskToReturn),
           );
 
           final container = createContainer(
             overrides: [
               taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+              isTaskTextInputFieldVisibleProvider.overrideWith((previous) => true),
             ],
           );
 
@@ -77,7 +79,11 @@ void main() {
           expect(state?.first.name, 'Test');
           expect(state?.first.status, TaskStatus.todo);
 
-          verify(() => mockTaskUseCase.createTask(taskProperties)).called(1);
+          /// hide text field after the task is successfully added.
+          final textFieldVisibility = container.read(isTaskTextInputFieldVisibleProvider);
+          expect(textFieldVisibility, isFalse);
+
+          verify(() => mockTaskUseCase.upsertTask(taskProperties)).called(1);
 
           await addTaskResult;
 
@@ -93,7 +99,7 @@ void main() {
       test(
         'should revert to previous state and remove the optimistic update in case API fails',
         () async {
-          when(() => mockTaskUseCase.createTask(any())).thenAnswer(
+          when(() => mockTaskUseCase.upsertTask(any())).thenAnswer(
             (_) async => const Failure(AppException(exception: '', stackTrace: StackTrace.empty)),
           );
 
@@ -108,7 +114,10 @@ void main() {
           ];
 
           final container = createContainer(
-            overrides: [taskUseCaseProvider.overrideWithValue(mockTaskUseCase)],
+            overrides: [
+              taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+              isTaskTextInputFieldVisibleProvider.overrideWith((previous) => true),
+            ],
           );
 
           final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier)
@@ -131,7 +140,11 @@ void main() {
           expect(state?.first.name, 'Test');
           expect(state?.first.status, TaskStatus.todo);
 
-          verify(() => mockTaskUseCase.createTask(taskProperties)).called(1);
+          /// hide text field after the task is successfully added.
+          final textFieldVisibility = container.read(isTaskTextInputFieldVisibleProvider);
+          expect(textFieldVisibility, isFalse);
+
+          verify(() => mockTaskUseCase.upsertTask(taskProperties)).called(1);
 
           await addTaskResult;
 

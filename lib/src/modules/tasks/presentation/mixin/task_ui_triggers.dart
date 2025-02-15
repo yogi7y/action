@@ -8,7 +8,7 @@ import '../state/tasks_provider.dart';
 
 mixin TaskUiTriggersMixin {
   Future<void> addTask({required WidgetRef ref}) async {
-    final currentTaskView = ref.read(selectedTaskView);
+    final currentTaskView = ref.read(selectedTaskViewProvider);
     final task = ref.read(newTaskProvider);
 
     await ref.read(tasksNotifierProvider(currentTaskView).notifier).upsertTask(task);

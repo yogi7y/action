@@ -28,7 +28,7 @@ class TaskUseCase {
     return repository.createTask(task);
   }
 
-  Future<Result<TaskEntity, AppException>> upsertTask({required TaskPropertiesEntity task}) {
+  Future<Result<TaskEntity, AppException>> upsertTask(TaskPropertiesEntity task) {
     task.validate();
     return repository.upsertTask(task);
   }

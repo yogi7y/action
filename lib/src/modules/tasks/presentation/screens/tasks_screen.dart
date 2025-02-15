@@ -95,7 +95,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
           body: PageView(
             controller: _pageController,
             children: filters.map((filter) => TasksListView(taskView: filter)).toList(),
-            onPageChanged: (value) => ref.read(selectedTaskView.notifier).selectByIndex(value),
+            onPageChanged: (value) =>
+                ref.read(selectedTaskViewProvider.notifier).selectByIndex(value),
           ),
         ),
         floatingActionButton: AddRemoveFloatingActionButton(
