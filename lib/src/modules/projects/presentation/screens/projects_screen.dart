@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
+import '../../../../design_system/icons/app_icons.dart';
 import '../../../../shared/header/app_header.dart';
 import '../../../../shared/tab_bar/chip_tab_bar.dart';
 import '../../../context/presentation/screens/context_screen.dart';
@@ -54,11 +55,11 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                 items: const [
                   ChipTabBarItem(
                     label: 'Project',
-                    icon: AssetsV2.hammerOutlined,
+                    icon: AppIcons.hammerOutlined,
                   ),
                   ChipTabBarItem(
                     label: 'Context',
-                    icon: AssetsV2.tag,
+                    icon: AppIcons.tagOutlined,
                   ),
                 ],
               ),
