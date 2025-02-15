@@ -21,10 +21,10 @@ abstract class CompositeFilter extends Filter {
   String toString() => 'CompositeFilter(filters: $filters)';
 
   @override
-  bool operator ==(covariant CompositeFilter other) {
+  bool operator ==(covariant Filter other) {
     if (identical(this, other)) return true;
 
-    return listEquals(other.filters, filters);
+    return other is CompositeFilter && listEquals(other.filters, filters);
   }
 
   @override

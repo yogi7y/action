@@ -5,13 +5,14 @@ import 'package:smart_textfield/smart_textfield.dart';
 
 import '../../design_system/assets/assets_constants.dart';
 import '../../design_system/colors/primitive_tokens.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../design_system/spacing/spacing.dart';
 import '../../design_system/themes/base/theme.dart';
 import '../../design_system/themes/dark/dark_theme.dart';
 import '../../design_system/typography/typography.dart';
 import '../../modules/context/presentation/state/context_picker_provider.dart';
 import '../../modules/projects/presentation/state/project_picker_provider.dart';
-import '../buttons/icon_button.dart';
+import '../buttons/clickable_svg.dart';
 import 'sticky_keyboard_provider.dart';
 
 class StickyTextField extends ConsumerWidget {
@@ -87,7 +88,7 @@ class _PrefixIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(appThemeProvider);
 
-    const icon = AssetsV2.chevronLeft;
+    const icon = AppIcons.chevronLeft;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -97,7 +98,7 @@ class _PrefixIcon extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.only(right: 8),
         child: AppIconButton(
-          svgIconPath: icon,
+          icon: icon,
           color: colors.textTokens.secondary,
         ),
       ),

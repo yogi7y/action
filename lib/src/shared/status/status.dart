@@ -1,17 +1,18 @@
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../design_system/themes/base/semantics/status_tokens.dart';
+import '../buttons/clickable_svg.dart';
 import '../checkbox/checkbox.dart';
 
 extension on AppCheckboxState {
-  String get iconPath => switch (this) {
-        AppCheckboxState.checked => AssetsV2.circleCheck,
-        AppCheckboxState.intermediate => AssetsV2.circleDashed,
-        AppCheckboxState.unchecked => AssetsV2.circle,
+  IconData get icon => switch (this) {
+        AppCheckboxState.checked => AppIcons.circleCheck,
+        AppCheckboxState.intermediate => AppIcons.circleDashed,
+        AppCheckboxState.unchecked => AppIcons.circle,
       };
 }
 
@@ -85,14 +86,10 @@ class StatusWidget extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (showIcon) ...[
-            SvgPicture.asset(
-              state.iconPath,
-              height: 16,
-              width: 16,
-              colorFilter: ColorFilter.mode(
-                statusTokens.text,
-                BlendMode.srcIn,
-              ),
+            AppIconButton(
+              icon: state.icon,
+              size: 16,
+              color: statusTokens.text,
             ),
             const SizedBox(width: 6),
           ],

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../design_system/design_system.dart';
-import '../buttons/icon_button.dart';
+import '../buttons/clickable_svg.dart';
 
 @immutable
 class ChipTabBar extends ConsumerStatefulWidget {
@@ -126,7 +126,7 @@ class TabBarChip extends ConsumerWidget {
   });
 
   final String label;
-  final String? icon;
+  final IconData? icon;
   final bool isSelected;
 
   @override
@@ -150,11 +150,11 @@ class TabBarChip extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon?.isNotEmpty ?? false)
+          if (icon != null)
             Padding(
               padding: EdgeInsets.only(right: spacing.xxs),
               child: AppIconButton(
-                svgIconPath: icon!,
+                icon: icon!,
                 size: 18,
               ),
             ),
@@ -177,7 +177,7 @@ class ChipTabBarItem {
     this.icon,
   });
   final String label;
-  final String? icon;
+  final IconData? icon;
 
   @override
   String toString() => 'ChipTabBarItem(label: $label, icon: $icon)';

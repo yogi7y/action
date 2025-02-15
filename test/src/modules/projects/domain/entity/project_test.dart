@@ -67,7 +67,7 @@ void main() {
     const id = 'test-id';
     const name = 'Test Project';
     const status = ProjectStatus.notStarted;
-    final createdAt = DateTime(2024, 1, 1);
+    final createdAt = DateTime(2024);
     final updatedAt = DateTime(2024, 1, 2);
     final dueDate = DateTime(2024, 1, 3);
 

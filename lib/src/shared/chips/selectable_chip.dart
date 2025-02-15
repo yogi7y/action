@@ -3,19 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../design_system/design_system.dart';
-import '../buttons/icon_button.dart';
+import '../../design_system/icons/app_icons.dart';
+import '../buttons/clickable_svg.dart';
 
 class AppSelectableChip extends ConsumerWidget {
   const AppSelectableChip({
     required this.label,
-    this.iconPath,
+    this.icon,
     this.value,
     super.key,
     this.onClick,
     this.onCrossClick,
   });
 
-  final String? iconPath;
+  final IconData? icon;
   final String label;
   final String? value;
   final VoidCallback? onClick;
@@ -53,9 +54,9 @@ class AppSelectableChip extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            if (iconPath != null && iconPath!.isNotEmpty) ...{
+            if (icon != null) ...{
               AppIconButton(
-                svgIconPath: iconPath!,
+                icon: icon!,
                 color: selectableChipTheme.foregroundColor,
                 size: 16,
               ),
@@ -70,7 +71,7 @@ class AppSelectableChip extends ConsumerWidget {
             SizedBox(width: spacing.xxs),
             if (hasValue)
               AppIconButton(
-                svgIconPath: AssetsV2.xmark,
+                icon: AppIcons.xmark,
                 onClick: onCrossClick,
                 size: 16,
                 color: selectableChipTheme.foregroundColor.withValues(alpha: .8),

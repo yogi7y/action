@@ -22,8 +22,8 @@ void main() {
         ui: FakeTaskViewUI(),
       );
 
-      const expectedFilter = AndFilter([
-        OrganizedFilter(),
+      final expectedFilter = AndFilter([
+        const OrganizedFilter(),
         StatusFilter(TaskStatus.inProgress),
       ]);
 
@@ -36,8 +36,8 @@ void main() {
         ui: FakeTaskViewUI(),
       );
 
-      const expectedFilter = AndFilter([
-        OrganizedFilter(),
+      final expectedFilter = AndFilter([
+        const OrganizedFilter(),
         StatusFilter(TaskStatus.todo),
       ]);
 

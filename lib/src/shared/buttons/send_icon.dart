@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../design_system/assets/assets_constants.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../design_system/themes/base/theme.dart';
-import 'icon_button.dart';
+import 'clickable_svg.dart';
 
 class SendIcon extends ConsumerWidget {
   const SendIcon({
@@ -30,7 +30,7 @@ class SendIcon extends ConsumerWidget {
     return Consumer(
       builder: (context, ref, _) {
         return AppIconButton(
-          svgIconPath: AssetsV2.chevronLeft,
+          icon: AppIcons.chevronLeft,
           size: size,
           color: iconColor,
           onClick: () async {

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/extensions/date_time_extension.dart';
 import '../../design_system/design_system.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../modules/context/presentation/state/context_provider.dart';
 import '../../modules/projects/presentation/state/projects_provider.dart';
 import '../../modules/tasks/presentation/state/new_task_provider.dart';
@@ -39,7 +40,7 @@ class _DueDateOption extends ConsumerWidget {
     final relativeDueDate = dueDate?.relativeDate;
 
     return AppSelectableChip(
-      iconPath: AssetsV2.calendarOutlined,
+      icon: AppIcons.calendarOutlined,
       value: relativeDueDate,
       label: 'Due Date',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(dueDateAsNull: true),
@@ -59,7 +60,7 @@ class _ContextOption extends ConsumerWidget {
         ? ref.watch(contextByIdProvider(selectedContextId))
         : null;
     return AppSelectableChip(
-      iconPath: AssetsV2.tag,
+      icon: AppIcons.tagOutlined,
       label: 'Context',
       value: selectedContext?.name,
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(contextIdAsNull: true),
@@ -81,7 +82,7 @@ class _ProjectOption extends ConsumerWidget {
         : null;
 
     return AppSelectableChip(
-      iconPath: AssetsV2.hammerOutlined,
+      icon: AppIcons.hammerOutlined,
       value: selectedProject?.project.name,
       label: 'Project',
       onCrossClick: () => ref.read(newTaskProvider.notifier).mark(projectIdAsNull: true),
