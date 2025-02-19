@@ -9,6 +9,7 @@ import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
 import '../../tasks/presentation/state/new_checklist_provider.dart';
 import '../../tasks/presentation/state/new_task_provider.dart';
+import '../../tasks/presentation/state/task_view_provider.dart';
 import 'state/keyboard_visibility_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Activating the listener here.
+      ref.read(loadedTaskViewsProvider);
+    });
 
     ref
       ..listenManual(keyboardVisibilityProvider, (previous, next) {

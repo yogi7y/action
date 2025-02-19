@@ -5,7 +5,6 @@ import '../../../../core/network/paginated_response.dart';
 import '../../../../services/database/supabase_provider.dart';
 import '../../../filter/domain/entity/filter.dart';
 import '../../domain/entity/task.dart';
-import '../models/task.dart';
 import 'supabase_task_data_source.dart';
 
 @immutable
@@ -19,7 +18,7 @@ abstract class TaskRemoteDataSource {
   /// final filter = EqualFilter(field: 'project_id', value: '<project_id_here>');
   /// final tasks = await taskRemoteDataSource.fetchTasks(filter: filter);
   /// ```
-  Future<PaginatedResponse<TaskModel>> fetchTasks({
+  Future<PaginatedResponse<TaskEntity>> fetchTasks({
     required Filter filter,
   });
 

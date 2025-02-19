@@ -20,6 +20,7 @@ void main() {
       final inProgressTaskView = StatusTaskView(
         status: TaskStatus.inProgress,
         ui: FakeTaskViewUI(),
+        id: '',
       );
 
       final expectedFilter = AndFilter([
@@ -34,6 +35,7 @@ void main() {
       final todoTaskView = StatusTaskView(
         status: TaskStatus.todo,
         ui: FakeTaskViewUI(),
+        id: '',
       );
 
       final expectedFilter = AndFilter([
@@ -47,7 +49,10 @@ void main() {
 
   group('AllTasksView', () {
     test('has filter that selects all tasks without any filtering', () {
-      final allTasksView = AllTasksView(ui: FakeTaskViewUI());
+      final allTasksView = AllTasksView(
+        ui: FakeTaskViewUI(),
+        id: '',
+      );
 
       const expectedFilter = SelectFilter();
 
@@ -57,7 +62,10 @@ void main() {
 
   group('UnorganizedTaskView', () {
     test('has filter that checks if task is not organized', () {
-      final unorganizedTaskView = UnorganizedTaskView(ui: FakeTaskViewUI());
+      final unorganizedTaskView = UnorganizedTaskView(
+        ui: FakeTaskViewUI(),
+        id: '',
+      );
 
       const expectedFilter = OrganizedFilter(isOrganized: false);
 

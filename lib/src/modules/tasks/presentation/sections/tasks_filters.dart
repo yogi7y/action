@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/chips/chips.dart';
 import '../models/task_view.dart';
-import '../state/task_filter_provider.dart';
+import '../state/task_view_provider.dart';
 
 typedef TaskFilterView = ({
   TaskView filter,

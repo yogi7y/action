@@ -7,13 +7,19 @@ import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
 import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockTaskUseCase extends Mock implements TaskUseCase {}
 
-class FakeTaskView extends Fake implements TaskView {}
+class MockGlobalKey extends Mock implements GlobalKey<AnimatedListState> {}
+
+class FakeTaskView extends Fake implements TaskView {
+  @override
+  String get id => 'fake-task-view-id';
+}
 
 class FakeDateTime extends Fake implements DateTime {}
 
@@ -23,6 +29,7 @@ void main() {
   late MockTaskUseCase mockTaskUseCase;
   late FakeDateTime fakeDateTime;
   late FakeTaskView fakeTaskView;
+  late MockGlobalKey mockGlobalKey;
 
   setUpAll(
     () {
@@ -36,6 +43,7 @@ void main() {
     mockTaskUseCase = MockTaskUseCase();
     fakeDateTime = FakeDateTime();
     fakeTaskView = FakeTaskView();
+    mockGlobalKey = MockGlobalKey();
   });
 
   group(
@@ -56,6 +64,8 @@ void main() {
             (_) async => Success(taskToReturn),
           );
 
+          when(() => mockGlobalKey.currentState?.insertItem(any())).thenReturn(null);
+
           final container = createContainer(
             overrides: [
               taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
@@ -63,14 +73,18 @@ void main() {
             ],
           );
 
-          final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier);
+          final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier)
+            ..setAnimatedListKey(mockGlobalKey);
 
           const taskProperties = TaskPropertiesEntity(
             name: 'Test',
             status: TaskStatus.todo,
           );
 
-          final addTaskResult = tasksNotifier.upsertTask(taskProperties);
+          final addTaskResult = tasksNotifier.upsertTask(
+            taskProperties,
+            addToTop: true,
+          );
 
           final state =
               container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
@@ -78,6 +92,9 @@ void main() {
           expect(state?.first.id, isEmpty);
           expect(state?.first.name, 'Test');
           expect(state?.first.status, TaskStatus.todo);
+
+          // Ensure that the task is inserted at the top of the list.
+          verify(() => mockGlobalKey.currentState?.insertItem(0)).called(1);
 
           /// hide text field after the task is successfully added.
           final textFieldVisibility = container.read(isTaskTextInputFieldVisibleProvider);
@@ -131,10 +148,12 @@ void main() {
           final previousState =
               container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
 
-          final addTaskResult = tasksNotifier.upsertTask(taskProperties);
+          final addTaskResult = tasksNotifier.upsertTask(
+            taskProperties,
+            addToTop: true,
+          );
 
-          final state =
-              container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
+          final state = container.read(tasksNotifierProvider(fakeTaskView)).valueOrNull;
 
           expect(state?.first.id, isEmpty);
           expect(state?.first.name, 'Test');
@@ -152,6 +171,213 @@ void main() {
               container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
 
           expect(stateAfterUpdate, previousState);
+        },
+      );
+
+      test(
+        'should call insertItem when addToTop is true',
+        () async {
+          final taskToReturn = TaskEntity(
+            createdAt: fakeDateTime,
+            updatedAt: fakeDateTime,
+            id: 'task-id-0',
+            name: 'Test',
+            status: TaskStatus.todo,
+          );
+
+          when(() => mockTaskUseCase.upsertTask(any())).thenAnswer(
+            (_) async => Success(taskToReturn),
+          );
+
+          when(() => mockGlobalKey.currentState?.insertItem(any())).thenReturn(null);
+
+          final container = createContainer(
+            overrides: [
+              taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+            ],
+          );
+
+          final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier)
+            ..setAnimatedListKey(mockGlobalKey);
+
+          const taskProperties = TaskPropertiesEntity(
+            name: 'Test',
+            status: TaskStatus.todo,
+          );
+
+          await tasksNotifier.upsertTask(taskProperties, addToTop: true);
+
+          verify(() => mockGlobalKey.currentState?.insertItem(0)).called(1);
+        },
+      );
+
+      test(
+        'should not call insertItem when addToTop is false',
+        () async {
+          final taskToReturn = TaskEntity(
+            createdAt: fakeDateTime,
+            updatedAt: fakeDateTime,
+            id: 'task-id-0',
+            name: 'Test',
+            status: TaskStatus.todo,
+          );
+
+          when(() => mockTaskUseCase.upsertTask(any())).thenAnswer(
+            (_) async => Success(taskToReturn),
+          );
+
+          when(() => mockGlobalKey.currentState?.insertItem(any())).thenReturn(null);
+
+          final container = createContainer(
+            overrides: [
+              taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+            ],
+          );
+
+          final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier)
+            ..setAnimatedListKey(mockGlobalKey);
+
+          const taskProperties = TaskPropertiesEntity(
+            name: 'Test',
+            status: TaskStatus.todo,
+          );
+
+          await tasksNotifier.upsertTask(taskProperties);
+
+          verifyNever(() => mockGlobalKey.currentState?.insertItem(any()));
+        },
+      );
+    },
+  );
+
+  group(
+    'toggleCheckbox',
+    () {
+      late List<TaskEntity> initialTasks;
+
+      setUp(() {
+        initialTasks = [
+          TaskEntity(
+            createdAt: fakeDateTime,
+            updatedAt: fakeDateTime,
+            id: 'task-id-1',
+            name: 'Task 1',
+            status: TaskStatus.todo,
+          ),
+          TaskEntity(
+            createdAt: fakeDateTime,
+            updatedAt: fakeDateTime,
+            id: 'task-id-2',
+            name: 'Task 2',
+            status: TaskStatus.todo,
+          ),
+          TaskEntity(
+            createdAt: fakeDateTime,
+            updatedAt: fakeDateTime,
+            id: 'task-id-3',
+            name: 'Task 3',
+            status: TaskStatus.todo,
+          ),
+        ];
+      });
+
+      test(
+        'should optimistically update state and keep the update after API success',
+        () async {
+          final updatedTask = initialTasks[1].copyWith(status: TaskStatus.done);
+
+          when(() => mockTaskUseCase.upsertTask(any())).thenAnswer(
+            (_) async => Success(updatedTask),
+          );
+
+          when(() => mockGlobalKey.currentState?.insertItem(any())).thenReturn(null);
+
+          final container = createContainer(
+            overrides: [
+              taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+            ],
+          );
+
+          final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier)
+            ..setAnimatedListKey(mockGlobalKey)
+            ..updateState(initialTasks);
+
+          final toggleResult = tasksNotifier.toggleCheckbox(1, TaskStatus.done);
+
+          // Verify optimistic update
+          final stateAfterOptimisticUpdate =
+              container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
+
+          expect(stateAfterOptimisticUpdate?[1].status, TaskStatus.done);
+          expect(stateAfterOptimisticUpdate?[1].id, 'task-id-2');
+          expect(stateAfterOptimisticUpdate?[0].status, TaskStatus.todo);
+          expect(stateAfterOptimisticUpdate?[2].status, TaskStatus.todo);
+
+          // Verify API call
+          verify(() => mockTaskUseCase.upsertTask(any())).called(1);
+
+          // Verify insertItem is not called since addToTop is false by default
+          verifyNever(() => mockGlobalKey.currentState?.insertItem(any()));
+
+          await toggleResult;
+
+          // Verify final state
+          final finalState =
+              container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
+
+          expect(finalState?[1].status, TaskStatus.done);
+          expect(finalState?[1].id, 'task-id-2');
+          expect(finalState?[0].status, TaskStatus.todo);
+          expect(finalState?[2].status, TaskStatus.todo);
+        },
+      );
+
+      test(
+        'should revert to previous state when API fails',
+        () async {
+          when(() => mockTaskUseCase.upsertTask(any())).thenAnswer(
+            (_) async => const Failure(AppException(exception: '', stackTrace: StackTrace.empty)),
+          );
+
+          when(() => mockGlobalKey.currentState?.insertItem(any())).thenReturn(null);
+
+          final container = createContainer(
+            overrides: [
+              taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+            ],
+          );
+
+          final tasksNotifier = container.read(tasksNotifierProvider(fakeTaskView).notifier)
+            ..setAnimatedListKey(mockGlobalKey)
+            ..updateState(initialTasks);
+
+          final toggleResult = tasksNotifier.toggleCheckbox(1, TaskStatus.done);
+
+          // Verify optimistic update
+          final stateAfterOptimisticUpdate =
+              container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
+
+          expect(stateAfterOptimisticUpdate?[1].status, TaskStatus.done);
+          expect(stateAfterOptimisticUpdate?[1].id, 'task-id-2');
+          expect(stateAfterOptimisticUpdate?[0].status, TaskStatus.todo);
+          expect(stateAfterOptimisticUpdate?[2].status, TaskStatus.todo);
+
+          // Verify API call
+          verify(() => mockTaskUseCase.upsertTask(any())).called(1);
+
+          // Verify insertItem is not called since addToTop is false by default
+          verifyNever(() => mockGlobalKey.currentState?.insertItem(any()));
+
+          await toggleResult;
+
+          // Verify state is reverted back
+          final finalState =
+              container.read(tasksNotifierProvider(fakeTaskView).select((value) => value.value));
+
+          expect(finalState?[1].status, TaskStatus.todo);
+          expect(finalState?[1].id, 'task-id-2');
+          expect(finalState?[0].status, TaskStatus.todo);
+          expect(finalState?[2].status, TaskStatus.todo);
         },
       );
     },

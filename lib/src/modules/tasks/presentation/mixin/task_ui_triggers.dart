@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/new_task_provider.dart';
-import '../state/task_filter_provider.dart';
+import '../state/task_view_provider.dart';
 import '../state/tasks_provider.dart';
 
 mixin TaskUiTriggersMixin {

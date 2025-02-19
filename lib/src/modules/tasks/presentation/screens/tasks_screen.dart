@@ -10,7 +10,7 @@ import '../sections/task_input_field.dart';
 import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
-import '../state/task_filter_provider.dart';
+import '../state/task_view_provider.dart';
 import '../widgets/add_remove_floating_action_button.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
@@ -28,7 +28,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   void initState() {
     super.initState();
 
-    final filters = ref.read(tasksFilterProvider);
+    final filters = ref.read(taskViewProvider);
     for (final filter in filters) {
       _filterKeys[filter] = GlobalKey();
     }
@@ -46,7 +46,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   void _onPageChanged() {
     final controller = ref.read(tasksPageControllerProvider);
     final page = controller.page?.round() ?? 0;
-    final filters = ref.read(tasksFilterProvider);
+    final filters = ref.read(taskViewProvider);
 
     if (page >= 0 && page < filters.length) {
       _scrollToSelectedFilter(filters[page]);
@@ -70,7 +70,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   @override
   Widget build(BuildContext context) {
     final spacing = ref.watch(spacingProvider);
-    final filters = ref.watch(tasksFilterProvider);
+    final filters = ref.watch(taskViewProvider);
 
     return BackButtonListener(
       onBackButtonPressed: () async => false,

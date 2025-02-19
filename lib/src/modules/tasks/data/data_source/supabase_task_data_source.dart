@@ -16,7 +16,7 @@ class SupabaseRemoteTaskDataSource implements TaskRemoteDataSource {
   final SupabaseClient client;
 
   @override
-  Future<PaginatedResponse<TaskModel>> fetchTasks({required Filter filter}) async {
+  Future<PaginatedResponse<TaskEntity>> fetchTasks({required Filter filter}) async {
     final query = client.from('tasks').select();
     final filterOperations = SupabaseFilterOperations(query);
 
@@ -29,7 +29,7 @@ class SupabaseRemoteTaskDataSource implements TaskRemoteDataSource {
 
     final tasksModel = tasks.tryMap(TaskModel.fromMap).toList();
 
-    final paginatedResponse = PaginatedResponse<TaskModel>(
+    final paginatedResponse = PaginatedResponse<TaskEntity>(
       results: tasksModel,
       total: total,
     );

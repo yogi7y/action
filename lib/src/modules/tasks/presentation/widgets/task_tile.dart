@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core_y/src/extensions/time_ago.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +16,7 @@ import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/scoped_task_provider.dart';
+import '../state/tasks_provider.dart';
 
 @immutable
 class TaskTile extends ConsumerWidget with KeyboardMixin {
@@ -21,7 +24,9 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final task = ref.watch(scopedTaskProvider);
+    final indexedTask = ref.watch(scopedTaskProvider);
+    final task = indexedTask.task;
+    final index = indexedTask.index;
 
     final spacing = ref.watch(spacingProvider);
     final fonts = ref.watch(fontsProvider);
@@ -36,7 +41,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           behavior: HitTestBehavior.opaque,
           onTap: () async => context.goNamed(
             AppRoute.taskDetail.name,
-            extra: (value: (data: task, id: null), index: 1),
+            extra: (value: (data: task, id: null), index: index),
             pathParameters: {'id': task.id},
           ),
           child: Container(
@@ -54,7 +59,14 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                     bottom: bottomPadding,
                   ),
                   state: AppCheckboxState.fromTaskStatus(status: task.status),
-                  onChanged: (state) async {},
+                  onChanged: (state) async {
+                    final taskView = ref.read(scopedTaskViewProvider);
+                    unawaited(
+                      ref
+                          .read(tasksNotifierProvider(taskView).notifier)
+                          .toggleCheckbox(index, TaskStatus.fromAppCheckboxState(state)),
+                    );
+                  },
                 ),
                 Expanded(
                   child: Column(
@@ -101,7 +113,7 @@ class AnimatedTaskName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final fonts = ref.watch(fontsProvider);
     final colors = ref.watch(appThemeProvider);
-    final task = ref.watch(scopedTaskProvider);
+    final task = ref.watch(scopedTaskProvider).task;
 
     return AnimatedDefaultTextStyle(
       duration: defaultAnimationDuration,
@@ -128,7 +140,7 @@ class _TaskMetaDataRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spacing = ref.watch(spacingProvider);
-    final task = ref.watch(scopedTaskProvider);
+    final task = ref.watch(scopedTaskProvider).task;
 
     final project = ref.watch(projectByIdProvider(task.projectId ?? ''))?.project;
     final context0 = ref.watch(contextByIdProvider(task.contextId ?? ''));

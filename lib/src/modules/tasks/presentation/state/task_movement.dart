@@ -8,7 +8,7 @@ import '../../domain/entity/task.dart';
 import '../models/task_view.dart';
 import '../widgets/task_tile.dart';
 import 'scoped_task_provider.dart';
-import 'task_filter_provider.dart';
+import 'task_view_provider.dart';
 import 'tasks_provider.dart';
 import 'tasks_provider_old.dart';
 
@@ -211,7 +211,7 @@ class TaskMovementController {
         ),
         axisAlignment: -1, // Align to top to animate bottom-up
         child: ProviderScope(
-          overrides: [scopedTaskProvider.overrideWithValue(task)],
+          overrides: [scopedTaskProvider.overrideWithValue((index: index, task: task))],
           child: const TaskTile(),
         ),
       ),
@@ -221,7 +221,7 @@ class TaskMovementController {
 
 final taskMovementProvider = Provider<TaskMovementController>(
   (ref) => TaskMovementController(
-    allTaskViews: ref.read(tasksFilterProvider),
+    allTaskViews: ref.read(taskViewProvider),
     ref: ref,
   ),
 );

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/task.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../mixin/tasks_operations_mixin.dart';
-import 'task_filter_provider.dart';
+import 'task_view_provider.dart';
 import 'tasks_provider_old.dart';
 
 typedef TaskDataOrId = ({String? id, TaskEntity? data});

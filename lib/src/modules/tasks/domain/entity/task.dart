@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/entity.dart';
 import '../../../../core/exceptions/validation_exception.dart';
 import '../../../../services/database/model_meta_data.dart';
+import '../../data/models/task.dart';
 import 'task_status.dart';
 
 @immutable
@@ -137,6 +138,20 @@ class TaskEntity extends TaskPropertiesEntity implements ModelMetaData, Entity {
         isOrganized: isOrganized ?? this.isOrganized,
       );
 
+  /// todo: remove this method once it's no longer being used.
+  @Deprecated('Temp method to convert to model. Prefer to avoid using this.')
+  TaskModel toTaskModel() => TaskModel(
+        id: id,
+        name: name,
+        status: status,
+        dueDate: dueDate,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        projectId: projectId,
+        contextId: contextId,
+        isOrganized: isOrganized,
+      );
+
   factory TaskEntity.fromTaskProperties({
     required TaskPropertiesEntity task,
     required DateTime createdAt,
@@ -154,6 +169,12 @@ class TaskEntity extends TaskPropertiesEntity implements ModelMetaData, Entity {
         createdAt: createdAt,
         updatedAt: updatedAt,
       );
+
+  @override
+  Map<String, Object?> toMap() => {
+        'id': id,
+        ...super.toMap(),
+      };
 
   @override
   final Id id;

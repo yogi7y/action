@@ -6,6 +6,7 @@ import '../../../../shared/placeholder_widget.dart';
 import '../models/task_view.dart';
 import '../state/scoped_task_provider.dart';
 import '../state/tasks_provider.dart';
+import '../widgets/refresh_tasks_widget.dart';
 import '../widgets/task_loading_tile.dart';
 import '../widgets/task_tile.dart';
 
@@ -19,21 +20,21 @@ class TasksListView extends ConsumerWidget {
   final TaskView taskView;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      ref.watch(tasksNotifierProvider(taskView)).when(
-            error: (error, _) => PlaceholderWidget(text: error.toString()),
-            loading: () => const _TaskListLoadingState(),
-            data: (tasks) => _TaskListViewDataState(taskView: taskView),
-          );
+  Widget build(BuildContext context, WidgetRef ref) => ProviderScope(
+        overrides: [
+          scopedTaskViewProvider.overrideWithValue(taskView),
+        ],
+        child: ref.watch(tasksNotifierProvider(taskView)).when(
+              error: (error, _) => PlaceholderWidget(text: error.toString()),
+              loading: _TaskListLoadingState.new,
+              data: (tasks) => const _TaskListViewDataState(),
+            ),
+      );
 }
 
 @immutable
 class _TaskListViewDataState extends ConsumerStatefulWidget {
-  const _TaskListViewDataState({
-    required this.taskView,
-  });
-
-  final TaskView taskView;
+  const _TaskListViewDataState();
 
   @override
   ConsumerState<_TaskListViewDataState> createState() => _TaskListDataStateState();
@@ -43,19 +44,26 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
     with AutomaticKeepAliveClientMixin {
   late final _animatedListKey = GlobalKey<AnimatedListState>();
 
-  /// For easier `taskView` access rather than writing `widget.taskView` each time.
-  late final _taskView = widget.taskView;
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final taskView = ref.read(scopedTaskViewProvider);
+      ref.read(tasksNotifierProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final taskView = ref.read(scopedTaskViewProvider);
 
-    final tasks = ref.watch(tasksNotifierProvider(_taskView)).valueOrNull ?? [];
+    final tasks = ref.watch(tasksNotifierProvider(taskView)).valueOrNull ?? [];
 
     if (tasks.isEmpty) return const _EmptyState();
 
-    return RefreshIndicator(
-      onRefresh: () async {},
+    return RefreshTasksWidget(
       child: Stack(
         children: [
           AnimatedList(
@@ -64,7 +72,7 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
             initialItemCount: tasks.length,
             itemBuilder: (context, index, animation) => ProviderScope(
               overrides: [
-                scopedTaskProvider.overrideWithValue(tasks[index]),
+                scopedTaskProvider.overrideWithValue((index: index, task: tasks[index])),
               ],
               child: FadeTransition(
                 opacity: CurvedAnimation(
@@ -98,28 +106,35 @@ class _EmptyState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fonts = ref.watch(fontsProvider);
+    final height = MediaQuery.of(context).size.height * .7;
 
-    return Center(
-      child: Center(
-        child: Text(
-          'No tasks found',
-          style: fonts.headline.xs.medium,
+    return RefreshTasksWidget(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: height,
+          child: Center(
+            child: Text(
+              'No tasks found',
+              style: fonts.headline.xs.medium,
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _TaskListLoadingState extends StatelessWidget {
+class _TaskListLoadingState extends ConsumerWidget {
   const _TaskListLoadingState();
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(
-        10,
-        (index) => const TasksLoadingTile(),
-      ),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) => SingleChildScrollView(
+        child: Column(
+          children: List.generate(
+            10,
+            (index) => const TasksLoadingTile(),
+          ),
+        ),
+      );
 }

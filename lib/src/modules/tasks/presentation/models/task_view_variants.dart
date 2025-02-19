@@ -11,6 +11,7 @@ class StatusTaskView extends TaskView {
   StatusTaskView({
     required this.status,
     required super.ui,
+    required super.id,
   }) : super(
           operations: TaskViewOperations(
             filter: AndFilter([const OrganizedFilter(), StatusFilter(status)]),
@@ -24,6 +25,7 @@ class StatusTaskView extends TaskView {
 class AllTasksView extends TaskView {
   const AllTasksView({
     required super.ui,
+    required super.id,
   }) : super(operations: const TaskViewOperations(filter: SelectFilter()));
 }
 
@@ -31,5 +33,6 @@ class AllTasksView extends TaskView {
 class UnorganizedTaskView extends TaskView {
   const UnorganizedTaskView({
     required super.ui,
+    required super.id,
   }) : super(operations: const TaskViewOperations(filter: OrganizedFilter(isOrganized: false)));
 }
