@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../../domain/entity/task_status.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../models/task_view.dart';
@@ -51,10 +51,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
       final item = tempOptimisticTask[index];
 
-      /// todo: remove the toTaskModel. There's a type error happening because the
-      /// state of the provider is being saved as TaskModel instead of TaskEntity which
-      /// is giving errors on runtime. Added this conversion temporarily to unblock, but needs to be fixed and removed.
-      final updatedItem = item.copyWith(status: status).toTaskModel();
+      final updatedItem = item.copyWith(status: status);
 
       tempOptimisticTask
         ..removeAt(index)
@@ -85,17 +82,14 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
   }) async {
     final previousState = previousStateArg ?? state.valueOrNull;
 
-    final tempOptimisticTask = task.copyWith();
+    final now = DateTime.now();
 
-    /// Optimistically update the state.
-    if (addToTop) {
-      state = AsyncData([tempOptimisticTask, ...state.valueOrNull ?? []]);
+    final tempOptimisticTask = task.copyWith(
+      createdAt: task.createdAt ?? now,
+      updatedAt: now,
+    );
 
-      /// Insert the new task at the top of the list.
-      animatedListKey?.currentState?.insertItem(0);
-    }
-
-    // Move task to respective views based on the current state.
+    // Move task to respective views based on the current state + Optimistic update.
     _moveTaskToRespectiveView(tempOptimisticTask);
 
     /// Hide the text field after the task is successfully added.
@@ -135,8 +129,17 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
     final tasks = taskViewToUse == arg
         ? (state.valueOrNull ?? [])
-        : (ref.read(tasksNotifierProvider(taskViewToUse)).valueOrNull ?? []).toList()
-      ..add(task);
+        : (ref.read(tasksNotifierProvider(taskViewToUse)).valueOrNull ?? []).toList();
+
+    final index = useCase.getInsertIndexForTask(tasks, task);
+
+    /// If task is same, then it probably means that the task already exists and we just need to update it.
+    /// todo: need some handling.
+    if (tasks[index].id == task.id) {
+      removeIfTaskExists(task);
+    }
+
+    tasks.insert(index, task);
 
     taskViewNotifier.updateState(tasks);
 
@@ -148,7 +151,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
   /// Remove a task in memory.
   /// Does not make any API calls or anything, just update the state in memory.
-  void removeTask(
+  void removeIfTaskExists(
     TaskEntity task, {
     /// Uses the passed in task view to update the task to.
     /// In case not provided, the task will be removed from the current task view.
@@ -180,11 +183,9 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
   void _moveTaskToRespectiveView(TaskEntity task) {
     for (final view in _loadedTaskViews) {
       if (view.canContainTask(task)) {
-        if (view == arg) continue;
-
-        addInMemoryTask(task);
+        addInMemoryTask(task, taskView: view);
       } else {
-        removeTask(task);
+        removeIfTaskExists(task, taskView: view);
       }
     }
   }

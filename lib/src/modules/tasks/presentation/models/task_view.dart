@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../filter/domain/entity/filter.dart';
 import '../../domain/entity/filters/task_filter_operations.dart';
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 
 /// Combination of things like [Filter] and [TaskViewUI], etc. combining which
 /// a task view will be eventually shown.

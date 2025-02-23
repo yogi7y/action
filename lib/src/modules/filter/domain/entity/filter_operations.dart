@@ -3,6 +3,8 @@ import 'composite/or_filter.dart';
 import 'filter.dart';
 import 'variants/equals_filter.dart';
 import 'variants/greater_than_filter.dart';
+import 'variants/not_filter.dart';
+import 'variants/nullable_filter.dart';
 import 'variants/select_filter.dart';
 
 /// Visitor interface for implementing filter operations.
@@ -69,6 +71,24 @@ abstract class FilterOperations<V> {
   /// [filter] The select filter to process
   /// Returns a value of type [V] based on the visitor implementation
   V visitSelect(SelectFilter filter);
+
+  /// Processes a nullable filter operation.
+  ///
+  /// This method is called when visiting a [NullableFilter] to process
+  /// a filter that checks if a value is null or non-null.
+  ///
+  /// [filter] The nullable filter to process
+  /// Returns a value of type [V] based on the visitor implementation
+  V visitNullable(NullableFilter filter);
+
+  /// Processes a NOT filter operation.
+  ///
+  /// This method is called when visiting a [NotFilter] to process
+  /// a logical NOT operation on a filter.
+  ///
+  /// [filter] The NOT filter to process
+  /// Returns a value of type [V] based on the visitor implementation
+  V visitNot(NotFilter filter);
 }
 
 /// Base class for implementing in-memory filter operations using the Visitor pattern.

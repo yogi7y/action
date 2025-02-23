@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/paginated_response.dart';
 import '../../../filter/domain/entity/filter.dart';
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../../domain/repository/task_repository.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../data_source/task_remote_data_source.dart';

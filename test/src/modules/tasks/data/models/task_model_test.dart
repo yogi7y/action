@@ -1,8 +1,10 @@
 import 'package:action/src/core/exceptions/serialization_exception.dart';
-import 'package:action/src/modules/tasks/data/models/task.dart';
+import 'package:action/src/modules/tasks/data/models/task_model.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
+
+class TaskModelTest with TaskModelMixin {}
 
 void main() {
   group('TaskModel', () {
@@ -19,7 +21,7 @@ void main() {
         isOrganized: true,
       );
 
-      final model = TaskModel.fromMap(map);
+      final model = TaskModelTest().fromMapToTaskEntity(map);
 
       expect(model.id, 'test-id');
       expect(model.name, 'Test Task');
@@ -41,7 +43,7 @@ void main() {
         updatedAt: '2024-01-02T00:00:00.000Z',
       );
 
-      final model = TaskModel.fromMap(map);
+      final model = TaskModelTest().fromMapToTaskEntity(map);
 
       expect(model.dueDate, null);
       expect(model.projectId, null);
@@ -59,7 +61,7 @@ void main() {
       )..removeWhere((key, value) => key == 'name');
 
       expect(
-        () => TaskModel.fromMap(map),
+        () => TaskModelTest().fromMapToTaskEntity(map),
         throwsA(isA<InvalidTypeException>()),
       );
     });
@@ -74,7 +76,7 @@ void main() {
       );
 
       expect(
-        () => TaskModel.fromMap(map),
+        () => TaskModelTest().fromMapToTaskEntity(map),
         throwsArgumentError,
       );
     });
@@ -89,7 +91,7 @@ void main() {
       );
 
       expect(
-        () => TaskModel.fromMap(map),
+        () => TaskModelTest().fromMapToTaskEntity(map),
         throwsFormatException,
       );
     });

@@ -5,7 +5,7 @@ import 'package:smart_textfield/smart_textfield.dart';
 import '../../../filter/domain/entity/composite/composite_filter.dart';
 import '../../../filter/domain/entity/filter.dart';
 import '../../domain/entity/filters/task_filter_operations.dart';
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../../domain/entity/task_status.dart';
 import 'task_view_provider.dart';
 

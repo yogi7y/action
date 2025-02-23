@@ -4,7 +4,9 @@ import '../../../../../core/exceptions/in_memory_filter_exception.dart';
 import '../../../../filter/domain/entity/filter_operations.dart';
 import '../../../../filter/domain/entity/variants/equals_filter.dart';
 import '../../../../filter/domain/entity/variants/greater_than_filter.dart';
-import '../task.dart';
+import '../../../../filter/domain/entity/variants/not_filter.dart';
+import '../../../../filter/domain/entity/variants/nullable_filter.dart';
+import '../task_entity.dart';
 import '../task_status.dart';
 
 @immutable
@@ -37,7 +39,7 @@ class InMemoryTaskFilterOperations extends InMemoryFilterOperations<TaskEntity> 
 
     return switch ((key, value)) {
       (statusKey, final String value) => item.status == TaskStatus.fromString(value),
-      (isOrganizedKey, final bool value) => item.isOrganized == value,
+      (isOrganizedKey, final bool value) => item.computedIsOrganized == value,
       (projectIdKey, final String value) => item.projectId == value,
       (contextIdKey, final String value) => item.contextId == value,
       (idKey, final String value) => item.id == value,
@@ -62,4 +64,22 @@ class InMemoryTaskFilterOperations extends InMemoryFilterOperations<TaskEntity> 
         ),
     };
   }
+
+  @override
+  bool visitNullable(NullableFilter filter) {
+    final (key, value) = (filter.key, filter.value);
+
+    return switch ((key, value)) {
+      (projectIdKey, null) => item.projectId == null,
+      (contextIdKey, null) => item.contextId == null,
+      (_, _) => throw InMemoryFilterException(
+          key: key,
+          value: value,
+          stackTrace: StackTrace.current,
+        ),
+    };
+  }
+
+  @override
+  bool visitNot(NotFilter filter) => !filter.filter.accept(this);
 }

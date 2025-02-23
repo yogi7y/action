@@ -2,7 +2,7 @@ import 'package:core_y/core_y.dart';
 
 import '../../../../core/network/paginated_response.dart';
 import '../../../filter/domain/entity/filter.dart';
-import '../entity/task.dart';
+import '../entity/task_entity.dart';
 import '../use_case/task_use_case.dart';
 
 abstract class TaskRepository {

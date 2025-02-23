@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/logger/logger.dart';
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../models/task_view.dart';
 import '../widgets/task_tile.dart';
 import 'scoped_task_provider.dart';

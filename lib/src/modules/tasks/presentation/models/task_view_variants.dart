@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../../../filter/domain/entity/composite/and_filter.dart';
+import '../../../filter/domain/entity/variants/not_filter.dart';
 import '../../../filter/domain/entity/variants/select_filter.dart';
 import '../../domain/entity/task_status.dart';
 import 'task_filters.dart';
@@ -14,7 +15,7 @@ class StatusTaskView extends TaskView {
     required super.id,
   }) : super(
           operations: TaskViewOperations(
-            filter: AndFilter([const OrganizedFilter(), StatusFilter(status)]),
+            filter: AndFilter([OrganizedFilter(), StatusFilter(status)]),
           ),
         );
 
@@ -34,5 +35,9 @@ class UnorganizedTaskView extends TaskView {
   const UnorganizedTaskView({
     required super.ui,
     required super.id,
-  }) : super(operations: const TaskViewOperations(filter: OrganizedFilter(isOrganized: false)));
+  }) : super(
+          operations: const TaskViewOperations(
+            filter: OrganizedFilter(isOrganized: false),
+          ),
+        );
 }

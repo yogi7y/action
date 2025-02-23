@@ -3,7 +3,7 @@ import 'package:action/src/modules/filter/domain/entity/composite/or_filter.dart
 import 'package:action/src/modules/filter/domain/entity/filter.dart';
 import 'package:action/src/modules/filter/domain/entity/filter_operations.dart';
 import 'package:action/src/modules/tasks/domain/entity/filters/task_filter_operations.dart';
-import 'package:action/src/modules/tasks/domain/entity/task.dart';
+import 'package:action/src/modules/tasks/domain/entity/task_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

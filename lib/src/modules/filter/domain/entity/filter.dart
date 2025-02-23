@@ -50,5 +50,5 @@ abstract class PropertyFilter extends Filter {
   final String key;
 
   /// The value to filter by.
-  final Object value;
+  final Object? value;
 }

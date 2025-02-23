@@ -2,7 +2,7 @@ import 'package:action/src/core/exceptions/in_memory_filter_exception.dart';
 import 'package:action/src/modules/filter/domain/entity/variants/equals_filter.dart';
 import 'package:action/src/modules/filter/domain/entity/variants/greater_than_filter.dart';
 import 'package:action/src/modules/tasks/domain/entity/filters/task_filter_operations.dart';
-import 'package:action/src/modules/tasks/domain/entity/task.dart';
+import 'package:action/src/modules/tasks/domain/entity/task_entity.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore: depend_on_referenced_packages, implementation_imports
 import 'package:riverpod/src/notifier.dart';
 
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../../domain/use_case/task_use_case.dart';
 
 /// Base mixin containing common task operation logic

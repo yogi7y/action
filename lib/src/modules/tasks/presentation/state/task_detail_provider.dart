@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../mixin/tasks_operations_mixin.dart';
 import 'task_view_provider.dart';

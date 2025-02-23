@@ -6,6 +6,8 @@ import '../../domain/entity/composite/or_filter.dart';
 import '../../domain/entity/filter_operations.dart';
 import '../../domain/entity/variants/equals_filter.dart';
 import '../../domain/entity/variants/greater_than_filter.dart';
+import '../../domain/entity/variants/not_filter.dart';
+import '../../domain/entity/variants/nullable_filter.dart';
 import '../../domain/entity/variants/select_filter.dart';
 
 class SupabaseFilterOperations<T> implements FilterOperations<PostgrestFilterBuilder<T>> {
@@ -14,11 +16,11 @@ class SupabaseFilterOperations<T> implements FilterOperations<PostgrestFilterBui
   final PostgrestFilterBuilder<T> query;
 
   @override
-  PostgrestFilterBuilder<T> visitEquals(EqualsFilter filter) => query.eq(filter.key, filter.value);
+  PostgrestFilterBuilder<T> visitEquals(EqualsFilter filter) => query.eq(filter.key, filter.value!);
 
   @override
   PostgrestFilterBuilder<T> visitGreaterThan(GreaterThanFilter filter) =>
-      query.gt(filter.key, filter.value);
+      query.gt(filter.key, filter.value!);
 
   @override
   PostgrestFilterBuilder<T> visitSelect(SelectFilter filter) => query;
@@ -40,5 +42,15 @@ class SupabaseFilterOperations<T> implements FilterOperations<PostgrestFilterBui
     }
 
     return result;
+  }
+
+  @override
+  PostgrestFilterBuilder<T> visitNullable(NullableFilter filter) {
+    throw UnimplementedError();
+  }
+
+  @override
+  PostgrestFilterBuilder<T> visitNot(NotFilter filter) {
+    throw UnimplementedError();
   }
 }

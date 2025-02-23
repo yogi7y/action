@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/exceptions/validation_exception.dart';
-import '../../data/models/task.dart';
 import 'task_status.dart';
 
 @immutable
-class TaskEntity {
+class TaskEntity implements Comparable<TaskEntity> {
   const TaskEntity({
     required this.name,
     required this.status,
@@ -28,6 +27,12 @@ class TaskEntity {
   final bool isOrganized;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+
+  /// Logic to determine if the task is organized.
+  /// Should only be used for in-memory operations and not to be pushed to the database.
+  bool get computedIsOrganized =>
+      [TaskStatus.done, TaskStatus.discard].contains(status) ||
+      (projectId != null && projectId!.isNotEmpty);
 
   TaskEntity copyWith({
     String? id,
@@ -63,22 +68,8 @@ class TaskEntity {
         contextId: contextIdAsNull ? null : contextId,
       );
 
-  /// todo: remove this method once it's no longer being used.
-  @Deprecated('Temp method to convert to model. Prefer to avoid using this.')
-  TaskModel toTaskModel() => TaskModel(
-        id: id,
-        name: name,
-        status: status,
-        dueDate: dueDate,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-        projectId: projectId,
-        contextId: contextId,
-        isOrganized: isOrganized,
-      );
-
   Map<String, Object?> toMap() => {
-        'id': id,
+        if (id != null) 'id': id,
         'name': name,
         'status': status.value,
         if (dueDate != null) 'due_date': dueDate?.toIso8601String(),
@@ -98,7 +89,6 @@ class TaskEntity {
   @override
   String toString() =>
       'TaskEntity(id: $id, name: $name, status: $status, dueDate: $dueDate, projectId: $projectId, contextId: $contextId, isOrganized: $isOrganized, createdAt: $createdAt, updatedAt: $updatedAt)';
-
   @override
   bool operator ==(covariant TaskEntity other) {
     if (identical(this, other)) return true;
@@ -110,8 +100,7 @@ class TaskEntity {
         other.projectId == projectId &&
         other.contextId == contextId &&
         other.isOrganized == isOrganized &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.createdAt == createdAt;
   }
 
   @override
@@ -123,6 +112,13 @@ class TaskEntity {
       projectId.hashCode ^
       contextId.hashCode ^
       isOrganized.hashCode ^
-      createdAt.hashCode ^
-      updatedAt.hashCode;
+      createdAt.hashCode;
+
+  @override
+  int compareTo(TaskEntity other) {
+    final createdAtA = createdAt ?? DateTime.now();
+    final createdAtB = other.createdAt ?? DateTime.now();
+
+    return createdAtB.compareTo(createdAtA);
+  }
 }

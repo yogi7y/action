@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_implementing_value_types
 
-import 'package:action/src/modules/tasks/domain/entity/task.dart';
+import 'package:action/src/modules/tasks/domain/entity/task_entity.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';

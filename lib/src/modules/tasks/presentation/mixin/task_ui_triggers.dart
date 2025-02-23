@@ -9,13 +9,13 @@ import '../state/tasks_provider.dart';
 mixin TaskUiTriggersMixin {
   Future<void> addTask({
     required WidgetRef ref,
-
-    /// To be passed in when updating a task.
-    String? id,
   }) async {
     final currentTaskView = ref.read(selectedTaskViewProvider);
     final task = ref.read(newTaskProvider);
 
-    await ref.read(tasksNotifierProvider(currentTaskView).notifier).upsertTask(task);
+    await ref.read(tasksNotifierProvider(currentTaskView).notifier).upsertTask(
+          task,
+          addToTop: task.id == null,
+        );
   }
 }

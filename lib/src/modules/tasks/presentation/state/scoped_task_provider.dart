@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../models/task_view.dart';
 
 typedef IndexedTask = ({int index, TaskEntity task});

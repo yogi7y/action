@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import '../../../../core/network/paginated_response.dart';
 import '../../../../services/database/supabase_provider.dart';
 import '../../../filter/domain/entity/filter.dart';
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import 'supabase_task_data_source.dart';
 
 @immutable

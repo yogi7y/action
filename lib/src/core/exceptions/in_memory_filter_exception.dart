@@ -17,7 +17,7 @@ class InMemoryFilterException implements AppException {
   final String key;
 
   /// The [value] which was being looked up in the filter.
-  final Object value;
+  final Object? value;
 
   /// The original exception that caused this serialization error.
   @override
