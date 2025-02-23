@@ -41,7 +41,7 @@ class ChecklistItem extends ConsumerWidget {
 
                 final taskId = ref.read(taskDetailNotifierProvider).id;
 
-                await ref.read(checklistProvider(taskId).notifier).updateChecklist(
+                await ref.read(checklistProvider(taskId!).notifier).updateChecklist(
                       checklist.copyWith(
                         status: newStatus,
                       ),
@@ -64,7 +64,7 @@ class ChecklistItem extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.only(left: spacing.sm),
             child: Text(
-              checklist.createdAt.timeAgo,
+              checklist.createdAt?.timeAgo ?? '',
               style: fonts.text.xs.regular.copyWith(
                 fontSize: 10,
                 height: 16 / 10,

@@ -86,7 +86,7 @@ class TaskDetailProperties extends ConsumerWidget {
               color: colors.textTokens.tertiary,
             ),
             Text(
-              task.createdAt.relativeDate,
+              task.createdAt?.relativeDate ?? '',
               style: fonts.text.xs.regular.copyWith(
                 color: colors.textTokens.tertiary,
                 decoration: TextDecoration.underline,

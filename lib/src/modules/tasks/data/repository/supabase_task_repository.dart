@@ -29,7 +29,7 @@ class SupabaseTaskRepository implements TaskRepository {
   }
 
   @override
-  AsyncTaskResult createTask(TaskPropertiesEntity task) {
+  AsyncTaskResult createTask(TaskEntity task) {
     throw UnimplementedError();
   }
 
@@ -44,7 +44,7 @@ class SupabaseTaskRepository implements TaskRepository {
   }
 
   @override
-  AsyncTaskResult upsertTask(TaskPropertiesEntity task) async {
+  AsyncTaskResult upsertTask(TaskEntity task) async {
     try {
       final response = await remoteDataSource.upsertTask(task: task);
 

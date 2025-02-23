@@ -23,12 +23,12 @@ class TaskUseCase {
 
   AsyncTaskPaginatedResult fetchTasks(Filter filter) => repository.fetchTasks(filter: filter);
 
-  Future<Result<TaskEntity, AppException>> createTask(TaskPropertiesEntity task) {
+  Future<Result<TaskEntity, AppException>> createTask(TaskEntity task) {
     task.validate();
     return repository.createTask(task);
   }
 
-  Future<Result<TaskEntity, AppException>> upsertTask(TaskPropertiesEntity task) {
+  Future<Result<TaskEntity, AppException>> upsertTask(TaskEntity task) {
     task.validate();
     return repository.upsertTask(task);
   }

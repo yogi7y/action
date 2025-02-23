@@ -72,7 +72,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
   }
 
   Future<void> upsertTask(
-    TaskPropertiesEntity task, {
+    TaskEntity task, {
     /// Whether to add the task to the top of the list.
     /// Mark this as true if you're creating a new task.
     /// Should be `false` when updating an existing task.
@@ -85,15 +85,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
   }) async {
     final previousState = previousStateArg ?? state.valueOrNull;
 
-    const id = '';
-    final now = DateTime.now();
-
-    final tempOptimisticTask = TaskEntity.fromTaskProperties(
-      task: task,
-      createdAt: now,
-      updatedAt: now,
-      id: id,
-    );
+    final tempOptimisticTask = task.copyWith();
 
     /// Optimistically update the state.
     if (addToTop) {
@@ -118,7 +110,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
         /// The temp optimistic task which we saved in the previous step.
         bool isOptimisticTask(TaskEntity task) =>
-            task.id.isEmpty && task.name == tempOptimisticTask.name;
+            task.id == null && task.name == tempOptimisticTask.name;
 
         state = AsyncData(
           state.valueOrNull?.map((e) => isOptimisticTask(e) ? taskResult : e).toList() ?? [],
@@ -141,7 +133,9 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     final taskViewToUse = taskView ?? arg;
     final taskViewNotifier = ref.read(tasksNotifierProvider(taskViewToUse).notifier);
 
-    final tasks = (ref.read(tasksNotifierProvider(taskViewToUse)).valueOrNull ?? []).toList()
+    final tasks = taskViewToUse == arg
+        ? (state.valueOrNull ?? [])
+        : (ref.read(tasksNotifierProvider(taskViewToUse)).valueOrNull ?? []).toList()
       ..add(task);
 
     taskViewNotifier.updateState(tasks);
@@ -163,7 +157,9 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     final taskViewToUse = taskView ?? arg;
     final taskViewNotifier = ref.read(tasksNotifierProvider(taskViewToUse).notifier);
 
-    final tasks = (ref.read(tasksNotifierProvider(taskViewToUse)).valueOrNull ?? []).toList();
+    final tasks = taskViewToUse == arg
+        ? (state.valueOrNull ?? [])
+        : (ref.read(tasksNotifierProvider(taskViewToUse)).valueOrNull ?? []).toList();
 
     final index = tasks.indexOf(task);
     if (index == -1) return;

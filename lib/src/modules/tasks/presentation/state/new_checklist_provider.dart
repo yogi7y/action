@@ -5,16 +5,15 @@ import '../../domain/entity/checklist.dart';
 
 final isChecklistTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);
 
-final newChecklistProvider =
-    AutoDisposeNotifierProvider<NewChecklistTextNotifier, ChecklistPropertiesEntity>(
-        NewChecklistTextNotifier.new);
+final newChecklistProvider = AutoDisposeNotifierProvider<NewChecklistTextNotifier, ChecklistEntity>(
+    NewChecklistTextNotifier.new);
 
-class NewChecklistTextNotifier extends AutoDisposeNotifier<ChecklistPropertiesEntity> {
+class NewChecklistTextNotifier extends AutoDisposeNotifier<ChecklistEntity> {
   late final controller = TextEditingController();
   late final focusNode = FocusNode();
 
   @override
-  ChecklistPropertiesEntity build() {
+  ChecklistEntity build() {
     _syncControllerAndState();
 
     ref.onDispose(() {
@@ -22,7 +21,7 @@ class NewChecklistTextNotifier extends AutoDisposeNotifier<ChecklistPropertiesEn
       focusNode.dispose();
     });
 
-    return const ChecklistPropertiesEntity(
+    return const ChecklistEntity(
       taskId: '',
       title: '',
       status: ChecklistStatus.todo,

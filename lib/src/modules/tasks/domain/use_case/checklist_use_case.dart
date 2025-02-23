@@ -11,7 +11,7 @@ class ChecklistUseCase {
   AsyncChecklistResult getChecklistsByTaskId(String taskId) =>
       repository.getChecklistsByTaskId(taskId);
 
-  AsyncSingleChecklistResult createChecklist(ChecklistPropertiesEntity checklist) {
+  AsyncSingleChecklistResult createChecklist(ChecklistEntity checklist) {
     checklist.validate();
     return repository.createChecklist(checklist);
   }

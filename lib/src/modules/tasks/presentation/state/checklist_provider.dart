@@ -46,7 +46,7 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
 
     try {
       final result = await _useCase.createChecklist(
-        ChecklistPropertiesEntity(
+        ChecklistEntity(
           taskId: arg,
           title: checklistTitle,
           status: ChecklistStatus.todo,

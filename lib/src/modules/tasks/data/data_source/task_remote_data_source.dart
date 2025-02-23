@@ -24,7 +24,7 @@ abstract class TaskRemoteDataSource {
 
   /// Creates a task in the remote data source.
   Future<TaskEntity> upsertTask({
-    required TaskPropertiesEntity task,
+    required TaskEntity task,
   });
 }
 

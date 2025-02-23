@@ -30,7 +30,7 @@ class SupabaseChecklistRepository implements ChecklistRepository {
   }
 
   @override
-  AsyncSingleChecklistResult createChecklist(ChecklistPropertiesEntity checklist) async {
+  AsyncSingleChecklistResult createChecklist(ChecklistEntity checklist) async {
     try {
       final response =
           await client.from('checklist_items').insert(checklist.toMap()).select().single();
@@ -52,18 +52,18 @@ class SupabaseChecklistRepository implements ChecklistRepository {
   @override
   AsyncSingleChecklistResult updateChecklist(ChecklistEntity checklist) async {
     try {
-      final _id = checklist.id;
-      final _data = checklist.toMap();
+      final id = checklist.id!; // handle the bang operator.
+      final data = checklist.toMap();
 
-      final _response = await client
+      final response = await client
           .from('checklist_items') //
-          .update(_data)
-          .eq('id', _id)
+          .update(data)
+          .eq('id', id)
           .select()
           .single();
 
-      final _result = ChecklistModel.fromMap(_response);
-      return Success(_result);
+      final result = ChecklistModel.fromMap(response);
+      return Success(result);
     } catch (e, stackTrace) {
       return Failure(AppException(
         exception: e.toString(),

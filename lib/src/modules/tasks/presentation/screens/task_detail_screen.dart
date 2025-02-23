@@ -121,7 +121,7 @@ class TaskDetailDataView extends ConsumerWidget {
       backgroundColor: colors.surface.background,
       body: RefreshIndicator(
         onRefresh: () async {
-          return ref.refresh(checklistProvider(task.id).future);
+          return ref.refresh(checklistProvider(task.id!).future);
         },
         child: CustomScrollView(
           controller: scrollController,
@@ -152,7 +152,7 @@ class TaskDetailDataView extends ConsumerWidget {
               child: SizedBox(height: spacing.xs),
             ),
             Consumer(builder: (context, ref, child) {
-              final checklist = ref.watch(checklistProvider(task.id));
+              final checklist = ref.watch(checklistProvider(task.id!));
               final listKey = ref.watch(checklistAnimatedListKeyProvider);
 
               return checklist.when(

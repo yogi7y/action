@@ -29,6 +29,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Activating the listener here.
       ref.read(loadedTaskViewsProvider);
+      final selectedTaskView = ref.read(selectedTaskViewProvider);
+
+      ref.read(loadedTaskViewsProvider.notifier).update(
+        (state) {
+          if (state.contains(selectedTaskView)) return state;
+
+          return {...state, selectedTaskView};
+        },
+      );
     });
 
     ref

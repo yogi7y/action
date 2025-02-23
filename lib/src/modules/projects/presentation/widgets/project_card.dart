@@ -34,7 +34,7 @@ class ProjectCard extends ConsumerWidget {
       onTap: () => unawaited(
         context.pushNamed(
           AppRoute.projectDetail.name,
-          pathParameters: {'id': project.id},
+          pathParameters: {'id': project.id!}, // handle the bang operator.
           extra: projectViewModel,
         ),
       ),

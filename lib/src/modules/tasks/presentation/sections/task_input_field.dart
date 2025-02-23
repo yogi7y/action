@@ -130,7 +130,7 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
       return;
     }
 
-    ref.read(newTaskProvider.notifier).updateValue(dueDate: dateTime);
+    ref.read(newTaskProvider.notifier).updateValue((state) => state.copyWith(dueDate: dateTime));
   }
 
   @override

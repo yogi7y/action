@@ -42,7 +42,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           onTap: () async => context.goNamed(
             AppRoute.taskDetail.name,
             extra: (value: (data: task, id: null), index: index),
-            pathParameters: {'id': task.id},
+            pathParameters: {'id': task.id ?? ''},
           ),
           child: Container(
             padding: EdgeInsets.only(
@@ -92,7 +92,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           top: spacing.xs,
           right: spacing.lg,
           child: Text(
-            task.createdAt.timeAgo,
+            task.createdAt?.timeAgo ?? '',
             style: fonts.text.xs.regular.copyWith(
               fontSize: 10,
               height: 16 / 10,

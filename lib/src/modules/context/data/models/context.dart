@@ -13,6 +13,7 @@ class ContextModel extends ContextEntity {
     required super.updatedAt,
   });
 
+  // todo: handle properly.
   factory ContextModel.fromMap(Map<String, Object?> map) => ContextModel(
         id: map['id'] as String,
         name: map['name'] as String,
@@ -23,7 +24,7 @@ class ContextModel extends ContextEntity {
   Map<String, Object?> toMap() => {
         'id': id,
         'name': name,
-        'created_at': createdAt.toIso8601String(),
-        'updated_at': updatedAt.toIso8601String(),
+        'created_at': createdAt?.toIso8601String(),
+        'updated_at': updatedAt?.toIso8601String(),
       };
 }

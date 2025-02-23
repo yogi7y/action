@@ -10,18 +10,11 @@ abstract class TaskRepository {
     required Filter filter,
   });
 
-  // AsyncTasksResult fetchTasks(
-  //   TaskQuerySpecification spec, {
-  //   required Cursor? cursor,
-  //   required int limit,
-  //   ProjectId? projectId,
-  // });
-
-  AsyncTaskResult createTask(TaskPropertiesEntity task);
+  AsyncTaskResult createTask(TaskEntity task);
 
   AsyncTaskResult getTaskById(TaskId id);
 
   AsyncTaskResult updateTask(TaskEntity task);
 
-  AsyncTaskResult upsertTask(TaskPropertiesEntity task);
+  AsyncTaskResult upsertTask(TaskEntity task);
 }

@@ -13,21 +13,21 @@ import 'task_view_provider.dart';
 final isTaskTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);
 
 /// holds the task entered by the user.
-final newTaskProvider = AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskPropertiesEntity>(
+final newTaskProvider = AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskEntity>(
   NewTaskTextNotifier.new,
 );
 
-class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
+class NewTaskTextNotifier extends AutoDisposeNotifier<TaskEntity> {
   late final controller = SmartTextFieldController();
   late final focusNode = FocusNode();
 
   @override
-  TaskPropertiesEntity build() {
+  TaskEntity build() {
     _syncControllerAndState();
 
     final filter = ref.read(selectedTaskViewProvider).operations.filter;
 
-    var task = const TaskPropertiesEntity(
+    var task = const TaskEntity(
       name: '',
       status: TaskStatus.todo,
     );
@@ -47,7 +47,7 @@ class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
     return task;
   }
 
-  TaskPropertiesEntity getFilterValue(PropertyFilter filter, TaskPropertiesEntity task) {
+  TaskEntity getFilterValue(PropertyFilter filter, TaskEntity task) {
     final key = filter.key;
     final value = filter.value;
 
@@ -69,12 +69,16 @@ class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
 
   void clear() => controller.clear();
 
-  void updateValue({
+  void updateValue(TaskEntity Function(TaskEntity) update) => state = update(state);
+
+  @Deprecated('Use updateValue instead')
+  void updateValueOld({
     String? name,
     TaskStatus? status,
     DateTime? dueDate,
     String? projectId,
     String? contextId,
+    String? id,
   }) =>
       state = state.copyWith(
         name: name ?? state.name,

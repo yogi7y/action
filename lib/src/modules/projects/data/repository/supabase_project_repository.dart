@@ -85,7 +85,7 @@ class SupabaseProjectRepository with ConnectivityCheckerMixin implements Project
         onSuccess: (success) async {
           final updatedProject = await _remoteDataSource.updateProject(
             project.toMap(),
-            project.id,
+            project.id!, // handle the bang operator.
           );
           return Success(updatedProject);
         },

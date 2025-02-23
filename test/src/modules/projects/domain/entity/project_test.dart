@@ -9,7 +9,7 @@ void main() {
     const status = ProjectStatus.notStarted;
 
     test('should create instance with required fields', () {
-      const project = ProjectPropertiesEntity(
+      const project = ProjectEntity(
         name: name,
         status: status,
       );
@@ -20,7 +20,7 @@ void main() {
     });
 
     test('should create instance with all fields', () {
-      final project = ProjectPropertiesEntity(
+      final project = ProjectEntity(
         name: name,
         status: status,
         dueDate: dueDate,
@@ -32,7 +32,7 @@ void main() {
     });
 
     test('copyWith should create new instance with updated fields', () {
-      final project = ProjectPropertiesEntity(
+      final project = ProjectEntity(
         name: name,
         status: status,
         dueDate: dueDate,
@@ -49,7 +49,7 @@ void main() {
     });
 
     test('toMap should return correct map representation', () {
-      final project = ProjectPropertiesEntity(
+      final project = ProjectEntity(
         name: name,
         status: status,
         dueDate: dueDate,
@@ -86,28 +86,6 @@ void main() {
       expect(project.createdAt, createdAt);
       expect(project.updatedAt, updatedAt);
       expect(project.dueDate, null);
-    });
-
-    test('fromProjectProperties should create correct instance', () {
-      final properties = ProjectPropertiesEntity(
-        name: name,
-        status: status,
-        dueDate: dueDate,
-      );
-
-      final project = ProjectEntity.fromProjectProperties(
-        project: properties,
-        id: id,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-      expect(project.id, id);
-      expect(project.name, name);
-      expect(project.status, status);
-      expect(project.dueDate, dueDate);
-      expect(project.createdAt, createdAt);
-      expect(project.updatedAt, updatedAt);
     });
   });
 }

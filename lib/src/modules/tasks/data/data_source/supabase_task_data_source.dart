@@ -39,7 +39,7 @@ class SupabaseRemoteTaskDataSource implements TaskRemoteDataSource {
 
   @override
   Future<TaskEntity> upsertTask({
-    required TaskPropertiesEntity task,
+    required TaskEntity task,
   }) async {
     final response = await client.from(DatabaseConstants.tasksTable).upsert(task.toMap()).select();
 

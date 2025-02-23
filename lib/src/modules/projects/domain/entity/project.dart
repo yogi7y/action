@@ -1,53 +1,38 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 
-import '../../../../core/entity.dart';
 import '../../../../core/exceptions/validation_exception.dart';
-import '../../../../services/database/model_meta_data.dart';
 import 'project_status.dart';
 
 @immutable
-class ProjectPropertiesEntity implements Entity {
-  const ProjectPropertiesEntity({
+class ProjectEntity {
+  const ProjectEntity({
     required this.name,
     required this.status,
+    this.id,
     this.dueDate,
+    this.createdAt,
+    this.updatedAt,
   });
 
+  final String? id;
   final String name;
   final ProjectStatus status;
   final DateTime? dueDate;
-
-  ProjectPropertiesEntity copyWith({
-    String? name,
-    ProjectStatus? status,
-    DateTime? dueDate,
-  }) =>
-      ProjectPropertiesEntity(
-        name: name ?? this.name,
-        status: status ?? this.status,
-        dueDate: dueDate ?? this.dueDate,
-      );
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Map<String, Object?> toMap() => {
+        'id': id,
         'name': name,
         'status': status.value,
         if (dueDate != null) 'due_date': dueDate?.toIso8601String(),
+        'created_at': createdAt?.toIso8601String(),
+
+        /// check: do we need to remove these field from toMap?
+        'updated_at': updatedAt?.toIso8601String(),
       };
 
-  @override
-  bool operator ==(covariant ProjectPropertiesEntity other) {
-    if (identical(this, other)) return true;
-
-    return other.name == name && other.status == status && other.dueDate == dueDate;
-  }
-
-  @override
-  int get hashCode => name.hashCode ^ status.hashCode ^ dueDate.hashCode;
-
-  @override
-  String toString() => 'ProjectPropertiesEntity(name: $name, status: $status, dueDate: $dueDate)';
-
-  @override
   void validate() {
     if (name.trim().isEmpty) {
       throw ValidationException(
@@ -57,46 +42,9 @@ class ProjectPropertiesEntity implements Entity {
       );
     }
   }
-}
 
-@immutable
-class ProjectEntity extends ProjectPropertiesEntity implements ModelMetaData, Entity {
-  const ProjectEntity({
-    required this.id,
-    required super.name,
-    required super.status,
-    required this.createdAt,
-    required this.updatedAt,
-    super.dueDate,
-  });
-
-  factory ProjectEntity.fromProjectProperties({
-    required ProjectPropertiesEntity project,
-    required Id id,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) =>
-      ProjectEntity(
-        id: id,
-        name: project.name,
-        status: project.status,
-        dueDate: project.dueDate,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  @override
-  final Id id;
-
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  @override
   ProjectEntity copyWith({
-    Id? id,
+    String? id,
     String? name,
     ProjectStatus? status,
     DateTime? dueDate,
