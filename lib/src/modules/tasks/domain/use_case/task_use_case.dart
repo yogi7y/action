@@ -51,14 +51,20 @@ class TaskUseCase {
   /// create a function that return the index at which we should insert the task based on
   /// if the list is sorted by createdAt.
   int getInsertIndexForTask(List<TaskEntity> tasks, TaskEntity task) {
-    final sortedTasks = tasks.toList();
+    var left = 0;
+    var right = tasks.length;
 
-    /// since the array is already sorted, let's use a binary search to find the index.
-    final index = binarySearch<TaskEntity>(sortedTasks, task);
+    while (left < right) {
+      final mid = left + (right - left) ~/ 2;
 
-    if (index == -1) return 0;
+      if (tasks[mid].createdAt!.isBefore(task.createdAt!)) {
+        left = mid + 1;
+      } else {
+        right = mid;
+      }
+    }
 
-    return index;
+    return left;
   }
 
   /// Sorts the entire passed in array of tasks by the createdAt field.
