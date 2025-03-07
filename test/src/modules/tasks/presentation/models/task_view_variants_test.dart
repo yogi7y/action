@@ -24,7 +24,7 @@ void main() {
       );
 
       final expectedFilter = AndFilter([
-        OrganizedFilter(),
+        const OrganizedFilter(),
         StatusFilter(TaskStatus.inProgress),
       ]);
 
@@ -39,7 +39,7 @@ void main() {
       );
 
       final expectedFilter = AndFilter([
-        OrganizedFilter(),
+        const OrganizedFilter(),
         StatusFilter(TaskStatus.todo),
       ]);
 
@@ -67,7 +67,7 @@ void main() {
         id: '',
       );
 
-      final expectedFilter = OrganizedFilter();
+      const expectedFilter = OrganizedFilter(isOrganized: false);
 
       expect(unorganizedTaskView.operations.filter, expectedFilter);
     });

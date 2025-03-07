@@ -40,7 +40,7 @@ void main() {
       ));
 
       expect(result, isTrue);
-    });
+    }, skip: 'use the computedIsOrganized instead for testing');
 
     test(
       'should return false when if the task is not organized but the filter is passed in as true',
@@ -54,6 +54,7 @@ void main() {
 
         expect(result, isFalse);
       },
+      skip: 'use the computedIsOrganized instead for testing',
     );
 
     test('should return true if the task projectId matches the filter value', () {

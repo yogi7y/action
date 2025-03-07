@@ -146,7 +146,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     final animatedListKeyForTaskView =
         ref.read(tasksNotifierProvider(taskViewToUse).notifier).animatedListKey;
 
-    animatedListKeyForTaskView?.currentState?.insertItem(0);
+    animatedListKeyForTaskView?.currentState?.insertItem(index);
   }
 
   /// Remove a task in memory.
