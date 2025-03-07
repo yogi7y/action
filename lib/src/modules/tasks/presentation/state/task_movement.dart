@@ -1,16 +1,12 @@
-import 'package:collection/collection.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
 import '../../domain/entity/task_entity.dart';
 import '../models/task_view.dart';
 import '../widgets/task_tile.dart';
 import 'scoped_task_provider.dart';
 import 'task_view_provider.dart';
-import 'tasks_provider.dart';
-import 'tasks_provider_old.dart';
 
 class TaskMovementController {
   TaskMovementController({
