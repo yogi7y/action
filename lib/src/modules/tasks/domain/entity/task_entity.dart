@@ -57,15 +57,23 @@ class TaskEntity implements Comparable<TaskEntity> {
         updatedAt: updatedAt ?? this.updatedAt,
       );
 
+// todo: write unit tests.
   TaskEntity mark({
     bool dueDateAsNull = false,
     bool projectIdAsNull = false,
     bool contextIdAsNull = false,
+    bool idAsNull = false,
   }) =>
-      copyWith(
+      TaskEntity(
+        name: name,
+        status: status,
         dueDate: dueDateAsNull ? null : dueDate,
         projectId: projectIdAsNull ? null : projectId,
         contextId: contextIdAsNull ? null : contextId,
+        id: idAsNull ? null : id,
+        isOrganized: isOrganized,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
       );
 
   Map<String, Object?> toMap() => {

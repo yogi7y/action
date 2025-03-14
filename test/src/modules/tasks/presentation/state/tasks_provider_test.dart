@@ -10,6 +10,7 @@ import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view_variants.dart';
 import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
+import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter/widgets.dart';
@@ -50,7 +51,7 @@ class MockTaskEntity extends TaskEntity {
     super.name = 'Fake task',
     DateTime? createdAt,
     super.status = TaskStatus.todo,
-    super.id = '1',
+    super.id,
   }) : super(
           createdAt: createdAt ?? DateTime.now(),
         );
@@ -146,6 +147,68 @@ void main() {
       // Verify the result is an empty list on failure
       expect(asyncValue, equals([]));
     });
+  });
+
+  group('upsert', () {
+    test(
+      'should perform optimistic update and then call the api.',
+      () async {
+        final taskView = unorganizedTaskView;
+        final task = MockTaskEntity(name: 'Task 1');
+        final expectedTask = task.copyWith(id: '1');
+
+        // stub the api call
+        when(() => mockTaskUseCase.upsertTask(any()))
+            .thenAnswer((_) async => Success(expectedTask));
+        when(() => mockTaskUseCase.fetchTasks(any()))
+            .thenAnswer((_) async => const Success(PaginatedResponse(results: [], total: 0)));
+
+        // create the container
+        final container = createContainer(overrides: [
+          taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+          loadedTaskViewsProvider.overrideWith((_) => {taskView}),
+        ]);
+
+        // await for the build to complete
+        await container.read(tasksNotifierProvider(taskView).future);
+
+        final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+
+        // animated list key
+        final unorganizedTaskViewKey = MockGlobalKey();
+        notifier.setAnimatedListKey(unorganizedTaskViewKey);
+
+        // call the upsert method to create/update the task.
+        final result = notifier.upsertTask(task);
+
+        // verify the task was optimistically added to the list.
+        final tasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        expect(tasks.length, 1);
+        expect(tasks.first, expectedTask.mark(idAsNull: true));
+        expect(tasks.first.id, null); // task does not have an id yet as it's created on backend.
+
+        // verify the api call was called with the correct task.
+        verify(() => mockTaskUseCase.upsertTask(task)).called(1);
+
+        // await the api call to complete.
+        await result;
+
+        // verify the task was updated in the list.
+        final updatedTasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        expect(updatedTasks.length, 1);
+        expect(updatedTasks.first, expectedTask);
+        expect(updatedTasks.first.id, '1');
+      },
+    );
+
+    test(
+      'should revert the optimistic update if the api call fails.',
+      () {},
+    );
+
+    test('should keep the keyboard open after a task is added', () {});
+
+    test('should clear the textfield after a task is added', () {});
   });
 
   group('removeTaskIfExists', () {
@@ -316,6 +379,7 @@ void main() {
     setUp(() async {
       // Create mock task entities with fixed timestamps for predictable sorting
       taskOne = MockTaskEntity(
+        id: '1',
         name: 'Task One',
         createdAt: DateTime(2024, 4, 29, 12), // 2024-04-29 12:00:00
       );
@@ -740,69 +804,4 @@ class RemoveIfTaskExistsCall {
 
   @override
   int get hashCode => Object.hash(task.id, taskView, index);
-}
-
-class SpyTasksNotifier extends TasksNotifier {
-  final List<AddOrUpdateTaskCall> addOrUpdateTaskCalls = [];
-  final List<RemoveIfTaskExistsCall> removeIfTaskExistsCalls = [];
-  Set<TaskView>? _loadedTaskViews;
-  late GlobalKey<AnimatedListState> _animatedListKey;
-
-  void setLoadedTaskViews(Set<TaskView> views) {
-    _loadedTaskViews = views;
-  }
-
-  @override
-  void setAnimatedListKey(GlobalKey<AnimatedListState> key) {
-    _animatedListKey = key;
-  }
-
-  @override
-  GlobalKey<AnimatedListState>? get animatedListKey => _animatedListKey;
-
-  @override
-  void addOrUpdateTask(
-    TaskEntity task, {
-    required TaskView taskView,
-    bool animate = true,
-  }) {
-    addOrUpdateTaskCalls.add(AddOrUpdateTaskCall(
-      task: task,
-      taskView: taskView,
-      animate: animate,
-    ));
-  }
-
-  @override
-  void removeIfTaskExists(
-    TaskEntity task, {
-    required TaskView taskView,
-    int? index,
-    bool animate = true,
-  }) {
-    removeIfTaskExistsCalls.add(RemoveIfTaskExistsCall(
-      task: task,
-      taskView: taskView,
-      index: index,
-      animate: animate,
-    ));
-  }
-
-  @override
-  Future<List<TaskEntity>> build(TaskView arg) async {
-    return [];
-  }
-
-  @override
-  void handleInMemoryTask(TaskEntity task, {int? index}) {
-    final loadedTaskViews = _loadedTaskViews ?? <TaskView>{};
-
-    for (final view in loadedTaskViews) {
-      if (view.canContainTask(task)) {
-        addOrUpdateTask(task, taskView: view);
-      } else {
-        removeIfTaskExists(task, taskView: view, index: index);
-      }
-    }
-  }
 }

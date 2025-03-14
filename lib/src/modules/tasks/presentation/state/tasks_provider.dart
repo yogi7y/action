@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
@@ -78,32 +79,38 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     /// If not provided, the current state will be used.
     List<TaskEntity>? previousStateArg,
   }) async {
+    /// The previous state of the tasks.
     final previousState = previousStateArg ?? state.valueOrNull;
-
     final now = DateTime.now();
 
-    final tempOptimisticTask = task.copyWith(
-      createdAt: task.createdAt ?? now,
-      updatedAt: now,
-    );
+    /// Temp optimistic task to render on the UI.
+    final tempOptimisticTask = task.copyWith(createdAt: task.createdAt ?? now);
 
-    // clear the textfile after the task is added.
-    ref.read(newTaskProvider.notifier).clear();
+    /// Check in which all the task views the task should be added/updated.
+    handleInMemoryTask(tempOptimisticTask);
 
     final result = await useCase.upsertTask(task);
 
     result.fold(
       onSuccess: (taskResult) {
-        // TODO: [Performance] maybe rather than iterating over the entire list, we can do some
-        // optimization as mostly the task will be at the top of the list.
+        // replace the temp optimistic task with the actual task.
+        print(taskResult);
 
-        /// The temp optimistic task which we saved in the previous step.
-        bool isOptimisticTask(TaskEntity task) =>
-            task.id == null && task.name == tempOptimisticTask.name;
+        final updatedTasks = state.valueOrNull?.mapIndexed((index, element) {
+              final handleTask = (element.id == taskResult.id) ||
+                  (element.id == null && taskResult.id != null && element.name == taskResult.name);
 
-        state = AsyncData(
-          state.valueOrNull?.map((e) => isOptimisticTask(e) ? taskResult : e).toList() ?? [],
-        );
+              if (handleTask) {
+                handleInMemoryTask(taskResult, index: index);
+                return taskResult;
+              } else {
+                return element;
+              }
+            }).toList() ??
+            [];
+        print('hey');
+
+        state = AsyncData(updatedTasks);
       },
       onFailure: (failure) {
         state = AsyncData(previousState ?? []);
@@ -124,7 +131,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
     for (final view in loadedTaskViews) {
       if (view.canContainTask(task)) {
-        addOrUpdateTask(task, taskView: view);
+        addOrUpdateTask(task, taskView: view, index: index);
       } else {
         removeIfTaskExists(task, taskView: view, index: index);
       }
@@ -143,10 +150,15 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     /// Defaults to true.
     /// Mostly will be set to false when updating a task which will stay in place.
     bool animate = true,
+
+    /// The index of the task to add/update.
+    /// In case not provided, the task will be added to the current task view
+    /// by searching for the task in the list.
+    int? index,
   }) {
     final tasks = _getTasksForView(taskView);
-    final index = _findTaskIndex(tasks, task);
-    final isNewTask = index == -1;
+    final _index = index ?? _findTaskIndex(tasks, task);
+    final isNewTask = _index == -1;
 
     if (isNewTask) {
       final insertAtIndex = getInsertIndexForTask(tasks, task);
@@ -155,7 +167,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
       _animateTaskInsertion(insertAtIndex, taskView, animate);
     } else {
       // Update the task at the existing index
-      tasks[index] = task;
+      tasks[_index] = task;
       _updateTaskViewState(taskView, tasks);
     }
   }
