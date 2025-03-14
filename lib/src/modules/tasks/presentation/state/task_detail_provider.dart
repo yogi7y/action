@@ -4,29 +4,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_entity.dart';
 import '../../domain/use_case/task_use_case.dart';
-import '../mixin/tasks_operations_mixin.dart';
 import 'task_view_provider.dart';
-import 'tasks_provider_old.dart';
 
 typedef TaskDataOrId = ({String? id, TaskEntity? data});
 typedef UpdateTaskCallback = TaskEntity Function(TaskEntity task);
 
 final taskDetailProvider =
     FutureProvider.autoDispose.family<TaskEntity, TaskDataOrId>((ref, dataOrId) async {
-  throw UnimplementedError('');
+  // throw UnimplementedError('');
   // If we have data, return it directly
-  // if (dataOrId.data != null) return dataOrId.data!;
+  if (dataOrId.data != null) return dataOrId.data!;
 
-  // // Otherwise fetch using ID
-  // if (dataOrId.id != null) {
-  //   final useCase = ref.watch(taskUseCaseProvider);
-  //   final result = await useCase.getTaskById(dataOrId.id!);
+  // Otherwise fetch using ID
+  if (dataOrId.id != null) {
+    throw UnimplementedError('Fetching task by id is not implemented');
+    // final useCase = ref.watch(taskUseCaseProvider);
+    // final result = await useCase.getTaskById(dataOrId.id!);
 
-  //   return result.fold(
-  //     onSuccess: (task) => task,
-  //     onFailure: (error) => throw error,
-  //   );
-  // }
+    // return result.fold(
+    //   onSuccess: (task) => task,
+    //   onFailure: (error) => throw error,
+    // );
+  }
 
   throw Exception('Either id or data must be provided');
 });
@@ -35,8 +34,7 @@ final taskDetailProvider =
 final taskDetailIndexProvider = Provider<int?>((ref) => throw UnimplementedError(
     'Ensure that the taskDetailIndexProvider is overridden when opening the task detail'));
 
-class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
-    with BaseTaskOperationsMixin<TaskEntity>, NotifierTaskOperationsMixin<TaskEntity> {
+class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
   TaskDetailNotifier(this.task);
 
   final TaskEntity task;
@@ -62,20 +60,11 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity>
     //     );
   }
 
-  @override
-  TaskEntity handleOptimisticUpdate(TaskEntity task, int index) => task;
-
-  @override
-  FutureOr<TaskEntity> handleSuccessfulUpdate(TaskEntity updatedTask) => updatedTask;
-
   Future<void> updateTaskWithCallback(UpdateTaskCallback update) async {
     final _task = update(task);
 
-    await super.updateTask(task: _task, index: 0);
+    // await super.updateTask(task: _task, index: 0);
   }
-
-  @override
-  TaskUseCase get useCase => ref.read(taskUseCaseProvider);
 }
 
 final taskDetailNotifierProvider = NotifierProvider.autoDispose<TaskDetailNotifier, TaskEntity>(

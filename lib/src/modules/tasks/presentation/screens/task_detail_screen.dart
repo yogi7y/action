@@ -29,7 +29,7 @@ class TaskDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
-  late final ScrollController scrollController = ScrollController();
+  late final scrollController = ScrollController();
   late final _checklistSectionKey = GlobalKey(debugLabel: 'Checklist Section');
 
   @override

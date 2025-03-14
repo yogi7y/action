@@ -113,8 +113,20 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     );
   }
 
+  @visibleForTesting
+  void handleInMemoryTask(TaskEntity task) {
+    final loadedTaskViews = ref.read(loadedTaskViewsProvider);
+
+    for (final view in loadedTaskViews) {
+      if (view.canContainTask(task)) {
+        // addInMemoryTask(task, taskView: view);
+      }
+    }
+  }
+
   /// Add a task in memory.
   /// Does not make any API calls or anything, just update the state in memory.
+  @Deprecated('')
   void addInMemoryTask(
     TaskEntity task, {
     /// Uses the passed in task view to update the task to.
@@ -178,6 +190,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
   /// Remove a task in memory.
   /// Does not make any API calls or anything, just update the state in memory.
+  @Deprecated('')
   void removeIfTaskExists(
     TaskEntity task, {
     /// Uses the passed in task view to update the task to.
