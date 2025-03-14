@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:action/src/core/network/paginated_response.dart';
 import 'package:action/src/modules/filter/domain/entity/filter.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_entity.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
+import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
@@ -22,28 +25,20 @@ class MockTaskViewOperations extends Mock implements TaskViewOperations {
   final Filter filter;
 }
 
-ProviderContainer createContainer({
-  ProviderContainer? parent,
-  List<Override> overrides = const [],
-  List<ProviderObserver>? observers,
-}) {
-  // Create a ProviderContainer, and optionally allow specifying parameters.
-  final container = ProviderContainer(
-    parent: parent,
-    overrides: overrides,
-    observers: observers,
-  );
+class FakeTask extends Fake implements TaskEntity {}
 
-  // When the test ends, dispose the container.
-  addTearDown(container.dispose);
-
-  return container;
+class MockTaskEntity extends TaskEntity {
+  const MockTaskEntity({super.name = 'Fake Task', super.status = TaskStatus.todo});
 }
 
 void main() {
   late MockTaskUseCase mockTaskUseCase;
   late TaskView testTaskView;
   late MockFilter mockFilter;
+
+  setUpAll(() {
+    registerFallbackValue(FakeTask());
+  });
 
   setUp(() {
     mockTaskUseCase = MockTaskUseCase();
@@ -125,4 +120,45 @@ void main() {
       expect(asyncValue, equals([]));
     });
   });
+
+  group('upsertTask', () {
+    setUp(() async {
+      // Setup the mock to return a successful result
+      when(() => mockTaskUseCase.upsertTask(any()))
+          .thenAnswer((_) async => const Success(MockTaskEntity()));
+    });
+
+    test('should clear the textfield after the task is added', () {
+      // Create a container with overridden providers
+      final container = createContainer(
+        overrides: [
+          taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+        ],
+      );
+
+      final tasksNotifier = container.read(tasksNotifierProvider(testTaskView).notifier);
+
+      unawaited(tasksNotifier.upsertTask(const MockTaskEntity()));
+
+      expect(container.read(newTaskProvider.notifier).controller.text, '');
+    });
+  });
+}
+
+ProviderContainer createContainer({
+  ProviderContainer? parent,
+  List<Override> overrides = const [],
+  List<ProviderObserver>? observers,
+}) {
+  // Create a ProviderContainer, and optionally allow specifying parameters.
+  final container = ProviderContainer(
+    parent: parent,
+    overrides: overrides,
+    observers: observers,
+  );
+
+  // When the test ends, dispose the container.
+  addTearDown(container.dispose);
+
+  return container;
 }
