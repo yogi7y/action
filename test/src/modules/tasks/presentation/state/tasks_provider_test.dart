@@ -10,7 +10,6 @@ import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view_variants.dart';
 import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
-import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter/widgets.dart';
@@ -61,11 +60,6 @@ void main() {
   late MockTaskUseCase mockTaskUseCase;
   late TaskView testTaskView;
   late MockFilter mockFilter;
-  late MockStatusTaskView mockInProgressTaskView;
-  late MockStatusTaskView mockTodoTaskView;
-  late MockStatusTaskView mockDoneTaskView;
-  late MockAllTasksView mockAllTasksView;
-  late MockUnorganizedTaskView mockUnorganizedTaskView;
 
   setUpAll(() {
     registerFallbackValue(FakeTask());
@@ -74,12 +68,6 @@ void main() {
 
   setUp(() {
     // initializing task views.
-    mockInProgressTaskView = MockStatusTaskView(id: 'in_progress_task_view');
-    mockTodoTaskView = MockStatusTaskView(id: 'todo_task_view');
-    mockDoneTaskView = MockStatusTaskView(id: 'done_task_view');
-    mockAllTasksView = MockAllTasksView();
-    mockUnorganizedTaskView = MockUnorganizedTaskView();
-
     mockTaskUseCase = MockTaskUseCase();
     mockFilter = MockFilter();
 
@@ -160,295 +148,10 @@ void main() {
     });
   });
 
-  group('handleInMemoryTask', () {
-    test(
-      'should only call canContainTask on loaded task views',
-      () {
-        when(() => mockUnorganizedTaskView.canContainTask(any())).thenReturn(true);
-        when(() => mockAllTasksView.canContainTask(any())).thenReturn(true);
-
-        final loadedTaskViews = <TaskView>{
-          mockAllTasksView,
-          mockUnorganizedTaskView,
-        };
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => loadedTaskViews),
-        ]);
-
-        container
-            .read(tasksNotifierProvider(mockUnorganizedTaskView).notifier)
-            .handleInMemoryTask(MockTaskEntity());
-
-        verify(() => mockUnorganizedTaskView.canContainTask(any())).called(1);
-        verify(() => mockAllTasksView.canContainTask(any())).called(1);
-        verifyZeroInteractions(mockInProgressTaskView);
-        verifyZeroInteractions(mockTodoTaskView);
-        verifyZeroInteractions(mockDoneTaskView);
-      },
-    );
-
-    test(
-      'should call canContainTask on all task views when all are loaded',
-      () {
-        // Setup mocks to return different values
-        when(() => mockUnorganizedTaskView.canContainTask(any())).thenReturn(true);
-        when(() => mockAllTasksView.canContainTask(any())).thenReturn(true);
-        when(() => mockInProgressTaskView.canContainTask(any())).thenReturn(false);
-        when(() => mockTodoTaskView.canContainTask(any())).thenReturn(false);
-        when(() => mockDoneTaskView.canContainTask(any())).thenReturn(false);
-
-        // Create a set with all task views loaded
-        final loadedTaskViews = <TaskView>{
-          mockAllTasksView,
-          mockUnorganizedTaskView,
-          mockInProgressTaskView,
-          mockTodoTaskView,
-          mockDoneTaskView,
-        };
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => loadedTaskViews),
-        ]);
-
-        // Call the method under test
-        container
-            .read(tasksNotifierProvider(mockUnorganizedTaskView).notifier)
-            .handleInMemoryTask(MockTaskEntity());
-
-        // Verify canContainTask was called on all task views
-        verify(() => mockUnorganizedTaskView.canContainTask(any())).called(1);
-        verify(() => mockAllTasksView.canContainTask(any())).called(1);
-        verify(() => mockInProgressTaskView.canContainTask(any())).called(1);
-        verify(() => mockTodoTaskView.canContainTask(any())).called(1);
-        verify(() => mockDoneTaskView.canContainTask(any())).called(1);
-      },
-    );
-
-    test(
-      'should not call canContainTask on any task view when none are loaded',
-      () {
-        // Create an empty set of loaded task views
-        final loadedTaskViews = <TaskView>{};
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => loadedTaskViews),
-        ]);
-
-        // Call the method under test
-        container
-            .read(tasksNotifierProvider(mockUnorganizedTaskView).notifier)
-            .handleInMemoryTask(MockTaskEntity());
-
-        // Verify canContainTask was not called on any task view
-        verifyZeroInteractions(mockUnorganizedTaskView);
-        verifyZeroInteractions(mockAllTasksView);
-        verifyZeroInteractions(mockInProgressTaskView);
-        verifyZeroInteractions(mockTodoTaskView);
-        verifyZeroInteractions(mockDoneTaskView);
-      },
-    );
-
-    test(
-      'should only call canContainTask on the single loaded task view',
-      () {
-        // Setup mock to return a value
-        when(() => mockTodoTaskView.canContainTask(any())).thenReturn(true);
-
-        // Create a set with only one task view loaded
-        final loadedTaskViews = <TaskView>{
-          mockTodoTaskView,
-        };
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => loadedTaskViews),
-        ]);
-
-        // Call the method under test
-        container
-            .read(tasksNotifierProvider(mockTodoTaskView).notifier)
-            .handleInMemoryTask(MockTaskEntity());
-
-        // Verify canContainTask was only called on the loaded task view
-        verify(() => mockTodoTaskView.canContainTask(any())).called(1);
-
-        // Verify no interactions with other task views
-        verifyZeroInteractions(mockUnorganizedTaskView);
-        verifyZeroInteractions(mockAllTasksView);
-        verifyZeroInteractions(mockInProgressTaskView);
-        verifyZeroInteractions(mockDoneTaskView);
-      },
-    );
-
-    test(
-      'add new task to respective loaded view',
-      () async {
-        when(() => mockTaskUseCase.fetchTasks(any()))
-            .thenAnswer((_) async => const Success(PaginatedResponse(results: [], total: 0)));
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => {
-                unorganizedTaskView,
-                allTaskView,
-              }),
-          taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
-        ]);
-
-        // Read the provider to trigger the build method
-        await container.read(tasksNotifierProvider(unorganizedTaskView).future);
-
-        final task = MockTaskEntity();
-
-        container
-            .read(tasksNotifierProvider(unorganizedTaskView).notifier)
-            .handleInMemoryTask(task);
-
-        final result = container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
-
-        expect(result.length, 1);
-        expect(result.first, task);
-        expect(container.read(tasksNotifierProvider(allTaskView)).requireValue.first, task);
-      },
-    );
-
-    test(
-      'add new task to an existing list of items',
-      () async {
-        final now = DateTime.now();
-        final taskOne = MockTaskEntity(createdAt: now.subtract(const Duration(days: 2)));
-        final taskTwo = MockTaskEntity(id: '2', createdAt: now.subtract(const Duration(days: 1)));
-        final taskThree = MockTaskEntity(id: '3', createdAt: now);
-
-        when(() => mockTaskUseCase.fetchTasks(any())).thenAnswer(
-          (_) async => Success(
-            PaginatedResponse(
-              results: [taskTwo, taskOne],
-              total: 2,
-            ),
-          ),
-        );
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => {
-                unorganizedTaskView,
-                allTaskView,
-              }),
-          taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
-        ]);
-
-        /// Mimicking the behavior of the view being loaded by the user so the state is updated.
-        await container.read(tasksNotifierProvider(unorganizedTaskView).future);
-        await container.read(tasksNotifierProvider(allTaskView).future);
-
-        container
-            .read(tasksNotifierProvider(unorganizedTaskView).notifier)
-            .handleInMemoryTask(taskThree);
-
-        final result = container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
-
-        expect(
-          result,
-          <TaskEntity>[
-            taskThree,
-            taskTwo,
-            taskOne,
-          ],
-        );
-
-        expect(
-          container.read(tasksNotifierProvider(allTaskView)).requireValue,
-          <TaskEntity>[
-            taskThree,
-            taskTwo,
-            taskOne,
-          ],
-        );
-      },
-    );
-
-    test(
-      'should remove task from unorganized view and update in all tasks view when status changes from todo to done',
-      () async {
-        // Use a fixed reference time instead of DateTime.now()
-        final referenceTime = DateTime(2024, 5, 1, 12); // 2024-05-01 12:00:00
-
-        final taskOne = MockTaskEntity(
-          createdAt: referenceTime.subtract(const Duration(days: 3)),
-        );
-
-        final taskTwo = MockTaskEntity(
-          id: '2',
-          createdAt: referenceTime.subtract(const Duration(days: 2)),
-        );
-
-        final taskThree = MockTaskEntity(
-          id: '3',
-          createdAt: referenceTime.subtract(const Duration(days: 1)),
-        );
-
-        final taskFour = MockTaskEntity(id: '4', createdAt: referenceTime);
-
-        // Initial tasks are all in todo status (default for MockTaskEntity)
-        when(() => mockTaskUseCase.fetchTasks(any())).thenAnswer(
-          (_) async => Success(
-            PaginatedResponse(
-              results: [taskFour, taskThree, taskTwo, taskOne],
-              total: 4,
-            ),
-          ),
-        );
-
-        final container = createContainer(overrides: [
-          loadedTaskViewsProvider.overrideWith((_) => {
-                unorganizedTaskView,
-                allTaskView,
-              }),
-          taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
-        ]);
-
-        // Load the initial state for both views
-        await container.read(tasksNotifierProvider(unorganizedTaskView).future);
-        await container.read(tasksNotifierProvider(allTaskView).future);
-
-        // Verify initial state
-        final initialUnorganizedTasks =
-            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
-        final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
-
-        expect(initialUnorganizedTasks.length, 4);
-        expect(initialAllTasks.length, 4);
-
-        // Create an updated version of taskThree with done status
-        final updatedTaskThree = taskThree.copyWith(status: TaskStatus.done);
-
-        // Handle the updated task
-        container
-            .read(tasksNotifierProvider(unorganizedTaskView).notifier)
-            .handleInMemoryTask(updatedTaskThree);
-
-        // Get the updated state for both views
-        final updatedUnorganizedTasks =
-            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
-        final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
-
-        // Verify that the task was removed from unorganized view as it's status is done so it's organized.
-        expect(updatedUnorganizedTasks.length, 3);
-        expect(updatedUnorganizedTasks.any((task) => task.id == '3'), isFalse);
-
-        // Verify that the task was updated in all tasks view
-        expect(updatedAllTasks.length, 4);
-        final updatedTaskInAllView = updatedAllTasks.firstWhere((task) => task.id == '3');
-        expect(updatedTaskInAllView.status, TaskStatus.done);
-      },
-    );
-  });
-
-  group('insert task', () {});
-
   group('removeTaskIfExists', () {
     late TasksNotifier notifier;
     late ProviderContainer container;
-    late MockGlobalKey key;
+    late MockGlobalKey allTasksKey;
     late TaskEntity taskOne;
     late TaskEntity taskTwo;
     late TaskEntity taskThree;
@@ -481,8 +184,8 @@ void main() {
 
       // Setup notifier and animated list key
       notifier = container.read(tasksNotifierProvider(allTaskView).notifier);
-      key = MockGlobalKey();
-      notifier.setAnimatedListKey(key);
+      allTasksKey = MockGlobalKey();
+      notifier.setAnimatedListKey(allTasksKey);
 
       // Load the initial state
       await container.read(tasksNotifierProvider(allTaskView).future);
@@ -506,7 +209,8 @@ void main() {
         final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 3);
         expect(updatedAllTasks.any((task) => task.id == '3'), isFalse);
-        verify(() => key.currentState?.removeItem(2, (_, __) => Container(), duration: any()))
+        verify(() =>
+                allTasksKey.currentState?.removeItem(2, (_, __) => Container(), duration: any()))
             .called(1);
       },
     );
@@ -528,7 +232,8 @@ void main() {
         final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 3);
         expect(updatedAllTasks.any((task) => task.id == '3'), isFalse);
-        verify(() => key.currentState?.removeItem(2, (_, __) => Container(), duration: any()))
+        verify(() =>
+                allTasksKey.currentState?.removeItem(2, (_, __) => Container(), duration: any()))
             .called(1);
       },
     );
@@ -552,7 +257,7 @@ void main() {
         // verify the state remains unchanged
         final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 4);
-        verifyNever(() => key.currentState?.removeItem(any(), any(), duration: any()));
+        verifyNever(() => allTasksKey.currentState?.removeItem(any(), any(), duration: any()));
       },
     );
 
@@ -576,7 +281,7 @@ void main() {
         final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 3);
         expect(updatedAllTasks.any((task) => task.name == 'Task One'), isFalse);
-        verify(() => key.currentState?.removeItem(0, any(), duration: any())).called(1);
+        verify(() => allTasksKey.currentState?.removeItem(0, any(), duration: any())).called(1);
       },
     );
 
@@ -595,7 +300,8 @@ void main() {
         );
 
         // Verify the animation duration is zero
-        verify(() => key.currentState?.removeItem(0, any(), duration: Duration.zero)).called(1);
+        verify(() => allTasksKey.currentState?.removeItem(0, any(), duration: Duration.zero))
+            .called(1);
       },
     );
   });
@@ -603,21 +309,20 @@ void main() {
   group('addOrUpdateTask', () {
     late TasksNotifier notifier;
     late ProviderContainer container;
-    late MockGlobalKey key;
+    late MockGlobalKey allTasksKey;
     late TaskEntity taskOne;
     late TaskEntity taskTwo;
 
     setUp(() async {
       // Create mock task entities with fixed timestamps for predictable sorting
-      final now = DateTime(2024, 5, 1, 12); // 2024-05-01 12:00:00
       taskOne = MockTaskEntity(
         name: 'Task One',
-        createdAt: now.subtract(const Duration(days: 2)),
+        createdAt: DateTime(2024, 4, 29, 12), // 2024-04-29 12:00:00
       );
       taskTwo = MockTaskEntity(
         id: '2',
         name: 'Task Two',
-        createdAt: now.subtract(const Duration(days: 1)),
+        createdAt: DateTime(2024, 4, 30, 12), // 2024-04-30 12:00:00
       );
 
       // Setup mock response
@@ -637,8 +342,8 @@ void main() {
 
       // Setup notifier and animated list key
       notifier = container.read(tasksNotifierProvider(allTaskView).notifier);
-      key = MockGlobalKey();
-      notifier.setAnimatedListKey(key);
+      allTasksKey = MockGlobalKey();
+      notifier.setAnimatedListKey(allTasksKey);
 
       // Load the initial state
       await container.read(tasksNotifierProvider(allTaskView).future);
@@ -648,11 +353,10 @@ void main() {
       'should add a new task at the correct position',
       () {
         // Create a new task that should be inserted at the beginning (newest)
-        final now = DateTime(2024, 5, 1, 12);
         final newTask = MockTaskEntity(
           id: '3',
           name: 'New Task',
-          createdAt: now,
+          createdAt: DateTime(2024, 5, 1, 12), // 2024-05-01 12:00:00
         );
 
         // Verify initial state
@@ -666,7 +370,7 @@ void main() {
         final updatedTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
         expect(updatedTasks.length, 3);
         expect(updatedTasks[0], newTask);
-        verify(() => key.currentState?.insertItem(0, duration: any())).called(1);
+        verify(() => allTasksKey.currentState?.insertItem(0, duration: any())).called(1);
       },
     );
 
@@ -690,7 +394,7 @@ void main() {
         expect(updatedTasks[1].name, 'Updated Task One');
 
         // Verify no animation was triggered for an update
-        verifyNever(() => key.currentState?.insertItem(any(), duration: any()));
+        verifyNever(() => allTasksKey.currentState?.insertItem(any(), duration: any()));
       },
     );
 
@@ -709,7 +413,8 @@ void main() {
         notifier.addOrUpdateTask(newTask, taskView: allTaskView, animate: false);
 
         // Verify the animation duration is zero
-        verify(() => key.currentState?.insertItem(any(), duration: Duration.zero)).called(1);
+        verify(() => allTasksKey.currentState?.insertItem(any(), duration: Duration.zero))
+            .called(1);
       },
     );
 
@@ -733,7 +438,7 @@ void main() {
         expect(updatedTasks[1].id, null);
 
         // Verify no animation was triggered for an update
-        verifyNever(() => key.currentState?.insertItem(any(), duration: any()));
+        verifyNever(() => allTasksKey.currentState?.insertItem(any(), duration: any()));
       },
     );
   });
@@ -986,4 +691,118 @@ ProviderContainer createContainer({
   addTearDown(container.dispose);
 
   return container;
+}
+
+class AddOrUpdateTaskCall {
+  final TaskEntity task;
+  final TaskView taskView;
+  final bool animate;
+
+  AddOrUpdateTaskCall({
+    required this.task,
+    required this.taskView,
+    this.animate = true,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddOrUpdateTaskCall &&
+          runtimeType == other.runtimeType &&
+          task.id == other.task.id &&
+          taskView == other.taskView;
+
+  @override
+  int get hashCode => Object.hash(task.id, taskView);
+}
+
+class RemoveIfTaskExistsCall {
+  final TaskEntity task;
+  final TaskView taskView;
+  final int? index;
+  final bool animate;
+
+  RemoveIfTaskExistsCall({
+    required this.task,
+    required this.taskView,
+    this.index,
+    this.animate = true,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RemoveIfTaskExistsCall &&
+          runtimeType == other.runtimeType &&
+          task.id == other.task.id &&
+          taskView == other.taskView &&
+          index == other.index;
+
+  @override
+  int get hashCode => Object.hash(task.id, taskView, index);
+}
+
+class SpyTasksNotifier extends TasksNotifier {
+  final List<AddOrUpdateTaskCall> addOrUpdateTaskCalls = [];
+  final List<RemoveIfTaskExistsCall> removeIfTaskExistsCalls = [];
+  Set<TaskView>? _loadedTaskViews;
+  late GlobalKey<AnimatedListState> _animatedListKey;
+
+  void setLoadedTaskViews(Set<TaskView> views) {
+    _loadedTaskViews = views;
+  }
+
+  @override
+  void setAnimatedListKey(GlobalKey<AnimatedListState> key) {
+    _animatedListKey = key;
+  }
+
+  @override
+  GlobalKey<AnimatedListState>? get animatedListKey => _animatedListKey;
+
+  @override
+  void addOrUpdateTask(
+    TaskEntity task, {
+    required TaskView taskView,
+    bool animate = true,
+  }) {
+    addOrUpdateTaskCalls.add(AddOrUpdateTaskCall(
+      task: task,
+      taskView: taskView,
+      animate: animate,
+    ));
+  }
+
+  @override
+  void removeIfTaskExists(
+    TaskEntity task, {
+    required TaskView taskView,
+    int? index,
+    bool animate = true,
+  }) {
+    removeIfTaskExistsCalls.add(RemoveIfTaskExistsCall(
+      task: task,
+      taskView: taskView,
+      index: index,
+      animate: animate,
+    ));
+  }
+
+  @override
+  Future<List<TaskEntity>> build(TaskView arg) async {
+    return [];
+  }
+
+  @override
+  void handleInMemoryTask(TaskEntity task, {int? index}) {
+    final loadedTaskViews = _loadedTaskViews ?? <TaskView>{};
+
+    for (final view in loadedTaskViews) {
+      if (view.canContainTask(task)) {
+        addOrUpdateTask(task, taskView: view);
+      } else {
+        removeIfTaskExists(task, taskView: view, index: index);
+      }
+    }
+  }
 }
