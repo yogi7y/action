@@ -74,7 +74,13 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(right: 60, top: topPadding),
-                        child: const AnimatedTaskName(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AnimatedTaskName(),
+                            Text(task.id ?? '', style: fonts.text.xs.regular),
+                          ],
+                        ),
                       ),
                       SizedBox(height: spacing.xxs),
                       const Padding(

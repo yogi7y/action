@@ -13,9 +13,6 @@ mixin TaskUiTriggersMixin {
     final currentTaskView = ref.read(selectedTaskViewProvider);
     final task = ref.read(newTaskProvider);
 
-    await ref.read(tasksNotifierProvider(currentTaskView).notifier).upsertTask(
-          task,
-          addToTop: task.id == null,
-        );
+    await ref.read(tasksNotifierProvider(currentTaskView).notifier).upsertTask(task);
   }
 }

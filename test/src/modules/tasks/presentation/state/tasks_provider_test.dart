@@ -60,7 +60,7 @@ void main() {
     registerFallbackValue(MockFilter());
   });
 
-  group('TasksNotifier Tests', () {
+  group('TasksNotifier', () {
     test('should call fetchTasks with correct filter when provider is read', () async {
       // Setup mock response
       final mockTasks = [

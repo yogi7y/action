@@ -25,25 +25,25 @@ void main() {
   });
 
   group('getInsertIndexForTask', () {
-    test('should return correct index for task that should go at the beginning', () {
+    test('should return correct index for task that should go at the beginning (newest task)', () {
       final tasks = [
         FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
-        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)), // 3:00 PM
+        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)), // 1:00 PM
       ];
 
-      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)); // 1:00 PM
+      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)); // 3:00 PM (newest)
 
       final result = systemUnderTest.getInsertIndexForTask(tasks, newTask);
       expect(result, 0);
     });
 
-    test('should return correct index for task that should go at the end', () {
+    test('should return correct index for task that should go at the end (oldest task)', () {
       final tasks = [
-        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)), // 1:00 PM
+        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)), // 3:00 PM
         FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
       ];
 
-      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)); // 3:00 PM
+      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)); // 1:00 PM (oldest)
 
       final result = systemUnderTest.getInsertIndexForTask(tasks, newTask);
       expect(result, 2);
@@ -51,11 +51,11 @@ void main() {
 
     test('should return correct index for task that should go in the middle', () {
       final tasks = [
+        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)), // 3:00 PM
         FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)), // 1:00 PM
-        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
       ];
 
-      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13, 30)); // 1:30 PM
+      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)); // 2:00 PM (middle)
 
       final result = systemUnderTest.getInsertIndexForTask(tasks, newTask);
       expect(result, 1);
@@ -63,15 +63,16 @@ void main() {
 
     test('should return correct index for task with same timestamp (should be placed after)', () {
       final tasks = [
-        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)), // 1:00 PM
-        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
         FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)), // 3:00 PM
+        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
+        FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)), // 1:00 PM
       ];
 
-      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)); // 2:00 PM
+      final newTask =
+          FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)); // 2:00 PM (same as one task)
 
       final result = systemUnderTest.getInsertIndexForTask(tasks, newTask);
-      expect(result, 1);
+      expect(result, 2); // Should be placed after the existing task with same timestamp
     });
 
     test('should handle empty list', () {
@@ -87,10 +88,10 @@ void main() {
         FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
       ];
 
-      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 13)); // 1:00 PM
+      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 15)); // 3:00 PM (newer)
 
       final result = systemUnderTest.getInsertIndexForTask(tasks, newTask);
-      expect(result, 0);
+      expect(result, 0); // Should go at the beginning since it's newer
     });
 
     test('should maintain order with multiple tasks having same timestamp', () {
@@ -100,10 +101,11 @@ void main() {
         FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)), // 2:00 PM
       ];
 
-      final newTask = FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)); // 2:00 PM
+      final newTask =
+          FakeTaskEntity(createdAt: DateTime(2024, 3, 1, 14)); // 2:00 PM (same timestamp)
 
       final result = systemUnderTest.getInsertIndexForTask(tasks, newTask);
-      expect(result, 0); // Should insert at the beginning of the same-timestamp group
+      expect(result, 3); // Should be placed after all tasks with the same timestamp
     });
   });
 }
