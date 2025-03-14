@@ -88,8 +88,8 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     // Move task to respective views based on the current state + Optimistic update.
     _moveTaskToRespectiveView(tempOptimisticTask);
 
-    /// Hide the text field after the task is successfully added.
-    ref.read(isTaskTextInputFieldVisibleProvider.notifier).state = false;
+    // clear the textfile after the task is added.
+    ref.read(newTaskProvider.notifier).clear();
 
     final result = await useCase.upsertTask(task);
 
