@@ -48,28 +48,6 @@ class TaskUseCase {
     return Success(result!);
   }
 
-  /// Returns the index at which a new task should be inserted to maintain
-  /// descending order by createdAt (newest tasks at the top).
-  int getInsertIndexForTask(List<TaskEntity> tasks, TaskEntity task) {
-    var left = 0;
-    var right = tasks.length;
-
-    while (left < right) {
-      final mid = left + (right - left) ~/ 2;
-
-      // For descending order: if the task at mid is newer than or equal to the new task,
-      // search in the right half, otherwise search in the left half
-      if (tasks[mid].createdAt!.isAfter(task.createdAt!) ||
-          tasks[mid].createdAt!.isAtSameMomentAs(task.createdAt!)) {
-        left = mid + 1;
-      } else {
-        right = mid;
-      }
-    }
-
-    return left;
-  }
-
   /// Sorts the entire passed in array of tasks by the createdAt field.
   Result<List<TaskEntity>, AppException> sortByCreatedAt(List<TaskEntity> tasks) {
     try {

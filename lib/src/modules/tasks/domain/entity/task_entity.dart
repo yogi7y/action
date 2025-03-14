@@ -89,6 +89,7 @@ class TaskEntity implements Comparable<TaskEntity> {
   @override
   String toString() =>
       'TaskEntity(id: $id, name: $name, status: $status, dueDate: $dueDate, projectId: $projectId, contextId: $contextId, isOrganized: $isOrganized, createdAt: $createdAt, updatedAt: $updatedAt)';
+
   @override
   bool operator ==(covariant TaskEntity other) {
     if (identical(this, other)) return true;

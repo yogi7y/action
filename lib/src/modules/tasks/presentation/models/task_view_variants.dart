@@ -15,7 +15,7 @@ class StatusTaskView extends TaskView {
     required super.id,
   }) : super(
           operations: TaskViewOperations(
-            filter: AndFilter([OrganizedFilter(), StatusFilter(status)]),
+            filter: AndFilter([const OrganizedFilter(), StatusFilter(status)]),
           ),
         );
 
