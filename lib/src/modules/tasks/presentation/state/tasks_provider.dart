@@ -85,6 +85,10 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
 
     /// Temp optimistic task to render on the UI.
     final tempOptimisticTask = task.copyWith(createdAt: task.createdAt ?? now);
+    final tempTextFieldState = ref.read(newTaskProvider.notifier).controller.text;
+
+    // clear textfield
+    ref.read(newTaskProvider.notifier).controller.clear();
 
     /// Check in which all the task views the task should be added/updated.
     handleInMemoryTask(tempOptimisticTask);
@@ -94,25 +98,25 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     result.fold(
       onSuccess: (taskResult) {
         // replace the temp optimistic task with the actual task.
-        print(taskResult);
 
         final updatedTasks = state.valueOrNull?.mapIndexed((index, element) {
               final handleTask = (element.id == taskResult.id) ||
                   (element.id == null && taskResult.id != null && element.name == taskResult.name);
 
               if (handleTask) {
-                handleInMemoryTask(taskResult, index: index);
+                handleInMemoryTask(taskResult);
                 return taskResult;
               } else {
                 return element;
               }
             }).toList() ??
             [];
-        print('hey');
 
         state = AsyncData(updatedTasks);
       },
       onFailure: (failure) {
+        // revert the textfield state
+        ref.read(newTaskProvider.notifier).controller.text = tempTextFieldState;
         state = AsyncData(previousState ?? []);
       },
     );

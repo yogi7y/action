@@ -52,6 +52,7 @@ class MockTaskEntity extends TaskEntity {
     DateTime? createdAt,
     super.status = TaskStatus.todo,
     super.id,
+    super.projectId,
   }) : super(
           createdAt: createdAt ?? DateTime.now(),
         );
@@ -150,6 +151,68 @@ void main() {
   });
 
   group('upsert', () {
+    late ProviderContainer container;
+
+    /// Currently active task view. The task view where user is on.
+    late TaskView taskView;
+
+    // Animated list view keys for each view.
+    late GlobalKey<AnimatedListState> unorganizedTaskViewKey;
+    late GlobalKey<AnimatedListState> allTaskViewKey;
+    late GlobalKey<AnimatedListState> inProgressTaskViewKey;
+    late GlobalKey<AnimatedListState> todoTaskViewKey;
+    late GlobalKey<AnimatedListState> doneTaskViewKey;
+
+    setUp(() async {
+      // stub the api call
+      when(() => mockTaskUseCase.fetchTasks(any()))
+          .thenAnswer((_) async => const Success(PaginatedResponse(results: [], total: 0)));
+      when(() => mockTaskUseCase.upsertTask(any()))
+          .thenAnswer((_) async => Success(MockTaskEntity(id: '1')));
+
+      // load views in memory. We're kind of mimicking the behavior when user will visit these tabs individually and then it'll be in the loaded view provider.
+
+      // create the container
+      container = createContainer(overrides: [
+        taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+        loadedTaskViewsProvider.overrideWith((_) => {
+              taskView,
+              allTaskView,
+              inProgressTaskView,
+              todoTaskView,
+              doneTaskView,
+            }),
+      ]);
+
+      taskView = unorganizedTaskView;
+
+      // create animated list view keys
+      unorganizedTaskViewKey = MockGlobalKey();
+      allTaskViewKey = MockGlobalKey();
+      inProgressTaskViewKey = MockGlobalKey();
+      todoTaskViewKey = MockGlobalKey();
+      doneTaskViewKey = MockGlobalKey();
+
+      // set animated list view keys
+      container
+          .read(tasksNotifierProvider(unorganizedTaskView).notifier)
+          .setAnimatedListKey(unorganizedTaskViewKey);
+      container
+          .read(tasksNotifierProvider(allTaskView).notifier)
+          .setAnimatedListKey(allTaskViewKey);
+      container
+          .read(tasksNotifierProvider(inProgressTaskView).notifier)
+          .setAnimatedListKey(inProgressTaskViewKey);
+      container
+          .read(tasksNotifierProvider(todoTaskView).notifier)
+          .setAnimatedListKey(todoTaskViewKey);
+      container
+          .read(tasksNotifierProvider(doneTaskView).notifier)
+          .setAnimatedListKey(doneTaskViewKey);
+
+      await _buildAllProviders(container);
+    });
+
     test(
       'should perform optimistic update and then call the api.',
       () async {
@@ -160,23 +223,8 @@ void main() {
         // stub the api call
         when(() => mockTaskUseCase.upsertTask(any()))
             .thenAnswer((_) async => Success(expectedTask));
-        when(() => mockTaskUseCase.fetchTasks(any()))
-            .thenAnswer((_) async => const Success(PaginatedResponse(results: [], total: 0)));
-
-        // create the container
-        final container = createContainer(overrides: [
-          taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
-          loadedTaskViewsProvider.overrideWith((_) => {taskView}),
-        ]);
-
-        // await for the build to complete
-        await container.read(tasksNotifierProvider(taskView).future);
 
         final notifier = container.read(tasksNotifierProvider(taskView).notifier);
-
-        // animated list key
-        final unorganizedTaskViewKey = MockGlobalKey();
-        notifier.setAnimatedListKey(unorganizedTaskViewKey);
 
         // call the upsert method to create/update the task.
         final result = notifier.upsertTask(task);
@@ -203,12 +251,418 @@ void main() {
 
     test(
       'should revert the optimistic update if the api call fails.',
-      () {},
+      () async {
+        // stub api to fail
+        when(() => mockTaskUseCase.upsertTask(any())).thenAnswer((_) async => Failure(AppException(
+              exception: Exception('Failed to upsert task'),
+              stackTrace: StackTrace.current,
+            )));
+
+        final task = MockTaskEntity(name: 'Task 1');
+
+        // get access to notifier
+        final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+
+        // call the upsert method to create/update the task.
+        final result = notifier.upsertTask(task);
+
+        // verify the task was optimistically added to the list.
+        final tasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        expect(tasks.length, 1);
+        expect(tasks.first, task.mark(idAsNull: true));
+        expect(tasks.first.id, null); // task does not have an id yet as it's created on backend.
+
+        // verify the api call was called with the correct task.
+        verify(() => mockTaskUseCase.upsertTask(task)).called(1);
+
+        // await the api call to complete.
+        await result;
+
+        // verify that we fallback to the previous state as API returns a failure.
+        final updatedTasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        expect(updatedTasks.length, 0);
+      },
     );
 
     test('should keep the keyboard open after a task is added', () {});
 
-    test('should clear the textfield after a task is added', () {});
+    test('should clear the textfield after a task is added if the task is added successfully',
+        () async {
+      // prefill textfield with text to mock the real-world behavior.
+      container.read(newTaskProvider.notifier).controller.text = 'Task 1';
+
+      final task = MockTaskEntity(name: 'Task 1');
+
+      // get notifier
+      final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+
+      // call the upsert method to create/update the task.
+      await notifier.upsertTask(task);
+
+      // verify the textfield is cleared
+      expect(container.read(newTaskProvider.notifier).controller.text, '');
+    });
+
+    test(
+        'should not clear the textfield after a task is added if the task is not added successfully',
+        () async {
+      // prefill textfield with text to mock the real-world behavior.
+      container.read(newTaskProvider.notifier).controller.text = 'Task 1';
+
+      final task = MockTaskEntity(name: 'Task 1');
+
+      // stub the api call to fail
+      when(() => mockTaskUseCase.upsertTask(any())).thenAnswer((_) async => Failure(AppException(
+            exception: Exception('Failed to upsert task'),
+            stackTrace: StackTrace.current,
+          )));
+
+      // get notifier
+      final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+
+      // call the upsert method to create/update the task.
+      await notifier.upsertTask(task);
+
+      // verify the textfield is not cleared
+      expect(container.read(newTaskProvider.notifier).controller.text, 'Task 1');
+    });
+
+    group('with multiple tasks', () {
+      const projectId = 'project_id';
+      final organizedInProgressTask = MockTaskEntity(
+        id: '1',
+        name: 'Organized In Progress Task',
+        status: TaskStatus.inProgress,
+        projectId: projectId,
+      );
+
+      final organizedInProgressTaskTwo = MockTaskEntity(
+        id: '2',
+        name: 'Organized In Progress Task Two',
+        status: TaskStatus.inProgress,
+        projectId: projectId,
+      );
+
+      final organizedInProgressTaskThree = MockTaskEntity(
+        id: '3',
+        name: 'Organized In Progress Task Three',
+        status: TaskStatus.inProgress,
+        projectId: projectId,
+      );
+
+      final organizedTodoTask = MockTaskEntity(
+        id: '4',
+        name: 'Organized Todo Task',
+        projectId: projectId,
+      );
+
+      final organizedTodoTaskTwo = MockTaskEntity(
+        id: '5',
+        name: 'Organized Todo Task Two',
+        projectId: projectId,
+      );
+
+      final organizedTodoTaskThree = MockTaskEntity(
+        id: '6',
+        name: 'Organized Todo Task Three',
+        projectId: projectId,
+      );
+
+      final organizedDoneTask = MockTaskEntity(
+        id: '7',
+        name: 'Organized Done Task',
+        status: TaskStatus.done,
+        projectId: projectId,
+      );
+
+      final organizedDoneTaskTwo = MockTaskEntity(
+        id: '8',
+        name: 'Organized Done Task Two',
+        status: TaskStatus.done,
+        projectId: projectId,
+      );
+
+      final organizedDoneTaskThree = MockTaskEntity(
+        id: '9',
+        name: 'Organized Done Task Three',
+        status: TaskStatus.done,
+        projectId: projectId,
+      );
+
+      final unorganizedTask = MockTaskEntity(
+        id: '10',
+        name: 'Unorganized Task',
+      );
+
+      final unorganizedTaskTwo = MockTaskEntity(
+        id: '11',
+        name: 'Unorganized Task Two',
+      );
+
+      final unorganizedTaskThree = MockTaskEntity(
+        id: '12',
+        name: 'Unorganized Task Three',
+      );
+
+      final unorganizedTaskFour = MockTaskEntity(
+        id: '13',
+        name: 'Unorganized Task Four',
+      );
+
+      setUp(() async {
+        // return all task for allTaskView
+        when(() => mockTaskUseCase.fetchTasks(allTaskView.operations.filter)).thenAnswer(
+          (_) async => Success(
+            PaginatedResponse(
+              results: [
+                organizedInProgressTask,
+                organizedInProgressTaskTwo,
+                organizedInProgressTaskThree,
+                organizedTodoTask,
+                organizedTodoTaskTwo,
+                organizedTodoTaskThree,
+                organizedDoneTask,
+                organizedDoneTaskTwo,
+                organizedDoneTaskThree,
+                unorganizedTask,
+                unorganizedTaskTwo,
+                unorganizedTaskThree,
+                unorganizedTaskFour,
+              ],
+              total: 13,
+            ),
+          ),
+        );
+
+        // return organized in progress task for inProgressTaskView
+        when(() => mockTaskUseCase.fetchTasks(inProgressTaskView.operations.filter)).thenAnswer(
+          (_) async => Success(
+            PaginatedResponse(
+              results: [
+                organizedInProgressTask,
+                organizedInProgressTaskTwo,
+                organizedInProgressTaskThree,
+              ],
+              total: 3,
+            ),
+          ),
+        );
+
+        // return organized todo task for todoTaskView
+        when(() => mockTaskUseCase.fetchTasks(todoTaskView.operations.filter)).thenAnswer(
+          (_) async => Success(
+            PaginatedResponse(
+              results: [
+                organizedTodoTask,
+                organizedTodoTaskTwo,
+                organizedTodoTaskThree,
+              ],
+              total: 3,
+            ),
+          ),
+        );
+
+        // return organized done task for doneTaskView
+        when(() => mockTaskUseCase.fetchTasks(doneTaskView.operations.filter)).thenAnswer(
+          (_) async => Success(
+            PaginatedResponse(
+              results: [
+                organizedDoneTask,
+                organizedDoneTaskTwo,
+                organizedDoneTaskThree,
+              ],
+              total: 3,
+            ),
+          ),
+        );
+
+        // return unorganized task for unorganizedTaskView
+        when(() => mockTaskUseCase.fetchTasks(unorganizedTaskView.operations.filter)).thenAnswer(
+          (_) async => Success(
+            PaginatedResponse(
+              results: [
+                unorganizedTask,
+                unorganizedTaskTwo,
+                unorganizedTaskThree,
+                unorganizedTaskFour,
+              ],
+              total: 4,
+            ),
+          ),
+        );
+
+        // invalidate state
+        _invalidateAllTaskNotifier(container);
+
+        await _buildAllProviders(container);
+      });
+
+      test('verify all the task belong to their specific views', () {
+        // All task view will hold all the tasks
+        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        expect(allTasks.length, 13);
+        expect(allTasks.any((task) => task.id == organizedInProgressTask.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedInProgressTaskTwo.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedInProgressTaskThree.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedTodoTask.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedTodoTaskTwo.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedTodoTaskThree.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedDoneTask.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedDoneTaskTwo.id), isTrue);
+        expect(allTasks.any((task) => task.id == organizedDoneTaskThree.id), isTrue);
+        expect(allTasks.any((task) => task.id == unorganizedTask.id), isTrue);
+        expect(allTasks.any((task) => task.id == unorganizedTaskTwo.id), isTrue);
+        expect(allTasks.any((task) => task.id == unorganizedTaskThree.id), isTrue);
+        expect(allTasks.any((task) => task.id == unorganizedTaskFour.id), isTrue);
+
+        // In progress task view will only hold the in progress tasks
+        final inProgressTasks =
+            container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+        expect(inProgressTasks.length, 3);
+        expect(inProgressTasks.contains(organizedInProgressTask), isTrue);
+        expect(inProgressTasks.contains(organizedInProgressTaskTwo), isTrue);
+        expect(inProgressTasks.contains(organizedInProgressTaskThree), isTrue);
+
+        // task view will only hold the todo tasks
+        final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+        expect(todoTasks.length, 3);
+        expect(todoTasks.contains(organizedTodoTask), isTrue);
+        expect(todoTasks.contains(organizedTodoTaskTwo), isTrue);
+        expect(todoTasks.contains(organizedTodoTaskThree), isTrue);
+
+        // Done task view will only hold the done tasks
+        final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+        expect(doneTasks.length, 3);
+        expect(doneTasks.contains(organizedDoneTask), isTrue);
+        expect(doneTasks.contains(organizedDoneTaskTwo), isTrue);
+        expect(doneTasks.contains(organizedDoneTaskThree), isTrue);
+
+        // Unorganized task view will only hold the unorganized tasks
+        final unorganizedTasks =
+            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+        expect(unorganizedTasks.length, 4);
+        expect(unorganizedTasks.contains(unorganizedTask), isTrue);
+        expect(unorganizedTasks.contains(unorganizedTaskTwo), isTrue);
+        expect(unorganizedTasks.contains(unorganizedTaskThree), isTrue);
+        expect(unorganizedTasks.contains(unorganizedTaskFour), isTrue);
+      });
+
+      test('updating status should also reflect in other views', () async {
+        // update status of unorganized task from todo to done.
+        final updatedState = unorganizedTask.copyWith(status: TaskStatus.inProgress);
+
+        // update the status of the task
+        final notifier = container.read(tasksNotifierProvider(unorganizedTaskView).notifier);
+        await notifier.upsertTask(updatedState);
+
+        // it should show as in progress in unorganized task view.
+        final unorganizedTasks =
+            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+        expect(unorganizedTasks.length, 4);
+        // get the updated task
+        final updatedTask = unorganizedTasks.firstWhere((task) => task.id == updatedState.id);
+        expect(updatedTask.status, TaskStatus.inProgress);
+
+        // it should also update in all task view.
+        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        expect(allTasks.length, 13);
+        expect(allTasks.any((task) => task.id == updatedState.id), isTrue);
+        final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
+        expect(updatedAllTask.status, TaskStatus.inProgress);
+
+        // it should not update in in progress task view it's not organized hence cannot be in in progress task view.
+        final inProgressTasks =
+            container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+        expect(inProgressTasks.length, 3);
+        expect(inProgressTasks.any((task) => task.id == updatedState.id), isFalse);
+
+        // should not update in todo and done view as well.
+        final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+        expect(todoTasks.length, 3);
+        expect(todoTasks.any((task) => task.id == updatedState.id), isFalse);
+
+        final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+        expect(doneTasks.length, 3);
+        expect(doneTasks.any((task) => task.id == updatedState.id), isFalse);
+      });
+
+      test('task should move between views based on the new state.', () async {
+        // update unorganized task from todo to done.
+        final updatedState = unorganizedTask.copyWith(status: TaskStatus.done);
+
+        // update the status of the task
+        final notifier = container.read(tasksNotifierProvider(unorganizedTaskView).notifier);
+        await notifier.upsertTask(updatedState);
+
+        // it should be removed from unorganized task view as it's organized now.
+        final unorganizedTasks =
+            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+        expect(unorganizedTasks.length, 3);
+        expect(unorganizedTasks.any((task) => task.id == updatedState.id), isFalse);
+
+        // should update its state in all task view.
+        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        expect(allTasks.length, 13);
+        expect(allTasks.any((task) => task.id == updatedState.id), isTrue);
+        final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
+        expect(updatedAllTask.status, TaskStatus.done);
+
+        // should be added to done task view.
+        final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+        expect(doneTasks.length, 4);
+        expect(doneTasks.any((task) => task.id == updatedState.id), isTrue);
+
+        // nothing should happen to todo and in progress views.
+        final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+        expect(todoTasks.length, 3);
+        expect(todoTasks.any((task) => task.id == updatedState.id), isFalse);
+
+        final inProgressTasks =
+            container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+        expect(inProgressTasks.length, 3);
+        expect(inProgressTasks.any((task) => task.id == updatedState.id), isFalse);
+      });
+
+      test(
+        'task is moved from organized to unorganized view',
+        () async {
+          // remove project id from a task which is in todo to make it unorganized.
+          final updatedState = organizedTodoTask.mark(projectIdAsNull: true);
+
+          // update the status of the task
+          final notifier = container.read(tasksNotifierProvider(todoTaskView).notifier);
+          await notifier.upsertTask(updatedState);
+
+          // it should be removed from todo task view as it's no longer organized.
+          final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+          expect(todoTasks.length, 2);
+          expect(todoTasks.any((task) => task.id == updatedState.id), isFalse);
+
+          // it should be added to unorganized task view.
+          final unorganizedTasks =
+              container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+          expect(unorganizedTasks.length, 5);
+          expect(unorganizedTasks.any((task) => task.id == updatedState.id), isTrue);
+
+          // should update its state in all task view.
+          final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+          expect(allTasks.length, 13);
+          expect(allTasks.any((task) => task.id == updatedState.id), isTrue);
+          final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
+          expect(updatedAllTask.status, TaskStatus.todo);
+
+          // should not update in in progress and done task view as it's not organized.
+          final inProgressTasks =
+              container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+          expect(inProgressTasks.length, 3);
+          expect(inProgressTasks.any((task) => task.id == updatedState.id), isFalse);
+
+          final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+          expect(doneTasks.length, 3);
+          expect(doneTasks.any((task) => task.id == updatedState.id), isFalse);
+        },
+      );
+    });
   });
 
   group('removeTaskIfExists', () {
@@ -328,7 +782,7 @@ void main() {
       'should find task by name when id is null',
       () {
         // Create a task with the same name as taskOne but with null ID
-        final taskWithSameName = MockTaskEntity(id: null, name: 'Task One');
+        final taskWithSameName = MockTaskEntity(name: 'Task One');
 
         // verify initial state
         final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
@@ -694,6 +1148,25 @@ void main() {
       expect(result, 3); // Should be placed after all tasks with the same timestamp
     });
   });
+}
+
+void _invalidateAllTaskNotifier(ProviderContainer container) {
+  container
+    ..invalidate(tasksNotifierProvider(allTaskView))
+    ..invalidate(tasksNotifierProvider(inProgressTaskView))
+    ..invalidate(tasksNotifierProvider(todoTaskView))
+    ..invalidate(tasksNotifierProvider(doneTaskView))
+    ..invalidate(tasksNotifierProvider(unorganizedTaskView));
+}
+
+Future<void> _buildAllProviders(ProviderContainer container) async {
+  await Future.wait([
+    container.read(tasksNotifierProvider(allTaskView).future),
+    container.read(tasksNotifierProvider(inProgressTaskView).future),
+    container.read(tasksNotifierProvider(todoTaskView).future),
+    container.read(tasksNotifierProvider(doneTaskView).future),
+    container.read(tasksNotifierProvider(unorganizedTaskView).future),
+  ]);
 }
 
 final inProgressTaskView = StatusTaskView(
