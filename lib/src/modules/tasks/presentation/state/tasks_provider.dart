@@ -122,7 +122,6 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     );
   }
 
-  @visibleForTesting
   void handleInMemoryTask(
     TaskEntity task, {
     /// Will reduce any lookup and make the computation faster by directly accessing the element

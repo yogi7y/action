@@ -36,7 +36,7 @@ class _Checkbox extends StatelessWidget {
       child: Consumer(
         builder: (context, ref, child) => AppCheckbox(
           onChanged: (state) async {
-            await ref.read(taskDetailNotifierProvider.notifier).updateTaskWithCallback(
+            await ref.read(taskDetailNotifierProvider.notifier).updateTask(
                   (task) => task.copyWith(status: TaskStatus.fromAppCheckboxState(state)),
                 );
           },

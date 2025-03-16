@@ -60,41 +60,38 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   Widget build(BuildContext context) {
     final taskDetail = ref.watch(taskDetailProvider(widget.taskDataOrId));
 
-    return ProviderScope(
-      overrides: [taskDetailIndexProvider.overrideWithValue(widget.index)],
-      child: Scaffold(
-        body: switch (taskDetail) {
-          AsyncData(value: final task) => ProviderScope(
-              overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
-              child: TaskDetailDataView(
-                scrollController: scrollController,
-                checklistSectionKey: _checklistSectionKey,
-              ),
+    return Scaffold(
+      body: switch (taskDetail) {
+        AsyncData(value: final task) => ProviderScope(
+            overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
+            child: TaskDetailDataView(
+              scrollController: scrollController,
+              checklistSectionKey: _checklistSectionKey,
             ),
-          AsyncError(error: final error) => TaskDetailErrorView(error: error),
-          _ => const TaskDetailLoadingView(),
+          ),
+        AsyncError(error: final error) => TaskDetailErrorView(error: error),
+        _ => const TaskDetailLoadingView(),
+      },
+      floatingActionButton: AddRemoveFloatingActionButton(
+        onStateChanged: (state) {
+          ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => true);
+
+          final checklistContext = _checklistSectionKey.currentContext;
+          if (checklistContext == null) return;
+
+          final renderBox = checklistContext.findRenderObject() as RenderBox?;
+          if (renderBox == null) return;
+
+          final position = renderBox.localToGlobal(Offset.zero);
+          final scrollOffset =
+              scrollController.offset + position.dy - MediaQuery.of(context).padding.top - 40;
+
+          unawaited(scrollController.animateTo(
+            scrollOffset,
+            duration: defaultAnimationDuration,
+            curve: Curves.easeOutCubic,
+          ));
         },
-        floatingActionButton: AddRemoveFloatingActionButton(
-          onStateChanged: (state) {
-            ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => true);
-
-            final checklistContext = _checklistSectionKey.currentContext;
-            if (checklistContext == null) return;
-
-            final renderBox = checklistContext.findRenderObject() as RenderBox?;
-            if (renderBox == null) return;
-
-            final position = renderBox.localToGlobal(Offset.zero);
-            final scrollOffset =
-                scrollController.offset + position.dy - MediaQuery.of(context).padding.top - 40;
-
-            unawaited(scrollController.animateTo(
-              scrollOffset,
-              duration: defaultAnimationDuration,
-              curve: Curves.easeOutCubic,
-            ));
-          },
-        ),
       ),
     );
   }

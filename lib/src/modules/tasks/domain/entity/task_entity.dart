@@ -8,7 +8,7 @@ import 'task_status.dart';
 class TaskEntity implements Comparable<TaskEntity> {
   const TaskEntity({
     required this.name,
-    required this.status,
+    this.status = TaskStatus.todo,
     this.id,
     this.dueDate,
     this.projectId,

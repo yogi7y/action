@@ -5,7 +5,7 @@ import 'package:action/src/modules/tasks/presentation/state/task_view_provider.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'tasks_provider_test.dart';
+import '../../../../utils/provider_container.dart';
 
 class FakeTaskOperation extends Fake implements TaskViewOperations {}
 

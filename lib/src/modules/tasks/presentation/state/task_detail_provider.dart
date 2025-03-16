@@ -4,35 +4,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_entity.dart';
 import '../../domain/use_case/task_use_case.dart';
-import 'task_view_provider.dart';
 
 typedef TaskDataOrId = ({String? id, TaskEntity? data});
 typedef UpdateTaskCallback = TaskEntity Function(TaskEntity task);
 
+/// Provider to render the task detail screen.
+/// Internally it checks if data is provided, it returns that.
+/// If not, it checks for id to get data from server.
+/// If both are not provided, it throws an error.
 final taskDetailProvider =
     FutureProvider.autoDispose.family<TaskEntity, TaskDataOrId>((ref, dataOrId) async {
-  // throw UnimplementedError('');
-  // If we have data, return it directly
   if (dataOrId.data != null) return dataOrId.data!;
 
   // Otherwise fetch using ID
   if (dataOrId.id != null) {
     throw UnimplementedError('Fetching task by id is not implemented');
-    // final useCase = ref.watch(taskUseCaseProvider);
-    // final result = await useCase.getTaskById(dataOrId.id!);
-
-    // return result.fold(
-    //   onSuccess: (task) => task,
-    //   onFailure: (error) => throw error,
-    // );
   }
 
   throw Exception('Either id or data must be provided');
 });
-
-/// index of the task tile form which the task detail is opened
-final taskDetailIndexProvider = Provider<int?>((ref) => throw UnimplementedError(
-    'Ensure that the taskDetailIndexProvider is overridden when opening the task detail'));
 
 class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
   TaskDetailNotifier(this.task);
@@ -40,33 +30,53 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
   final TaskEntity task;
 
   @override
-  TaskEntity build() {
-    listenSelf(_onChanged);
-    return task;
-  }
+  TaskEntity build() => task;
 
-  Future<void> _onChanged(TaskEntity? previous, TaskEntity? current) async {
-    /// if previous is null, we're considering that the task provider is just initialized hence skipping the update
-    if (current == null || previous == null) return;
-    if (previous == current) return;
+  /// Updates the task using a callback function that receives the current state
+  /// and returns a new state.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// notifier.updateTask((task) => task.copyWith(name: 'New name'));
+  /// ```
+  ///
+  /// This method performs an optimistic update, immediately updating the UI
+  /// with the new task data, then makes the API call to persist the changes.
+  /// If the API call fails, it reverts to the original state.
+  ///
+  /// Returns a Future that completes when the API call is done.
+  Future<void> updateTask(UpdateTaskCallback callback) async {
+    // Store the original state for potential rollback
+    final originalTask = state;
 
-    final _currentFilter = ref.read(selectedTaskViewProvider);
+    // Apply the callback to get the updated task
+    final updatedTask = callback(state);
 
-    final _index = ref.read(taskDetailIndexProvider);
-    // await ref.read(tasksProvider(_currentFilter).notifier).updateTask(
-    //       task: current,
-    //       index: _index ?? 0,
-    //       onlyOptimisticUpdate: true,
-    //     );
-  }
+    // Optimistically update the state
+    state = updatedTask;
 
-  Future<void> updateTaskWithCallback(UpdateTaskCallback update) async {
-    final _task = update(task);
+    // Get the task use case
+    final useCase = ref.read(taskUseCaseProvider);
 
-    // await super.updateTask(task: _task, index: 0);
+    // Make the API call
+    final result = await useCase.upsertTask(updatedTask);
+
+    // Handle the result
+    result.fold(
+      onSuccess: (taskResult) {
+        // Update with the result from the server if needed
+        state = taskResult;
+      },
+      onFailure: (_) {
+        // Revert to the original state on failure
+        state = originalTask;
+      },
+    );
   }
 }
 
+/// This provider is meant to be overridden with a specific task instance.
+/// It should not be used directly without an override.
 final taskDetailNotifierProvider = NotifierProvider.autoDispose<TaskDetailNotifier, TaskEntity>(
-  () => throw UnimplementedError(),
+  () => throw UnimplementedError('This provider must be overridden with a specific task'),
 );

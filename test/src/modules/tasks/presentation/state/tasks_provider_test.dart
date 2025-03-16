@@ -18,6 +18,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../utils/provider_container.dart';
+
 class MockTaskUseCase extends Mock implements TaskUseCase {}
 
 class FakeDuration extends Fake implements Duration {}
@@ -1247,24 +1249,6 @@ final unorganizedTaskView = UnorganizedTaskView(
     viewName: 'unorganized_tasks_view',
   ),
 );
-
-ProviderContainer createContainer({
-  ProviderContainer? parent,
-  List<Override> overrides = const [],
-  List<ProviderObserver>? observers,
-}) {
-  // Create a ProviderContainer, and optionally allow specifying parameters.
-  final container = ProviderContainer(
-    parent: parent,
-    overrides: overrides,
-    observers: observers,
-  );
-
-  // When the test ends, dispose the container.
-  addTearDown(container.dispose);
-
-  return container;
-}
 
 class AddOrUpdateTaskCall {
   final TaskEntity task;
