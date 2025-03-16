@@ -11,11 +11,17 @@ class ChecklistUseCase {
   AsyncChecklistResult getChecklistsByTaskId(String taskId) =>
       repository.getChecklistsByTaskId(taskId);
 
+  AsyncSingleChecklistResult upsertChecklist(ChecklistEntity checklist) {
+    throw UnimplementedError('upsertChecklist method is not implemented yet');
+  }
+
+  @Deprecated('')
   AsyncSingleChecklistResult createChecklist(ChecklistEntity checklist) {
     checklist.validate();
     return repository.createChecklist(checklist);
   }
 
+  @Deprecated('')
   AsyncSingleChecklistResult updateChecklist(ChecklistEntity checklist) {
     checklist.validate();
     return repository.updateChecklist(checklist);

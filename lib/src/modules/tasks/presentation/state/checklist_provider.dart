@@ -4,13 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/checklist.dart';
 import '../../domain/use_case/checklist_use_case.dart';
 import '../../domain/use_case/task_use_case.dart';
-import 'new_checklist_provider.dart';
 
 final checklistProvider =
     AsyncNotifierProviderFamily<ChecklistNotifier, Checklists, TaskId>(ChecklistNotifier.new);
 
 class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
-  late final ChecklistUseCase _useCase = ref.read(checklistUseCaseProvider);
+  late final _useCase = ref.read(checklistUseCaseProvider);
 
   @override
   Future<List<ChecklistEntity>> build(TaskId arg) async => _fetchChecklists(arg);
@@ -23,85 +22,61 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
     );
   }
 
-  Future<void> addChecklist(String checklistTitle) async {
+  Future<void> upsertChecklist(
+    String checklistTitle, {
+    DateTime? createdAt,
+  }) async {
     final previousState = state;
-    final createdAt = DateTime.now();
-    final updatedAt = createdAt;
+    final now = createdAt ?? DateTime.now();
 
-    final tempChecklist = ChecklistEntity(
-      id: '', // Empty ID for temp item, just like tasks
+    final tempOptimisticChecklist = ChecklistEntity(
       taskId: arg,
       title: checklistTitle,
-      status: ChecklistStatus.todo,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      createdAt: now,
+      updatedAt: now,
     );
 
-    // Update state and animate
-    state = AsyncData([tempChecklist, ...state.valueOrNull ?? []]);
-    ref.read(checklistAnimatedListKeyProvider).currentState?.insertItem(0);
-    ref.read(newChecklistProvider.notifier).clear();
+    // do optimistic update
+    state = AsyncData([tempOptimisticChecklist, ...(state.valueOrNull ?? [])]);
 
-    try {
-      final result = await _useCase.createChecklist(
-        ChecklistEntity(
-          taskId: arg,
-          title: checklistTitle,
-          status: ChecklistStatus.todo,
-        ),
-      );
+    // make api call
+    final result = await _useCase.upsertChecklist(tempOptimisticChecklist);
 
-      await result.fold(
-        onSuccess: (checklist) async {
-          final currentChecklists = state.valueOrNull ?? [];
-          final updatedChecklists = currentChecklists
-              .map((item) => item.title == tempChecklist.title ? checklist : item)
-              .toList();
-          state = AsyncData(updatedChecklists);
-        },
-        onFailure: (error) async {
-          state = previousState;
-          throw error;
-        },
-      );
-    } catch (e) {
-      state = previousState;
-      rethrow;
-    }
-  }
+    result.fold(
+      onSuccess: (checklist) {
+        // update the temp state with server response
+        // remove the temp optimistic checklist item and replace it with the server response
+        // since it might mostly be the topmost item, we could probably use index to check. If it's not the
+        // top most item for some reason, we will iterate and verify.
+        final topMostItem = state.requireValue.first;
 
-  Future<void> updateChecklist(ChecklistEntity checklist) async {
-    final previousState = state;
-
-    state = AsyncData(
-      state.valueOrNull?.map((item) {
-            return item.id == checklist.id ? checklist : item;
-          }).toList() ??
-          [],
+        // mostly will be true if we're creating a new checklist
+        if (topMostItem.id == null && topMostItem.title == checklist.title) {
+          state.requireValue.removeAt(0);
+          state = AsyncData([checklist, ...state.requireValue]);
+        } else {
+          // if it's not the topmost item, we will iterate and verify
+          for (var i = 0; i < state.requireValue.length; i++) {
+            if (state.requireValue[i].id == checklist.id) {
+              state.requireValue.removeAt(i);
+              state.requireValue.insert(i, checklist);
+              ref.notifyListeners();
+            }
+          }
+        }
+      },
+      onFailure: (error) {
+        // revert to previous state
+        state = previousState;
+      },
     );
-
-    try {
-      final result = await _useCase.updateChecklist(checklist);
-
-      await result.fold(
-        onSuccess: (updatedChecklist) async {
-          final currentChecklists = state.valueOrNull ?? [];
-          final updatedChecklists = currentChecklists
-              .map((item) => item.id == checklist.id ? updatedChecklist : item)
-              .toList();
-
-          state = AsyncData(updatedChecklists);
-        },
-        onFailure: (error) async {
-          state = previousState;
-          throw error;
-        },
-      );
-    } catch (e) {
-      state = previousState;
-      rethrow;
-    }
   }
+
+  @Deprecated('')
+  Future<void> addChecklist(String checklistTitle) async {}
+
+  @Deprecated('')
+  Future<void> updateChecklist(ChecklistEntity checklist) async {}
 }
 
 // Global key for AnimatedList

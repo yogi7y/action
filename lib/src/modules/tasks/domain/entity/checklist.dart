@@ -27,7 +27,7 @@ class ChecklistEntity {
   const ChecklistEntity({
     required this.taskId,
     required this.title,
-    required this.status,
+    this.status = ChecklistStatus.todo,
     this.id,
     this.createdAt,
     this.updatedAt,
