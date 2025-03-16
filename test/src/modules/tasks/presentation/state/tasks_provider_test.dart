@@ -607,7 +607,7 @@ void main() {
         final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
         expect(updatedAllTask.status, TaskStatus.done);
 
-        // should be added to done task view.
+        // should be added to done task view. also verify that the id exists as it's optimistically added.
         final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
         expect(doneTasks.length, 4);
         expect(doneTasks.any((task) => task.id == updatedState.id), isTrue);
@@ -662,6 +662,42 @@ void main() {
           expect(doneTasks.any((task) => task.id == updatedState.id), isFalse);
         },
       );
+
+      test("new task should also update the id in other views where it's added", () async {
+        // When adding a task optimistically id is not added. Id is updated when we receive the response
+        // from the server. For the current view task, it's updated which is verified.
+        // Also ensure it's updated in other views where the task was added.
+        // for eg, a new task was added in unorganized view. While adding it, it also got added in all task view optimistically.
+        // As it was added optimistically, id was not present. After server response, id should be present in all task view.
+
+        // add a new task in unorganized view
+        final newTask = MockTaskEntity(name: 'New Task');
+
+        // stub api to return the new task with id
+        when(() => mockTaskUseCase.upsertTask(any()))
+            .thenAnswer((_) async => Success(newTask.copyWith(id: '100')));
+
+        final notifier = container.read(tasksNotifierProvider(unorganizedTaskView).notifier);
+        final result = notifier.upsertTask(newTask);
+
+        // it should be added to all task view.
+        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        expect(allTasks.length, 14);
+        // fetch new task by name
+        final newTaskFromAllView = allTasks.firstWhere((task) => task.name == newTask.name);
+        expect(newTaskFromAllView.id, isNull);
+
+        // wait for the result
+        await result;
+
+        // it should be added to all task view.
+        final allTaskAfterServerResponse =
+            container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        expect(allTaskAfterServerResponse.length, 14);
+        final newTaskFromAllViewAfterServerResponse =
+            allTaskAfterServerResponse.firstWhere((task) => task.name == newTask.name);
+        expect(newTaskFromAllViewAfterServerResponse.id, isNotNull);
+      });
     });
   });
 
