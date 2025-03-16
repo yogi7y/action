@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_entity.dart';
 import '../../domain/use_case/task_use_case.dart';
+import 'task_view_provider.dart';
+import 'tasks_provider.dart';
 
 typedef TaskDataOrId = ({String? id, TaskEntity? data});
 typedef UpdateTaskCallback = TaskEntity Function(TaskEntity task);
@@ -55,6 +57,9 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
     // Optimistically update the state
     state = updatedTask;
 
+    // update the task in all relevant views
+    _updateTaskInListView(updatedTask);
+
     // Get the task use case
     final useCase = ref.read(taskUseCaseProvider);
 
@@ -70,8 +75,20 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
       onFailure: (_) {
         // Revert to the original state on failure
         state = originalTask;
+
+        // Revert the task in all relevant views
+        _updateTaskInListView(originalTask);
       },
     );
+  }
+
+  /// Updates the task in all relevant views based on the task's properties
+  void _updateTaskInListView(TaskEntity task) {
+    // Get the selected task view
+    final selectedTaskView = ref.read(selectedTaskViewProvider);
+
+    // Get the tasks notifier for the selected view and call handleInMemoryTask
+    ref.read(tasksNotifierProvider(selectedTaskView).notifier).handleInMemoryTask(task);
   }
 }
 
