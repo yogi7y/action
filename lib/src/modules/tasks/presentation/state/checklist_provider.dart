@@ -6,8 +6,6 @@ import '../../domain/use_case/checklist_use_case.dart';
 import '../../domain/use_case/task_use_case.dart';
 import 'new_checklist_provider.dart';
 
-typedef Checklists = List<ChecklistEntity>;
-
 final checklistProvider =
     AsyncNotifierProviderFamily<ChecklistNotifier, Checklists, TaskId>(ChecklistNotifier.new);
 

@@ -1,24 +1,24 @@
-import 'package:flutter/foundation.dart';
-
+import '../../../../core/validators/serialization_validators.dart';
 import '../../domain/entity/checklist.dart';
 
-@immutable
-class ChecklistModel extends ChecklistEntity {
-  const ChecklistModel({
-    required super.id,
-    required super.taskId,
-    required super.title,
-    required super.status,
-    required super.createdAt,
-    required super.updatedAt,
-  });
+mixin ChecklistModelMixin {
+  ChecklistEntity fromMapToChecklistEntity(Map<String, Object?> map) {
+    final validator = FieldTypeValidator(map, StackTrace.current);
 
-  factory ChecklistModel.fromMap(Map<String, dynamic> map) => ChecklistModel(
-        id: map['id'] as String,
-        taskId: map['task_id'] as String,
-        title: map['title'] as String,
-        status: ChecklistStatus.fromString(map['status'] as String),
-        createdAt: DateTime.parse(map['created_at'] as String),
-        updatedAt: DateTime.parse(map['updated_at'] as String),
-      );
+    final id = validator.isOfType<String>('id');
+    final taskId = validator.isOfType<String>('task_id');
+    final title = validator.isOfType<String>('title');
+    final statusStr = validator.isOfType<String>('status');
+    final createdAt = validator.isOfType<String>('created_at');
+    final updatedAt = validator.isOfType<String>('updated_at');
+
+    return ChecklistEntity(
+      id: id,
+      taskId: taskId,
+      title: title,
+      status: ChecklistStatus.fromString(statusStr),
+      createdAt: DateTime.parse(createdAt),
+      updatedAt: DateTime.parse(updatedAt),
+    );
+  }
 }

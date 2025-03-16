@@ -5,7 +5,7 @@ import '../../domain/entity/checklist.dart';
 import '../../domain/repository/checklist_repository.dart';
 import '../models/checklist_model.dart';
 
-class SupabaseChecklistRepository implements ChecklistRepository {
+class SupabaseChecklistRepository with ChecklistModelMixin implements ChecklistRepository {
   const SupabaseChecklistRepository(this.client);
 
   final SupabaseClient client;
@@ -17,7 +17,7 @@ class SupabaseChecklistRepository implements ChecklistRepository {
           await client.from('checklist_items').select().eq('task_id', taskId).order('created_at');
 
       final checklists = (response as List<dynamic>)
-          .map((item) => ChecklistModel.fromMap(item as Map<String, Object?>? ?? {}))
+          .map((item) => fromMapToChecklistEntity(item as Map<String, Object?>? ?? {}))
           .toList();
 
       return Success(checklists);
@@ -35,7 +35,7 @@ class SupabaseChecklistRepository implements ChecklistRepository {
       final response =
           await client.from('checklist_items').insert(checklist.toMap()).select().single();
 
-      return Success(ChecklistModel.fromMap(response));
+      return Success(fromMapToChecklistEntity(response));
     } catch (e, stackTrace) {
       return Failure(AppException(
         exception: e.toString(),
@@ -45,8 +45,17 @@ class SupabaseChecklistRepository implements ChecklistRepository {
   }
 
   @override
-  AsyncSingleChecklistResult deleteChecklist(ChecklistId id) {
-    throw UnimplementedError();
+  AsyncSingleChecklistResult deleteChecklist(ChecklistId id) async {
+    try {
+      final response = await client.from('checklist_items').delete().eq('id', id).select().single();
+
+      return Success(fromMapToChecklistEntity(response));
+    } catch (e, stackTrace) {
+      return Failure(AppException(
+        exception: e.toString(),
+        stackTrace: stackTrace,
+      ));
+    }
   }
 
   @override
@@ -62,8 +71,7 @@ class SupabaseChecklistRepository implements ChecklistRepository {
           .select()
           .single();
 
-      final result = ChecklistModel.fromMap(response);
-      return Success(result);
+      return Success(fromMapToChecklistEntity(response));
     } catch (e, stackTrace) {
       return Failure(AppException(
         exception: e.toString(),

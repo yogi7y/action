@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/exceptions/validation_exception.dart';
 import '../use_case/task_use_case.dart';
 
+/// List of checklists items.
+typedef Checklists = List<ChecklistEntity>;
+
 enum ChecklistStatus {
   todo('todo'),
   done('done');
