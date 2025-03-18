@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 import 'package:stack_trace/stack_trace.dart';
@@ -11,7 +12,9 @@ import 'src/core/env/flavor.dart';
 import 'src/core/logger/logger.dart';
 
 Future<void> mainBase(AppFlavor flavor) async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   logger('launching app with URL: ${flavor.env.supabaseUrl}');
 
   FlutterError.demangleStackTrace = (stack) {

@@ -17,7 +17,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoute.splash.path,
+    initialLocation: AppRoute.home.path,
     debugLogDiagnostics: true,
     redirect: (context, state) {
       // Wrapping with Duration.zero as otherwise it was throwing error whenever I was opening
@@ -34,12 +34,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: AppRoute.splash.path,
-        name: AppRoute.splash.name,
-        builder: (context, state) => const SplashScreen(),
-      ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
         path: AppRoute.auth.path,
