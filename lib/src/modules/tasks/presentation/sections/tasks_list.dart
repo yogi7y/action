@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
+import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/placeholder_widget.dart';
 import '../models/task_view.dart';
-import '../state/task_filter_provider.dart';
-import '../state/task_movement.dart';
+import '../state/scoped_task_provider.dart';
 import '../state/tasks_provider.dart';
+import '../widgets/refresh_tasks_widget.dart';
 import '../widgets/task_loading_tile.dart';
 import '../widgets/task_tile.dart';
 
 @immutable
-class TasksList extends ConsumerWidget {
-  const TasksList({
+class TasksListView extends ConsumerWidget {
+  const TasksListView({
     required this.taskView,
     super.key,
   });
@@ -20,38 +20,27 @@ class TasksList extends ConsumerWidget {
   final TaskView taskView;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _count = ref.watch(tasksCountNotifierProvider(taskView));
-
-    return _count.when(
-      error: (error, _) => PlaceholderWidget(text: error.toString()),
-      loading: _TaskListLoadingState.new,
-      data: (count) {
-        logger('rebuilding count: $count for ${taskView.label}');
-        return _TaskListDataState(
-          taskView: taskView,
-          count: count,
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) => ProviderScope(
+        overrides: [
+          scopedTaskViewProvider.overrideWithValue(taskView),
+        ],
+        child: ref.watch(tasksNotifierProvider(taskView)).when(
+              error: (error, _) => PlaceholderWidget(text: error.toString()),
+              loading: _TaskListLoadingState.new,
+              data: (tasks) => const _TaskListViewDataState(),
+            ),
+      );
 }
 
 @immutable
-class _TaskListDataState extends ConsumerStatefulWidget {
-  const _TaskListDataState({
-    required this.taskView,
-    required this.count,
-  });
-
-  final TaskView taskView;
-  final int count;
+class _TaskListViewDataState extends ConsumerStatefulWidget {
+  const _TaskListViewDataState();
 
   @override
-  ConsumerState<_TaskListDataState> createState() => _TaskListDataStateState();
+  ConsumerState<_TaskListViewDataState> createState() => _TaskListDataStateState();
 }
 
-class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
+class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
     with AutomaticKeepAliveClientMixin {
   late final _animatedListKey = GlobalKey<AnimatedListState>();
 
@@ -60,86 +49,47 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(taskMovementProvider).addAnimatedListKey(
-            widget.taskView.label,
-            _animatedListKey,
-          );
-
-      if (widget.count == 0) {
-        ref.read(tasksProvider(widget.taskView.copyWithPage(1)));
-      }
+      final taskView = ref.read(scopedTaskViewProvider);
+      ref.read(tasksNotifierProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
     });
-  }
-
-  @override
-  void didUpdateWidget(covariant _TaskListDataState oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    logger('did update widget called with ${widget.taskView.label} and ${widget.count}');
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref
-          ..invalidate(tasksFilterProvider)
-          ..invalidate(tasksCountNotifierProvider);
+    final taskView = ref.read(scopedTaskViewProvider);
 
-        final _currentTaskView = ref.read(selectedTaskFilterProvider);
+    final tasks = ref.watch(tasksNotifierProvider(taskView)).valueOrNull ?? [];
 
-        return ref.refresh(tasksProvider(_currentTaskView).future);
-      },
+    if (tasks.isEmpty) return const _EmptyState();
+
+    return RefreshTasksWidget(
       child: Stack(
         children: [
-          Visibility(
-            visible: widget.count <= 0 &&
-                (ref.watch(tasksProvider(widget.taskView)).valueOrNull ?? []).isEmpty,
-            child: const PlaceholderWidget(text: 'No tasks found'),
-          ),
           AnimatedList(
             padding: EdgeInsets.zero,
             key: _animatedListKey,
-            initialItemCount: widget.count,
-            itemBuilder: (context, index, animation) {
-              final _page = index ~/ TasksCountNotifier.limit + 1;
-              final _itemIndex = index % TasksCountNotifier.limit;
-
-              final _value = ref.watch(tasksProvider(widget.taskView.copyWithPage(_page)));
-
-              return _value.when(
-                data: (tasks) {
-                  if (_itemIndex >= tasks.length) return const SizedBox.shrink();
-
-                  return ProviderScope(
-                    overrides: [
-                      scopedTaskProvider.overrideWithValue(
-                        (value: tasks[_itemIndex], index: index),
-                      ),
-                    ],
-                    child: FadeTransition(
-                      opacity: CurvedAnimation(
-                        parent: animation,
-                        curve: const Interval(0.2, 1),
-                      ),
-                      child: SlideTransition(
-                        position: animation.drive(
-                          Tween(
-                            begin: const Offset(0, -0.3),
-                            end: Offset.zero,
-                          ).chain(
-                            CurveTween(curve: Curves.easeInOut),
-                          ),
-                        ),
-                        child: const TaskTile(),
-                      ),
-                    ),
-                  );
-                },
-                loading: () => const TasksLoadingTile(),
-                error: (error, _) => Center(child: Text(error.toString())),
-              );
-            },
+            initialItemCount: tasks.length,
+            itemBuilder: (context, index, animation) => ProviderScope(
+              overrides: [
+                scopedTaskProvider.overrideWithValue((index: index, task: tasks[index])),
+              ],
+              child: FadeTransition(
+                opacity: CurvedAnimation(
+                  parent: animation,
+                  curve: const Interval(0.2, 1),
+                ),
+                child: SlideTransition(
+                  position: animation.drive(
+                    Tween(
+                      begin: const Offset(0, -0.3),
+                      end: Offset.zero,
+                    ).chain(CurveTween(curve: Curves.easeInOut)),
+                  ),
+                  child: const TaskTile(),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -150,18 +100,41 @@ class _TaskListDataStateState extends ConsumerState<_TaskListDataState>
   bool get wantKeepAlive => true;
 }
 
-class _TaskListLoadingState extends StatelessWidget {
-  const _TaskListLoadingState({
-    super.key,
-  });
+class _EmptyState extends ConsumerWidget {
+  const _EmptyState();
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(
-        10,
-        (index) => const TasksLoadingTile(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fonts = ref.watch(fontsProvider);
+    final height = MediaQuery.of(context).size.height * .7;
+
+    return RefreshTasksWidget(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: height,
+          child: Center(
+            child: Text(
+              'No tasks found',
+              style: fonts.headline.xs.medium,
+            ),
+          ),
+        ),
       ),
     );
   }
+}
+
+class _TaskListLoadingState extends ConsumerWidget {
+  const _TaskListLoadingState();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => SingleChildScrollView(
+        child: Column(
+          children: List.generate(
+            10,
+            (index) => const TasksLoadingTile(),
+          ),
+        ),
+      );
 }

@@ -6,11 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/routes.dart';
-import '../../../../design_system/assets/assets_constants.dart';
+import '../../../../design_system/icons/app_icons.dart';
 import '../../../../design_system/spacing/spacing.dart';
 import '../../../../design_system/themes/base/theme.dart';
 import '../../../../design_system/typography/typography.dart';
-import '../../../../shared/buttons/icon_button.dart';
+import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../../shared/status/status.dart';
 import '../state/projects_provider.dart';
 
@@ -34,7 +34,7 @@ class ProjectCard extends ConsumerWidget {
       onTap: () => unawaited(
         context.pushNamed(
           AppRoute.projectDetail.name,
-          pathParameters: {'id': project.id},
+          pathParameters: {'id': project.id!}, // handle the bang operator.
           extra: projectViewModel,
         ),
       ),
@@ -98,19 +98,19 @@ class ProjectCard extends ConsumerWidget {
                   SizedBox(height: spacing.xs),
                   const _IconWithText(
                     label: '14th Jan, 2025',
-                    iconPath: Assets.calendarMonth,
+                    iconData: AppIcons.calendarLinesOutlined,
                   ),
                   SizedBox(height: spacing.xs),
                   Row(
                     children: [
                       _IconWithText(
                         label: relationMetaData?.totalTasks.toString() ?? '',
-                        iconPath: AssetsV2.addTask,
+                        iconData: AppIcons.addTaskOutlined,
                       ),
                       const Spacer(),
                       _IconWithText(
                         label: relationMetaData?.totalPages.toString() ?? '',
-                        iconPath: AssetsV2.bookmarkAdd,
+                        iconData: AppIcons.bookmarkAddOutlined,
                       ),
                     ],
                   )
@@ -126,10 +126,10 @@ class ProjectCard extends ConsumerWidget {
 
 @immutable
 class _IconWithText extends ConsumerWidget {
-  const _IconWithText({required this.label, required this.iconPath});
+  const _IconWithText({required this.label, required this.iconData});
 
   final String label;
-  final String iconPath;
+  final IconData iconData;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -140,7 +140,7 @@ class _IconWithText extends ConsumerWidget {
     return Row(
       children: [
         AppIconButton(
-          svgIconPath: iconPath,
+          icon: iconData,
           color: projectCardTheme.subtitleForeground,
           size: 16,
         ),

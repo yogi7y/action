@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../design_system/design_system.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../design_system/themes/base/semantics/task_detail_overview_tile_token.dart';
-import '../buttons/icon_button.dart';
+import '../buttons/clickable_svg.dart';
 
 class PropertyList extends ConsumerWidget {
   const PropertyList({
@@ -68,7 +69,7 @@ class PropertyData {
   });
 
   final String label;
-  final String labelIcon;
+  final IconData labelIcon;
   final Widget? value;
   final String valuePlaceholder;
   final bool isRemovable;
@@ -80,10 +81,10 @@ class SelectedValueWidget extends ConsumerWidget {
   const SelectedValueWidget({
     required this.label,
     super.key,
-    this.iconPath,
+    this.icon,
   });
 
-  final String? iconPath;
+  final IconData? icon;
   final String label;
 
   @override
@@ -97,9 +98,9 @@ class SelectedValueWidget extends ConsumerWidget {
     return Row(
       spacing: spacing.xxs,
       children: [
-        if (iconPath != null)
+        if (icon != null)
           AppIconButton(
-            svgIconPath: iconPath!,
+            icon: icon!,
             size: 16,
             color: componentTheme.valueForeground,
           ),
@@ -177,7 +178,7 @@ class _PropertyTileValue extends ConsumerWidget {
         ),
         if (data.value != null && data.isRemovable)
           AppIconButton(
-            svgIconPath: AssetsV2.xmark,
+            icon: AppIcons.xmark,
             size: 20,
             color: color.textTokens.tertiary,
             onClick: data.onRemove,
@@ -202,7 +203,7 @@ class _PropertyTileValue extends ConsumerWidget {
           ),
         ),
         AppIconButton(
-          svgIconPath: AssetsV2.chevronDown,
+          icon: AppIcons.chevronDown,
           size: 20,
           color: colors.textTokens.tertiary,
         )
@@ -236,7 +237,7 @@ class _PropertyTileLabel extends ConsumerWidget {
         spacing: spacing.xxs,
         children: [
           AppIconButton(
-            svgIconPath: data.labelIcon,
+            icon: data.labelIcon,
             color: theme.labelForeground.withValues(alpha: .8),
             size: 16,
           ),

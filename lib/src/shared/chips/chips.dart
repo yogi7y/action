@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
+import '../buttons/clickable_svg.dart';
 
 class AppChips extends ConsumerWidget {
   const AppChips({
     required this.label,
-    required this.iconPath,
+    this.icon,
     this.count = 0,
     this.isSelected = false,
     this.onClick,
@@ -17,7 +17,7 @@ class AppChips extends ConsumerWidget {
   final bool isSelected;
   final String label;
   final int count;
-  final String iconPath;
+  final IconData? icon;
   final VoidCallback? onClick;
 
   @override
@@ -44,12 +44,12 @@ class AppChips extends ConsumerWidget {
         child: Row(
           spacing: spacing.xs,
           children: [
-            SvgPicture.asset(
-              iconPath,
-              height: 16,
-              width: 16,
-              colorFilter: ColorFilter.mode(chipsTheme.text, BlendMode.srcIn),
-            ),
+            if (icon != null)
+              AppIconButton(
+                icon: icon!,
+                size: 16,
+                color: chipsTheme.text,
+              ),
             Text(
               label,
               style: labelStyle.copyWith(color: chipsTheme.text),

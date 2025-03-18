@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../projects/domain/repository/project_repository.dart';
 import 'task_status.dart';
 
 @immutable
@@ -34,4 +35,11 @@ class OrganizedStatusSpecification extends TaskQuerySpecification {
   });
 
   final bool isOrganized;
+}
+
+@immutable
+class ProjectTaskSpecification extends TaskQuerySpecification {
+  const ProjectTaskSpecification(this.projectId);
+
+  final ProjectId projectId;
 }

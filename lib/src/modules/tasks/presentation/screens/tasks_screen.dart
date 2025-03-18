@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/header/app_header.dart';
 import '../models/task_view.dart';
@@ -12,7 +10,7 @@ import '../sections/task_input_field.dart';
 import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/new_task_provider.dart';
-import '../state/task_filter_provider.dart';
+import '../state/task_view_provider.dart';
 import '../widgets/add_remove_floating_action_button.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
@@ -30,8 +28,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   void initState() {
     super.initState();
 
-    final _filters = ref.read(tasksFilterProvider);
-    for (final filter in _filters) {
+    final filters = ref.read(taskViewProvider);
+    for (final filter in filters) {
       _filterKeys[filter] = GlobalKey();
     }
 
@@ -48,7 +46,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   void _onPageChanged() {
     final controller = ref.read(tasksPageControllerProvider);
     final page = controller.page?.round() ?? 0;
-    final filters = ref.read(tasksFilterProvider);
+    final filters = ref.read(taskViewProvider);
 
     if (page >= 0 && page < filters.length) {
       _scrollToSelectedFilter(filters[page]);
@@ -71,40 +69,34 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
-    final _filters = ref.watch(tasksFilterProvider);
+    final spacing = ref.watch(spacingProvider);
+    final filters = ref.watch(taskViewProvider);
 
     return BackButtonListener(
-      onBackButtonPressed: () async {
-        logger('on back button pressed');
-        return false;
-      },
+      onBackButtonPressed: () async => false,
       child: Scaffold(
         body: NestedScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               const AppHeader(title: 'Tasks'),
-              SliverToBoxAdapter(child: SizedBox(height: _spacing.xxs)),
+              SliverToBoxAdapter(child: SizedBox(height: spacing.xxs)),
               SliverToBoxAdapter(
                 child: TasksFilters(
-                  filterViews: _filters
-                      .map((filter) => (filter: filter, key: _filterKeys[filter]!))
-                      .toList(),
+                  filterViews:
+                      filters.map((filter) => (filter: filter, key: _filterKeys[filter]!)).toList(),
                 ),
               ),
-              SliverToBoxAdapter(child: SizedBox(height: _spacing.lg)),
+              SliverToBoxAdapter(child: SizedBox(height: spacing.lg)),
               const SliverToBoxAdapter(child: TaskInputFieldVisibility()),
-              SliverToBoxAdapter(child: SizedBox(height: _spacing.xs)),
+              SliverToBoxAdapter(child: SizedBox(height: spacing.xs)),
             ];
           },
           body: PageView(
             controller: _pageController,
-            children: _filters.map((filter) => TasksList(taskView: filter)).toList(),
-            onPageChanged: (value) {
-              unawaited(HapticFeedback.lightImpact());
-              ref.read(selectedTaskFilterProvider.notifier).selectByIndex(value);
-            },
+            children: filters.map((filter) => TasksListView(taskView: filter)).toList(),
+            onPageChanged: (value) =>
+                ref.read(selectedTaskViewProvider.notifier).selectByIndex(value),
           ),
         ),
         floatingActionButton: AddRemoveFloatingActionButton(

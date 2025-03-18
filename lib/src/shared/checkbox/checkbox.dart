@@ -4,9 +4,9 @@ import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../modules/projects/domain/entity/project_status.dart';
 import '../../modules/tasks/domain/entity/task_status.dart';
 import '../../services/audio/audio_service.dart';
@@ -142,43 +142,42 @@ class AppCheckbox extends ConsumerWidget {
             ),
           ),
           child: isChecked
-              ? Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      Assets.check,
-                      colorFilter: ColorFilter.mode(
-                        primitiveColors.neutral.shade100,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    // Slightly offset duplicate to create bold effect
-                    Transform.translate(
-                      offset: const Offset(0.4, 0.4),
-                      child: SvgPicture.asset(
-                        Assets.check,
-                        colorFilter: ColorFilter.mode(
-                          primitiveColors.neutral.shade100,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
+              ? _CheckedState()
               : isIntermediate
-                  ? Center(
-                      child: Container(
-                        height: 2.5,
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        decoration: ShapeDecoration(
-                          color: primitiveColors.neutral.shade100,
-                          shape: SmoothRectangleBorder(
-                            borderRadius: SmoothBorderRadius(cornerRadius: 4, cornerSmoothing: 1),
-                          ),
-                        ),
-                      ),
-                    )
+                  ? _IntermediateState()
                   : null,
+        ),
+      ),
+    );
+  }
+}
+
+class _CheckedState extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final primitiveColors = ref.watch(primitiveTokensProvider);
+
+    return Icon(
+      AppIcons.check,
+      color: primitiveColors.neutral.shade100,
+      size: 14,
+    );
+  }
+}
+
+class _IntermediateState extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final primitiveColors = ref.watch(primitiveTokensProvider);
+    return Center(
+      child: Container(
+        height: 2.5,
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        decoration: ShapeDecoration(
+          color: primitiveColors.neutral.shade100,
+          shape: SmoothRectangleBorder(
+            borderRadius: SmoothBorderRadius(cornerRadius: 4, cornerSmoothing: 1),
+          ),
         ),
       ),
     );

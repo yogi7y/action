@@ -13,17 +13,17 @@ class ChecklistItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
     final checklist = ref.watch(scopedChecklistProvider);
 
     final isDone = checklist.status == ChecklistStatus.done;
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: _spacing.lg,
-        vertical: _spacing.xs,
+        horizontal: spacing.lg,
+        vertical: spacing.xs,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,41 +34,39 @@ class ChecklistItem extends ConsumerWidget {
               state: checklist.status == ChecklistStatus.done
                   ? AppCheckboxState.checked
                   : AppCheckboxState.unchecked,
-              padding: EdgeInsets.only(right: _spacing.xs),
+              padding: EdgeInsets.only(right: spacing.xs),
               onChanged: (state) async {
                 final newStatus =
                     state == AppCheckboxState.checked ? ChecklistStatus.done : ChecklistStatus.todo;
 
-                final _taskId = ref.read(taskDetailNotifierProvider).id;
+                final taskId = ref.read(taskDetailNotifierProvider).id;
 
-                await ref.read(checklistProvider(_taskId).notifier).updateChecklist(
-                      checklist.copyWith(
-                        status: newStatus,
-                      ),
-                    );
+                // await ref
+                //     .read(checklistProvider(taskId!).notifier)
+                //     .updateChecklist(status: newStatus);
               },
             ),
           ),
           Expanded(
             child: Text(
               checklist.title,
-              style: _fonts.text.md.regular.copyWith(
+              style: fonts.text.md.regular.copyWith(
                 fontSize: 15,
                 fontVariations: [const FontVariation.weight(450)],
                 decoration: isDone ? TextDecoration.lineThrough : TextDecoration.none,
                 decorationThickness: 1,
-                color: isDone ? _colors.textTokens.secondary : _colors.textTokens.primary,
+                color: isDone ? colors.textTokens.secondary : colors.textTokens.primary,
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: _spacing.sm),
+            padding: EdgeInsets.only(left: spacing.sm),
             child: Text(
-              checklist.createdAt.timeAgo,
-              style: _fonts.text.xs.regular.copyWith(
+              checklist.createdAt?.timeAgo ?? '',
+              style: fonts.text.xs.regular.copyWith(
                 fontSize: 10,
                 height: 16 / 10,
-                color: _colors.textTokens.secondary,
+                color: colors.textTokens.secondary,
               ),
             ),
           ),

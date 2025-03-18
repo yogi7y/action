@@ -6,13 +6,11 @@ import '../../domain/use_case/checklist_use_case.dart';
 import '../../domain/use_case/task_use_case.dart';
 import 'new_checklist_provider.dart';
 
-typedef Checklists = List<ChecklistEntity>;
-
 final checklistProvider =
     AsyncNotifierProviderFamily<ChecklistNotifier, Checklists, TaskId>(ChecklistNotifier.new);
 
 class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
-  late final ChecklistUseCase _useCase = ref.read(checklistUseCaseProvider);
+  late final _useCase = ref.read(checklistUseCaseProvider);
 
   @override
   Future<List<ChecklistEntity>> build(TaskId arg) async => _fetchChecklists(arg);
@@ -25,84 +23,78 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
     );
   }
 
-  Future<void> addChecklist(String checklistTitle) async {
-    final _previousState = state;
-    final _createdAt = DateTime.now();
-    final _updatedAt = _createdAt;
-
-    final _tempChecklist = ChecklistEntity(
-      id: '', // Empty ID for temp item, just like tasks
-      taskId: arg,
-      title: checklistTitle,
-      status: ChecklistStatus.todo,
-      createdAt: _createdAt,
-      updatedAt: _updatedAt,
-    );
-
-    // Update state and animate
-    state = AsyncData([_tempChecklist, ...state.valueOrNull ?? []]);
-    ref.read(checklistAnimatedListKeyProvider).currentState?.insertItem(0);
-    ref.read(newChecklistProvider.notifier).clear();
-
-    try {
-      final result = await _useCase.createChecklist(
-        ChecklistPropertiesEntity(
-          taskId: arg,
-          title: checklistTitle,
-          status: ChecklistStatus.todo,
-        ),
-      );
-
-      await result.fold(
-        onSuccess: (checklist) async {
-          final currentChecklists = state.valueOrNull ?? [];
-          final updatedChecklists = currentChecklists
-              .map((item) => item.title == _tempChecklist.title ? checklist : item)
-              .toList();
-          state = AsyncData(updatedChecklists);
-        },
-        onFailure: (error) async {
-          state = _previousState;
-          throw error;
-        },
-      );
-    } catch (e) {
-      state = _previousState;
-      rethrow;
-    }
-  }
-
-  Future<void> updateChecklist(ChecklistEntity checklist) async {
+  Future<void> upsertChecklist(
+    ChecklistEntity checklist, {
+    /// pass in when updating an existing checklist
+    int? indexProp,
+  }) async {
     final previousState = state;
 
-    state = AsyncData(
-      state.valueOrNull?.map((item) {
-            return item.id == checklist.id ? checklist : item;
-          }).toList() ??
-          [],
+    /// storing the value in case we wanna revert it back.
+    final storeTextFieldValue = ref.read(newChecklistProvider.notifier).controller.text;
+
+    final now = checklist.createdAt ?? DateTime.now();
+
+    final isNewChecklist = checklist.id == null;
+
+    final tempOptimisticChecklist = checklist.copyWith(
+      taskId: checklist.taskId.isEmpty ? arg : checklist.taskId,
+      createdAt: checklist.createdAt ?? now,
+      updatedAt: checklist.updatedAt ?? now,
     );
 
-    try {
-      final result = await _useCase.updateChecklist(checklist);
+    // do optimistic update
+    if (isNewChecklist) {
+      state = AsyncData([tempOptimisticChecklist, ...(state.valueOrNull ?? [])]);
+      ref.read(checklistAnimatedListKeyProvider).currentState?.insertItem(0);
+    } else {
+      // find the index of the checklist
+      final index =
+          indexProp ?? state.valueOrNull?.indexWhere((element) => element.id == checklist.id);
 
-      await result.fold(
-        onSuccess: (updatedChecklist) async {
-          final currentChecklists = state.valueOrNull ?? [];
-          final updatedChecklists = currentChecklists
-              .map((item) => item.id == checklist.id ? updatedChecklist : item)
-              .toList();
-
-          state = AsyncData(updatedChecklists);
-        },
-        onFailure: (error) async {
-          state = previousState;
-          throw error;
-        },
-      );
-    } catch (e) {
-      state = previousState;
-      rethrow;
+      if (index != null) {
+        state.valueOrNull?[index] = tempOptimisticChecklist;
+        state = AsyncData(state.valueOrNull ?? []);
+      }
     }
+
+    // clear the text field.
+    ref.read(newChecklistProvider.notifier).controller.clear();
+
+    // make api call
+    final result = await _useCase.upsertChecklist(tempOptimisticChecklist);
+
+    result.fold(
+      onSuccess: (checklist) {
+        // update the temp state with server response
+        // remove the temp optimistic checklist item and replace it with the server response
+        // since it might mostly be the topmost item, we could probably use index to check. If it's not the
+        // top most item for some reason, we will iterate and verify.
+        final topMostItem = state.requireValue.first;
+
+        // mostly will be true if we're creating a new checklist
+        if (topMostItem.id == null && topMostItem.title == checklist.title) {
+          state.requireValue.removeAt(0);
+          state = AsyncData([checklist, ...state.requireValue]);
+        } else {
+          // if it's not the topmost item, we will iterate and verify
+          for (var i = 0; i < state.requireValue.length; i++) {
+            if (state.requireValue[i].id == checklist.id) {
+              state.requireValue.removeAt(i);
+              state.requireValue.insert(i, checklist);
+              ref.notifyListeners();
+            }
+          }
+        }
+      },
+      onFailure: (error) {
+        // revert to previous state
+        state = previousState;
+
+        // revert the text field value.
+        ref.read(newChecklistProvider.notifier).controller.text = storeTextFieldValue;
+      },
+    );
   }
 }
 

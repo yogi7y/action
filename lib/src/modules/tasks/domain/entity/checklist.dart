@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 
-import '../../../../core/entity.dart';
 import '../../../../core/exceptions/validation_exception.dart';
-import '../../../../services/database/model_meta_data.dart';
 import '../use_case/task_use_case.dart';
+
+/// List of checklists items.
+typedef Checklists = List<ChecklistEntity>;
 
 enum ChecklistStatus {
   todo('todo'),
@@ -22,131 +23,93 @@ enum ChecklistStatus {
 }
 
 @immutable
-class ChecklistPropertiesEntity implements Entity {
-  const ChecklistPropertiesEntity({
+class ChecklistEntity {
+  const ChecklistEntity({
     required this.taskId,
     required this.title,
-    required this.status,
+    this.status = ChecklistStatus.todo,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
   });
 
+  factory ChecklistEntity.newChecklist(String title) {
+    if (title.isEmpty)
+      throw ValidationException(
+        exception: 'Title cannot be empty',
+        stackTrace: StackTrace.current,
+        userFriendlyMessage: 'Title cannot be empty',
+      );
+
+    return ChecklistEntity(
+      taskId: '',
+      title: title,
+    );
+  }
+
+  final String? id;
   final TaskId taskId;
   final String title;
   final ChecklistStatus status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
-  ChecklistPropertiesEntity copyWith({
-    String? taskId,
+  ChecklistEntity copyWith({
+    String? id,
+    TaskId? taskId,
     String? title,
     ChecklistStatus? status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) =>
-      ChecklistPropertiesEntity(
+      ChecklistEntity(
+        id: id ?? this.id,
         taskId: taskId ?? this.taskId,
         title: title ?? this.title,
         status: status ?? this.status,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
       );
 
   Map<String, Object?> toMap() => {
+        if ((id ?? '').isNotEmpty) 'id': id,
         'task_id': taskId,
         'title': title,
         'status': status.value,
       };
 
   @override
-  bool operator ==(covariant ChecklistPropertiesEntity other) {
-    if (identical(this, other)) return true;
-
-    return other.taskId == taskId && other.title == title && other.status == status;
-  }
-
-  @override
-  int get hashCode => taskId.hashCode ^ title.hashCode ^ status.hashCode;
-
-  @override
-  String toString() => 'ChecklistPropertiesEntity(taskId: $taskId, title: $title, status: $status)';
-
-  @override
-  void validate() {
-    if (title.trim().isEmpty)
-      throw ValidationException(
-        exception: 'Task name cannot be empty. Got: $title',
-        stackTrace: StackTrace.current,
-        userFriendlyMessage: 'Task name cannot be empty',
-      );
-  }
-}
-
-@immutable
-class ChecklistEntity extends ChecklistPropertiesEntity implements ModelMetaData {
-  const ChecklistEntity({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required super.taskId,
-    required super.title,
-    required super.status,
-  });
-
-  factory ChecklistEntity.fromChecklistProperties({
-    required ChecklistPropertiesEntity checklist,
-    required String id,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) =>
-      ChecklistEntity(
-        id: id,
-        taskId: checklist.taskId,
-        title: checklist.title,
-        status: checklist.status,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  @override
-  final String id;
-  @override
-  final DateTime createdAt;
-  @override
-  final DateTime updatedAt;
-
-  @override
-  ChecklistEntity copyWith({
-    String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    TaskId? taskId,
-    String? title,
-    ChecklistStatus? status,
-  }) =>
-      ChecklistEntity(
-        id: id ?? this.id,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        taskId: taskId ?? this.taskId,
-        title: title ?? this.title,
-        status: status ?? this.status,
-      );
+  String toString() =>
+      'ChecklistEntity(id: $id, taskId: $taskId, title: $title, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
 
   @override
   bool operator ==(covariant ChecklistEntity other) {
     if (identical(this, other)) return true;
 
     return other.id == id &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt &&
         other.taskId == taskId &&
         other.title == title &&
-        other.status == status;
+        other.status == status &&
+        other.createdAt == createdAt &&
+        other.updatedAt == updatedAt;
   }
 
   @override
   int get hashCode =>
       id.hashCode ^
-      createdAt.hashCode ^
-      updatedAt.hashCode ^
       taskId.hashCode ^
       title.hashCode ^
-      status.hashCode;
+      status.hashCode ^
+      createdAt.hashCode ^
+      updatedAt.hashCode;
 
-  @override
-  String toString() =>
-      'ChecklistEntity(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, taskId: $taskId, title: $title, status: $status)';
+  void validate() {
+    if (title.isEmpty) {
+      throw ValidationException(
+        exception: 'Checklist title cannot be empty. Got: $title',
+        stackTrace: StackTrace.current,
+        userFriendlyMessage: 'Checklist title cannot be empty',
+      );
+    }
+  }
 }

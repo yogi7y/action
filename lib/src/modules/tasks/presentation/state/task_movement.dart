@@ -1,14 +1,12 @@
-import 'package:collection/collection.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/logger/logger.dart';
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
 import '../models/task_view.dart';
 import '../widgets/task_tile.dart';
-import 'task_filter_provider.dart';
-import 'tasks_provider.dart';
+import 'scoped_task_provider.dart';
+import 'task_view_provider.dart';
 
 class TaskMovementController {
   TaskMovementController({
@@ -31,28 +29,29 @@ class TaskMovementController {
   final _loadedViews = <TaskView>[];
 
   void addAnimatedListKey(String label, GlobalKey<AnimatedListState> key) {
-    _animatedListKeys[label] = key;
-    final _view = allTaskViews.firstWhereOrNull((view) => view.label == label);
+    throw UnimplementedError('');
+    // _animatedListKeys[label] = key;
+    // final view = allTaskViews.firstWhereOrNull((view) => view.label == label);
 
-    if (_view == null)
-      throw AppException(
-        exception: 'TaskView not found for label: $label',
-        stackTrace: StackTrace.current,
-      );
+    // if (view == null)
+    //   throw AppException(
+    //     exception: 'TaskView not found for label: $label',
+    //     stackTrace: StackTrace.current,
+    //   );
 
-    _loadedViews.add(_view);
+    // _loadedViews.add(view);
   }
 
   GlobalKey<AnimatedListState> getAnimatedListKey(String label) {
-    final _key = _animatedListKeys[label];
+    final key = _animatedListKeys[label];
 
-    if (_key == null)
+    if (key == null)
       throw AppException(
         exception: 'AnimatedListKey not found for label: $label',
         stackTrace: StackTrace.current,
       );
 
-    return _key;
+    return key;
   }
 
   /// 1. Detect if the task belongs in the current list.
@@ -73,29 +72,30 @@ class TaskMovementController {
     VoidCallback? onRemove,
     VoidCallback? onAdd,
   }) {
-    final _tasksCopy = List<TaskEntity>.from(tasks);
+    throw UnimplementedError('');
+    // final tasksCopy = List<TaskEntity>.from(tasks);
 
-    final _taskExistsInList = _tasksCopy.indexWhere((element) => element.id == task.id) != -1;
-    final _taskBelongsToList = currentView.canContainTask(task);
+    // final taskExistsInList = tasksCopy.indexWhere((element) => element.id == task.id) != -1;
+    // final taskBelongsToList = currentView.canContainTask(task);
 
-    /// if the task exists in the current list, but no longer belong to it after the update, remove it.
-    if (_taskExistsInList && !_taskBelongsToList) {
-      _tasksCopy.removeAt(index);
-      onRemove?.call();
-    }
+    // /// if the task exists in the current list, but no longer belong to it after the update, remove it.
+    // if (taskExistsInList && !taskBelongsToList) {
+    //   tasksCopy.removeAt(index);
+    //   onRemove?.call();
+    // }
 
-    /// if the task doesn't exist in the current list, but belongs to it after the update, add it.
-    else if (!_taskExistsInList && _taskBelongsToList) {
-      _tasksCopy.insert(0, task);
-      onAdd?.call();
-    }
+    // /// if the task doesn't exist in the current list, but belongs to it after the update, add it.
+    // else if (!taskExistsInList && taskBelongsToList) {
+    //   tasksCopy.insert(0, task);
+    //   onAdd?.call();
+    // }
 
-    /// if the task exists in the current list and still belongs to it after the update, update it.
-    else if (_taskExistsInList && _taskBelongsToList) {
-      _tasksCopy[index] = task;
-    }
+    // /// if the task exists in the current list and still belongs to it after the update, update it.
+    // else if (taskExistsInList && taskBelongsToList) {
+    //   tasksCopy[index] = task;
+    // }
 
-    return _tasksCopy;
+    // return tasksCopy;
   }
 
   /// The function that the clients will call.
@@ -106,50 +106,51 @@ class TaskMovementController {
     required TaskView currentView,
     required List<TaskEntity> tasks,
   }) {
-    final _updatedTasksListForCurrentView = _updateTaskInList(
-      task: task,
-      index: index,
-      currentView: currentView,
-      tasks: tasks,
-      onRemove: () => _removeItemFromAnimatedListAt(
-        index: index,
-        animatedListKey: getAnimatedListKey(currentView.label),
-        task: task,
-      ),
-      onAdd: () => getAnimatedListKey(currentView.label).currentState?.insertItem(0),
-    );
+    throw UnimplementedError('');
+    // final updatedTasksListForCurrentView = _updateTaskInList(
+    //   task: task,
+    //   index: index,
+    //   currentView: currentView,
+    //   tasks: tasks,
+    //   onRemove: () => _removeItemFromAnimatedListAt(
+    //     index: index,
+    //     animatedListKey: getAnimatedListKey(currentView.label),
+    //     task: task,
+    //   ),
+    //   onAdd: () => getAnimatedListKey(currentView.label).currentState?.insertItem(0),
+    // );
 
-    for (final view in _loadedViews) {
-      if (!view.canContainTask(task)) continue;
-      if (view.label == currentView.label) continue;
+    // for (final view in _loadedViews) {
+    //   if (!view.canContainTask(task)) continue;
+    //   if (view.label == currentView.label) continue;
 
-      final _tasks = ref.read(tasksProvider(view)).valueOrNull ?? [];
-      final _index = _tasks.indexWhere((element) => element.id == task.id);
+    //   final tasks0 = ref.read(tasksProvider(view)).valueOrNull ?? [];
+    //   final index0 = tasks0.indexWhere((element) => element.id == task.id);
 
-      _updateTaskInList(
-        task: task,
-        index: _index == -1 ? 0 : _index,
-        currentView: view,
-        tasks: _tasks,
-        onRemove: () {
-          ref.read(tasksProvider(view).notifier).removeTaskFromMemory(
-                taskId: task.id,
-                index: _index,
-              );
-          _removeItemFromAnimatedListAt(
-            index: 0,
-            animatedListKey: getAnimatedListKey(view.label),
-            task: task,
-          );
-        },
-        onAdd: () {
-          ref.read(tasksProvider(view).notifier).insertTaskInMemory(task);
-          getAnimatedListKey(view.label).currentState?.insertItem(0);
-        },
-      );
-    }
+    //   _updateTaskInList(
+    //     task: task,
+    //     index: index0 == -1 ? 0 : index0,
+    //     currentView: view,
+    //     tasks: tasks0,
+    //     onRemove: () {
+    //       ref.read(tasksProvider(view).notifier).removeTaskFromMemory(
+    //             taskId: task.id,
+    //             index: index0,
+    //           );
+    //       _removeItemFromAnimatedListAt(
+    //         index: 0,
+    //         animatedListKey: getAnimatedListKey(view.label),
+    //         task: task,
+    //       );
+    //     },
+    //     onAdd: () {
+    //       ref.read(tasksProvider(view).notifier).insertTaskInMemory(task);
+    //       getAnimatedListKey(view.label).currentState?.insertItem(0);
+    //     },
+    //   );
+    // }
 
-    return _updatedTasksListForCurrentView;
+    // return updatedTasksListForCurrentView;
   }
 
   List<TaskEntity> analyzeTaskMovement({
@@ -159,36 +160,37 @@ class TaskMovementController {
     required TaskView currentView,
     required Ref ref,
   }) {
-    final tasksCopy = List<TaskEntity>.from(tasks);
+    throw UnimplementedError('');
+    // final tasksCopy = List<TaskEntity>.from(tasks);
 
-    final existingTaskIndex = tasksCopy.indexWhere((task) => task.id == updatedTask.id);
-    final _wasInList = existingTaskIndex != -1;
-    final _shouldStayInList = currentView.canContainTask(updatedTask);
-    try {
-      final _animatedListKey = getAnimatedListKey(currentView.label);
+    // final existingTaskIndex = tasksCopy.indexWhere((task) => task.id == updatedTask.id);
+    // final wasInList = existingTaskIndex != -1;
+    // final shouldStayInList = currentView.canContainTask(updatedTask);
+    // try {
+    //   final animatedListKey = getAnimatedListKey(currentView.label);
 
-      if (_wasInList && !_shouldStayInList) {
-        // Remove the task from the list
-        _removeItemFromAnimatedListAt(
-          index: existingTaskIndex,
-          animatedListKey: _animatedListKey,
-          task: updatedTask,
-        );
-        tasksCopy.removeAt(index);
-      } else if (!_wasInList && _shouldStayInList) {
-        // Add the task to the list
-        _animatedListKey.currentState?.insertItem(0);
-        tasksCopy.insert(0, updatedTask);
-      } else if (_wasInList && _shouldStayInList) {
-        // Update the task in the list
-        tasksCopy[existingTaskIndex] = updatedTask;
-      }
+    //   if (wasInList && !shouldStayInList) {
+    //     // Remove the task from the list
+    //     _removeItemFromAnimatedListAt(
+    //       index: existingTaskIndex,
+    //       animatedListKey: animatedListKey,
+    //       task: updatedTask,
+    //     );
+    //     tasksCopy.removeAt(index);
+    //   } else if (!wasInList && shouldStayInList) {
+    //     // Add the task to the list
+    //     animatedListKey.currentState?.insertItem(0);
+    //     tasksCopy.insert(0, updatedTask);
+    //   } else if (wasInList && shouldStayInList) {
+    //     // Update the task in the list
+    //     tasksCopy[existingTaskIndex] = updatedTask;
+    //   }
 
-      return tasksCopy;
-    } catch (e, s) {
-      logger(e.toString(), error: e, stackTrace: s);
-      rethrow;
-    }
+    //   return tasksCopy;
+    // } catch (e, s) {
+    //   logger(e.toString(), error: e, stackTrace: s);
+    //   rethrow;
+    // }
   }
 
   void _removeItemFromAnimatedListAt({
@@ -205,7 +207,7 @@ class TaskMovementController {
         ),
         axisAlignment: -1, // Align to top to animate bottom-up
         child: ProviderScope(
-          overrides: [scopedTaskProvider.overrideWithValue(task.withIndex(index))],
+          overrides: [scopedTaskProvider.overrideWithValue((index: index, task: task))],
           child: const TaskTile(),
         ),
       ),
@@ -215,7 +217,7 @@ class TaskMovementController {
 
 final taskMovementProvider = Provider<TaskMovementController>(
   (ref) => TaskMovementController(
-    allTaskViews: ref.read(tasksFilterProvider),
+    allTaskViews: ref.read(taskViewProvider),
     ref: ref,
   ),
 );

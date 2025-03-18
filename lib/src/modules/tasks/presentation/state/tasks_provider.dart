@@ -1,194 +1,276 @@
-import 'dart:async';
+// ignore_for_file: no_leading_underscores_for_local_identifiers
 
-import 'package:core_y/core_y.dart';
-import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meta/meta.dart';
 
-import '../../domain/entity/task.dart';
+import '../../domain/entity/task_entity.dart';
+import '../../domain/entity/task_status.dart';
 import '../../domain/use_case/task_use_case.dart';
-import '../mixin/tasks_operations_mixin.dart';
 import '../models/task_view.dart';
 import 'new_task_provider.dart';
-import 'task_movement.dart';
+import 'task_view_provider.dart';
 
-final tasksProvider =
-    AsyncNotifierProviderFamily<TasksNotifier, Tasks, TaskView>(TasksNotifier.new);
+final tasksNotifierProvider =
+    AsyncNotifierProviderFamily<TasksNotifier, List<TaskEntity>, TaskView>(TasksNotifier.new);
 
-class TasksNotifier extends FamilyAsyncNotifier<Tasks, TaskView>
-    with BaseTaskOperationsMixin<Tasks>, FamilyAsyncTaskOperationsMixin<Tasks, TaskView> {
+/// [TasksNotifier] is a notifier that contains the list of tasks.
+///
+/// It should be overridden wherever the tasks are needed.
+/// It is responsible to handle listing, pagination, updating state etc for a list of tasks.
+/// It acts like a common module for all the task views through the app.
+class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
+  late final useCase = ref.read(taskUseCaseProvider);
+
+  /// Animated list key for the current task view.
+  ///
+  /// Used to animate the list of tasks when a task is added or removed.
+  late GlobalKey<AnimatedListState> _animatedListKey;
+
+  // ignore: use_setters_to_change_properties
+  void setAnimatedListKey(GlobalKey<AnimatedListState> key) => _animatedListKey = key;
+
+  @nonVirtual
+  GlobalKey<AnimatedListState>? get animatedListKey => _animatedListKey;
+
   @override
-  Future<List<TaskEntity>> build(TaskView arg) async => _fetchTasks(arg);
+  Future<List<TaskEntity>> build(TaskView arg) async {
+    return _fetchTasks();
+  }
 
-  Future<Tasks> _fetchTasks(TaskView arg) async {
-    var previousPageState = <TaskEntity>[];
-
-    state = const AsyncLoading();
-
-    if (arg.pageCount > 1) {
-      previousPageState =
-          ref.read(tasksProvider(arg.copyWithPage(arg.pageCount - 1))).valueOrNull ?? [];
-    }
-
-    final cursor =
-        previousPageState.isNotEmpty ? previousPageState.last.createdAt.toIso8601String() : null;
-
-    final result = await useCase.fetchTasks(
-      arg.toQuerySpecification(),
-      limit: TasksCountNotifier.limit,
-      cursor: cursor,
-    );
+  Future<List<TaskEntity>> _fetchTasks() async {
+    final result = await useCase.fetchTasks(arg.operations.filter);
 
     return result.fold(
-      onSuccess: (paginatedResponse) => paginatedResponse.results,
-      onFailure: (error) => throw error,
+      onSuccess: (tasksResult) => tasksResult.results,
+      onFailure: (failure) => <TaskEntity>[],
     );
   }
 
-  GlobalKey<AnimatedListState> get _animatedListKey =>
-      ref.read(taskMovementProvider).getAnimatedListKey(arg.label);
-
-  Future<void> addTask() async {
-    final task = ref.read(newTaskProvider);
-
-    final previousState = state;
-
-    const id = '';
-    final createdAt = DateTime.now();
-    final updatedAt = createdAt;
-    final tempTask = TaskEntity.fromTaskProperties(
-      task: task,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      id: id,
-    );
-
-    state = AsyncData([tempTask, ...state.valueOrNull ?? []]);
-    _animatedListKey.currentState?.insertItem(0);
-    _clearInput();
-
+  Future<void> toggleCheckbox(int index, TaskStatus status) async {
+    final previousState = state.valueOrNull?.toList();
     try {
-      final result = await useCase.createTask(task);
+      final tempOptimisticTask = state.valueOrNull ?? [];
 
-      await result.fold(
-        onSuccess: (task) async {
-          final currentTasks = state.valueOrNull ?? [];
+      final item = tempOptimisticTask[index];
 
-          final updatedTasks = currentTasks
-              .map((taskItem) => taskItem.name == tempTask.name ? task : taskItem)
-              .toList();
+      final updatedItem = item.copyWith(status: status);
 
-          state = AsyncData(updatedTasks);
-        },
-        onFailure: (error) async {
-          state = previousState;
-          throw error;
-        },
+      tempOptimisticTask
+        ..removeAt(index)
+        ..insert(index, updatedItem);
+
+      state = AsyncData(tempOptimisticTask);
+
+      return await upsertTask(
+        updatedItem,
+        previousStateArg: previousState,
       );
     } catch (e) {
-      state = previousState;
-      rethrow;
-    } finally {
-      ref.invalidate(newTaskProvider);
+      state = AsyncData(previousState ?? []);
     }
   }
 
-  void _clearInput() => ref.read(newTaskProvider.notifier).clear();
+  Future<void> upsertTask(
+    TaskEntity task, {
+    /// The previous state of the tasks.
+    /// Used to revert the state in case of failure.
+    /// If not provided, the current state will be used.
+    List<TaskEntity>? previousStateArg,
+  }) async {
+    /// The previous state of the tasks.
+    final previousState = previousStateArg ?? state.valueOrNull;
+    final now = DateTime.now();
 
-  @override
-  TaskUseCase get useCase => ref.read(taskUseCaseProvider);
+    /// Temp optimistic task to render on the UI.
+    final tempOptimisticTask = task.copyWith(createdAt: task.createdAt ?? now);
+    final tempTextFieldState = ref.read(newTaskProvider.notifier).controller.text;
 
-  /// todo: needs optimization here.
-  /// currently we're making a O(n) operation to update the task in the list. Let's target to make it O(1).
-  @override
-  Tasks handleOptimisticUpdate(TaskEntity task, int index) =>
-      ref.watch(taskMovementProvider).updateTaskInList(
-            task: task,
-            index: index,
-            currentView: arg,
-            tasks: state.valueOrNull ?? [],
-          );
+    // clear textfield
+    ref.read(newTaskProvider.notifier).controller.clear();
 
-  /// Inserts a task into the in-memory task list without performing any API operations.
-  ///
-  /// This method prepends the given [task] to the current list of tasks stored in state.
-  /// Note: This is a memory-only operation and does not persist changes to any backend/storage.
-  ///
-  /// [task] The task entity to be inserted at the beginning of the task list.
-  void insertTaskInMemory(TaskEntity task) =>
-      state = AsyncData([task, ...(state.valueOrNull ?? [])]);
+    /// Check in which all the task views the task should be added/updated.
+    handleInMemoryTask(tempOptimisticTask);
 
-  /// Removes a task from in-memory without performing any API operations.
-  ///
-  /// This method removes the given task from the current list of tasks stored in state.
-  /// Note: This is a memory-only operation and does not persist changes to any backend/storage.
-  ///
-  /// [taskId] The ID of the task to be removed. Only used for validation.
-  /// [index] The index of the task to be removed from the task list.
-  void removeTaskFromMemory({
-    required String taskId,
-    required int index,
-  }) {
-    final tasks = state.valueOrNull ?? [];
+    final result = await useCase.upsertTask(task);
 
-    if (index < 0 || index >= tasks.length) {
-      throw AppException(
-        exception: 'Index out of bounds',
-        stackTrace: StackTrace.current,
-      );
-    }
+    result.fold(
+      onSuccess: (taskResult) {
+        // replace the temp optimistic task with the actual task.
 
-    if (tasks[index].id != taskId) {
-      throw AppException(
-        exception: 'Task ID mismatch at the specified index',
-        stackTrace: StackTrace.current,
-      );
-    }
+        final updatedTasks = state.valueOrNull?.mapIndexed((index, element) {
+              final handleTask = (element.id == taskResult.id) ||
+                  (element.id == null && taskResult.id != null && element.name == taskResult.name);
 
-    final updatedTasks = List<TaskEntity>.from(tasks)..removeAt(index);
-    state = AsyncData(updatedTasks);
-  }
+              if (handleTask) {
+                handleInMemoryTask(taskResult);
+                return taskResult;
+              } else {
+                return element;
+              }
+            }).toList() ??
+            [];
 
-  @override
-  FutureOr<Tasks> handleSuccessfulUpdate(TaskEntity updatedTask) {
-    final currentTasks = state.valueOrNull ?? [];
-    final updatedTasks = currentTasks
-        .map((taskItem) => taskItem.id == updatedTask.id ? updatedTask : taskItem)
-        .toList();
-
-    return updatedTasks;
-  }
-}
-
-typedef WithIndex<T> = ({int index, T value});
-
-extension TaskWithIndexExtension on TaskEntity {
-  WithIndex<TaskEntity> withIndex(int index) => (index: index, value: this);
-}
-
-final scopedTaskProvider = Provider<WithIndex<TaskEntity>>(
-    (ref) => throw UnimplementedError('Ensure to override scopedTaskProvider'));
-
-final tasksCountNotifierProvider =
-    AsyncNotifierProviderFamily<TasksCountNotifier, int, TaskView>(TasksCountNotifier.new);
-
-class TasksCountNotifier extends FamilyAsyncNotifier<int, TaskView> {
-  static const limit = 20;
-
-  @override
-  Future<int> build(TaskView arg) async {
-    final result = await ref.watch(taskUseCaseProvider).getTotalTasks(arg.toQuerySpecification());
-
-    return result.fold(
-      onSuccess: (count) => count,
-      onFailure: (error) => throw error,
+        state = AsyncData(updatedTasks);
+      },
+      onFailure: (failure) {
+        // revert the textfield state
+        ref.read(newTaskProvider.notifier).controller.text = tempTextFieldState;
+        state = AsyncData(previousState ?? []);
+      },
     );
   }
 
-  void increment() {
-    state = AsyncData(state.value! + 1);
+  void handleInMemoryTask(
+    TaskEntity task, {
+    /// Will reduce any lookup and make the computation faster by directly accessing the element
+    /// at the given index.
+    ///
+    /// If not provided, a lookup will be performed to find the index of the task.
+    int? index,
+  }) {
+    final loadedTaskViews = ref.read(loadedTaskViewsProvider);
+
+    for (final view in loadedTaskViews) {
+      if (view.canContainTask(task)) {
+        addOrUpdateTask(task, taskView: view, index: index);
+      } else {
+        removeIfTaskExists(task, taskView: view, index: index);
+      }
+    }
   }
 
-  void decrement() {
-    state = AsyncData(state.value! - 1);
+  /// Add a task in memory.
+  /// Does not make any API calls or anything, just update the state in memory.
+  void addOrUpdateTask(
+    TaskEntity task, {
+    /// Uses the passed in task view to update the task to.
+    /// In case not provided, the task will be added to the current task view.
+    required TaskView taskView,
+
+    /// Whether to animate the task addition/removal.
+    /// Defaults to true.
+    /// Mostly will be set to false when updating a task which will stay in place.
+    bool animate = true,
+
+    /// The index of the task to add/update.
+    /// In case not provided, the task will be added to the current task view
+    /// by searching for the task in the list.
+    int? index,
+  }) {
+    final tasks = _getTasksForView(taskView);
+    final _index = index ?? _findTaskIndex(tasks, task);
+    final isNewTask = _index == -1;
+
+    if (isNewTask) {
+      final insertAtIndex = getInsertIndexForTask(tasks, task);
+      tasks.insert(insertAtIndex, task);
+      _updateTaskViewState(taskView, tasks);
+      _animateTaskInsertion(insertAtIndex, taskView, animate);
+    } else {
+      // Update the task at the existing index
+      tasks[_index] = task;
+      _updateTaskViewState(taskView, tasks);
+    }
   }
+
+  /// Animate the insertion of a task into the list
+  void _animateTaskInsertion(int index, TaskView taskView, bool animate) {
+    final animatedListKeyForTaskView =
+        ref.read(tasksNotifierProvider(taskView).notifier).animatedListKey;
+
+    animatedListKeyForTaskView?.currentState?.insertItem(
+      index,
+      duration: animate ? _defaultDuration : Duration.zero,
+    );
+  }
+
+  /// Remove a task in memory.
+  /// Does not make any API calls or anything, just update the state in memory.
+  void removeIfTaskExists(
+    TaskEntity task, {
+    /// Uses the passed in task view to update the task to.
+    /// In case not provided, the task will be removed from the current task view.
+    required TaskView taskView,
+
+    /// The index of the task to remove.
+    /// In case not provided, the task will be removed from the current task view
+    /// by searching for the task in the list.
+    int? index,
+
+    /// Whether to animate the task addition/removal.
+    /// Defaults to true.
+    /// Mostly will be set to false when updating a task which will stay in place.
+    bool animate = true,
+  }) {
+    final tasks = _getTasksForView(taskView);
+
+    final _index = index ?? _findTaskIndex(tasks, task);
+
+    if (_index == -1) return;
+
+    tasks.removeAt(_index);
+
+    _updateTaskViewState(taskView, tasks);
+    _animateTaskRemoval(_index, taskView, animate);
+  }
+
+  /// Get the current tasks list for a specific view
+  List<TaskEntity> _getTasksForView(TaskView taskView) {
+    return taskView == arg
+        ? (state.valueOrNull ?? []).toList()
+        : (ref.read(tasksNotifierProvider(taskView)).valueOrNull ?? []).toList();
+  }
+
+  /// Find the index of a task in a list
+  int _findTaskIndex(List<TaskEntity> tasks, TaskEntity task) => tasks.indexWhere(
+        (e) => ((e.id ?? '').isNotEmpty && (task.id ?? '').isNotEmpty)
+            ? e.id == task.id
+            : (e.name.toLowerCase() == task.name.toLowerCase()),
+      );
+
+  /// Update the state of a task view
+  void _updateTaskViewState(TaskView taskView, List<TaskEntity> tasks) {
+    ref.read(tasksNotifierProvider(taskView).notifier).updateState(tasks);
+  }
+
+  /// Animate the removal of a task from the list
+  void _animateTaskRemoval(int index, TaskView taskView, bool animate) {
+    final animatedListKeyForTaskView =
+        ref.read(tasksNotifierProvider(taskView).notifier).animatedListKey;
+
+    animatedListKeyForTaskView?.currentState?.removeItem(
+      index,
+      (_, __) => Container(),
+      duration: animate ? _defaultDuration : Duration.zero,
+    );
+  }
+
+  final _defaultDuration = const Duration(milliseconds: 300);
+
+  /// Returns the index at which a new task should be inserted to maintain
+  /// descending order by createdAt (newest tasks at the top).
+  int getInsertIndexForTask(List<TaskEntity> tasks, TaskEntity task) {
+    var left = 0;
+    var right = tasks.length;
+
+    while (left < right) {
+      final mid = left + (right - left) ~/ 2;
+
+      // For descending order: if the task at mid is newer than or equal to the new task,
+      // search in the right half, otherwise search in the left half
+      if (tasks[mid].createdAt!.isAfter(task.createdAt!) ||
+          tasks[mid].createdAt!.isAtSameMomentAs(task.createdAt!)) {
+        left = mid + 1;
+      } else {
+        right = mid;
+      }
+    }
+
+    return left;
+  }
+
+  @visibleForTesting
+  void updateState(List<TaskEntity> newState) => state = AsyncData(newState);
 }

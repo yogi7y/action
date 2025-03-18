@@ -15,12 +15,10 @@ enum TaskStatus {
   /// The human-readable display text for this status
   final String displayStatus;
 
-  static TaskStatus fromString(String status) {
-    return TaskStatus.values.firstWhere(
-      (e) => e.value == status,
-      orElse: () => throw ArgumentError('Invalid task status: $status'),
-    );
-  }
+  static TaskStatus fromString(String status) => TaskStatus.values.firstWhere(
+        (e) => e.value == status,
+        orElse: () => throw ArgumentError('Invalid task status: $status'),
+      );
 
   /// Convert from AppCheckboxState to TaskStatus
   static TaskStatus fromAppCheckboxState(AppCheckboxState state) {
@@ -32,11 +30,9 @@ enum TaskStatus {
   }
 
   /// Convert the task status to an AppCheckboxState
-  AppCheckboxState toAppCheckboxState() {
-    return switch (this) {
-      TaskStatus.todo || TaskStatus.doNext => AppCheckboxState.unchecked,
-      TaskStatus.inProgress => AppCheckboxState.intermediate,
-      TaskStatus.done || TaskStatus.discard => AppCheckboxState.checked,
-    };
-  }
+  AppCheckboxState toAppCheckboxState() => switch (this) {
+        TaskStatus.todo || TaskStatus.doNext => AppCheckboxState.unchecked,
+        TaskStatus.inProgress => AppCheckboxState.intermediate,
+        TaskStatus.done || TaskStatus.discard => AppCheckboxState.checked,
+      };
 }

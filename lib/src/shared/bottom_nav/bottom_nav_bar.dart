@@ -2,9 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
+import '../buttons/clickable_svg.dart';
 import 'bottom_nav_items_provider.dart';
 
 @immutable
@@ -96,14 +96,11 @@ class BottomNavItem extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          SvgPicture.asset(
-            data.iconPath,
-            colorFilter: ColorFilter.mode(
-              isSelected
-                  ? colors.selectedBottomNavigationItem.text
-                  : colors.unselectedBottomNavigationItem.text,
-              BlendMode.srcIn,
-            ),
+          AppIconButton(
+            icon: data.icon,
+            color: isSelected
+                ? colors.selectedBottomNavigationItem.text
+                : colors.unselectedBottomNavigationItem.text,
           ),
           SizedBox(height: spacing.xxs),
           Text(

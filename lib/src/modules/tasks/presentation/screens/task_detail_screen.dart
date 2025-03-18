@@ -29,7 +29,7 @@ class TaskDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
-  late final ScrollController scrollController = ScrollController();
+  late final scrollController = ScrollController();
   late final _checklistSectionKey = GlobalKey(debugLabel: 'Checklist Section');
 
   @override
@@ -37,10 +37,10 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     super.initState();
 
     ref.listenManual(keyboardVisibilityProvider, (previous, next) {
-      final _previousValue = previous?.valueOrNull ?? false;
-      final _nextValue = next.valueOrNull ?? false;
+      final previousValue = previous?.valueOrNull ?? false;
+      final nextValue = next.valueOrNull ?? false;
 
-      if (_previousValue && !_nextValue) {
+      if (previousValue && !nextValue) {
         unawaited(scrollController.animateTo(
           0,
           duration: defaultAnimationDuration,
@@ -60,41 +60,38 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   Widget build(BuildContext context) {
     final taskDetail = ref.watch(taskDetailProvider(widget.taskDataOrId));
 
-    return ProviderScope(
-      overrides: [taskDetailIndexProvider.overrideWithValue(widget.index)],
-      child: Scaffold(
-        body: switch (taskDetail) {
-          AsyncData(value: final task) => ProviderScope(
-              overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
-              child: TaskDetailDataView(
-                scrollController: scrollController,
-                checklistSectionKey: _checklistSectionKey,
-              ),
+    return Scaffold(
+      body: switch (taskDetail) {
+        AsyncData(value: final task) => ProviderScope(
+            overrides: [taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task))],
+            child: TaskDetailDataView(
+              scrollController: scrollController,
+              checklistSectionKey: _checklistSectionKey,
             ),
-          AsyncError(error: final error) => TaskDetailErrorView(error: error),
-          _ => const TaskDetailLoadingView(),
+          ),
+        AsyncError(error: final error) => TaskDetailErrorView(error: error),
+        _ => const TaskDetailLoadingView(),
+      },
+      floatingActionButton: AddRemoveFloatingActionButton(
+        onStateChanged: (state) {
+          ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => true);
+
+          final checklistContext = _checklistSectionKey.currentContext;
+          if (checklistContext == null) return;
+
+          final renderBox = checklistContext.findRenderObject() as RenderBox?;
+          if (renderBox == null) return;
+
+          final position = renderBox.localToGlobal(Offset.zero);
+          final scrollOffset =
+              scrollController.offset + position.dy - MediaQuery.of(context).padding.top - 40;
+
+          unawaited(scrollController.animateTo(
+            scrollOffset,
+            duration: defaultAnimationDuration,
+            curve: Curves.easeOutCubic,
+          ));
         },
-        floatingActionButton: AddRemoveFloatingActionButton(
-          onStateChanged: (state) {
-            ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((value) => true);
-
-            final _checklistContext = _checklistSectionKey.currentContext;
-            if (_checklistContext == null) return;
-
-            final _renderBox = _checklistContext.findRenderObject() as RenderBox?;
-            if (_renderBox == null) return;
-
-            final _position = _renderBox.localToGlobal(Offset.zero);
-            final _scrollOffset =
-                scrollController.offset + _position.dy - MediaQuery.of(context).padding.top - 40;
-
-            unawaited(scrollController.animateTo(
-              _scrollOffset,
-              duration: defaultAnimationDuration,
-              curve: Curves.easeOutCubic,
-            ));
-          },
-        ),
       ),
     );
   }
@@ -113,34 +110,34 @@ class TaskDetailDataView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _task = ref.watch(taskDetailNotifierProvider);
-    final _spacing = ref.watch(spacingProvider);
-    final _colors = ref.watch(appThemeProvider);
+    final task = ref.watch(taskDetailNotifierProvider);
+    final spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
 
     return Scaffold(
-      backgroundColor: _colors.surface.background,
+      backgroundColor: colors.surface.background,
       body: RefreshIndicator(
         onRefresh: () async {
-          return ref.refresh(checklistProvider(_task.id).future);
+          return ref.refresh(checklistProvider(task.id!).future);
         },
         child: CustomScrollView(
           controller: scrollController,
           slivers: [
             TaskDetailHeader(
-              title: _task.name,
+              title: task.name,
               scrollController: scrollController,
             ),
             SliverToBoxAdapter(
               child: Container(
-                height: _spacing.sm,
-                color: _colors.l2Screen.background,
+                height: spacing.sm,
+                color: colors.l2Screen.background,
               ),
             ),
             const SliverToBoxAdapter(child: TaskDetailProperties()),
             SliverToBoxAdapter(
               child: Container(
-                height: _spacing.sm,
-                color: _colors.l2Screen.background,
+                height: spacing.sm,
+                color: colors.l2Screen.background,
               ),
             ),
             SliverToBoxAdapter(
@@ -149,13 +146,13 @@ class TaskDetailDataView extends ConsumerWidget {
               ),
             ),
             SliverToBoxAdapter(
-              child: SizedBox(height: _spacing.xs),
+              child: SizedBox(height: spacing.xs),
             ),
             Consumer(builder: (context, ref, child) {
-              final _checklist = ref.watch(checklistProvider(_task.id));
+              final checklist = ref.watch(checklistProvider(task.id!));
               final listKey = ref.watch(checklistAnimatedListKeyProvider);
 
-              return _checklist.when(
+              return checklist.when(
                 data: (items) {
                   return SliverAnimatedList(
                     key: listKey,
@@ -187,7 +184,7 @@ class TaskDetailDataView extends ConsumerWidget {
               );
             }),
             SliverToBoxAdapter(
-              child: SizedBox(height: _spacing.xxl),
+              child: SizedBox(height: spacing.xxl),
             ),
             const SliverToBoxAdapter(
               child: SizedBox(height: 2000), // Force scrollable content
@@ -204,11 +201,11 @@ class _ChecklistHeadingAndInputField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
-    final _spacing = ref.watch(spacingProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
     return Container(
-      color: _colors.surface.background,
+      color: colors.surface.background,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,9 +213,9 @@ class _ChecklistHeadingAndInputField extends ConsumerWidget {
           const SizedBox(height: 20),
           Text(
             'Checklist',
-            style: _fonts.headline.md.semibold,
+            style: fonts.headline.md.semibold,
           ),
-          SizedBox(height: _spacing.md),
+          SizedBox(height: spacing.md),
           const ChecklistInputVisibility(),
         ],
       ),

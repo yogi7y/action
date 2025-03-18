@@ -17,13 +17,11 @@ class ProjectModel extends ProjectEntity {
 
   factory ProjectModel.fromMap(Map<String, Object?> map) {
     final validator = FieldTypeValidator(map, StackTrace.current);
-
     final id = validator.isOfType<String>('id');
     final name = validator.isOfType<String>('name');
     final statusStr = validator.isOfType<String>('status');
     final createdAt = validator.isOfType<String>('created_at');
     final updatedAt = validator.isOfType<String>('updated_at');
-
     return ProjectModel(
       id: id,
       name: name,

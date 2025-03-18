@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../design_system/assets/assets_constants.dart';
+import '../../design_system/icons/app_icons.dart';
 import '../../design_system/themes/base/theme.dart';
-import 'icon_button.dart';
+import 'clickable_svg.dart';
 
 class SendIcon extends ConsumerWidget {
   const SendIcon({
@@ -23,17 +23,16 @@ class SendIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final _newTaskText = ref.watch(newTaskProvider.select((value) => value.name.trim()));
-    final _colors = ref.watch(appThemeProvider);
+    final colors = ref.watch(appThemeProvider);
 
-    final _iconColor = isEnabled ? _colors.primary : _colors.textTokens.secondary;
+    final iconColor = isEnabled ? colors.primary : colors.textTokens.secondary;
 
     return Consumer(
       builder: (context, ref, _) {
         return AppIconButton(
-          svgIconPath: Assets.send,
+          icon: AppIcons.sendAlt2,
           size: size,
-          color: _iconColor,
+          color: iconColor,
           onClick: () async {
             unawaited(HapticFeedback.lightImpact());
             return onClick();

@@ -2,32 +2,66 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
-import '../../domain/entity/task.dart';
+import '../../../filter/domain/entity/composite/composite_filter.dart';
+import '../../../filter/domain/entity/filter.dart';
+import '../../domain/entity/filters/task_filter_operations.dart';
+import '../../domain/entity/task_entity.dart';
 import '../../domain/entity/task_status.dart';
-import 'task_filter_provider.dart';
+import 'task_view_provider.dart';
 
+/// Decides when to show/hide the task input field.
 final isTaskTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);
 
 /// holds the task entered by the user.
-final newTaskProvider = AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskPropertiesEntity>(
+final newTaskProvider = AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskEntity>(
   NewTaskTextNotifier.new,
 );
 
-class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
+class NewTaskTextNotifier extends AutoDisposeNotifier<TaskEntity> {
   late final controller = SmartTextFieldController();
   late final focusNode = FocusNode();
 
   @override
-  TaskPropertiesEntity build() {
+  TaskEntity build() {
     _syncControllerAndState();
-    final _selectedTaskView = ref.read(selectedTaskFilterProvider);
 
-    final _task = TaskPropertiesEntity(
+    final filter = ref.read(selectedTaskViewProvider).operations.filter;
+
+    var task = const TaskEntity(
       name: '',
-      status: _selectedTaskView.status,
+      status: TaskStatus.todo,
     );
 
-    return _task;
+    if (filter is PropertyFilter) {
+      task = getFilterValue(filter, task);
+    }
+
+    if (filter is CompositeFilter) {
+      for (final child in filter.filters) {
+        if (child is PropertyFilter) {
+          task = getFilterValue(child, task);
+        }
+      }
+    }
+
+    return task;
+  }
+
+  TaskEntity getFilterValue(PropertyFilter filter, TaskEntity task) {
+    final key = filter.key;
+    final value = filter.value;
+
+    var returnTask = task;
+
+    switch (key) {
+      case InMemoryTaskFilterOperations.statusKey:
+        final status = TaskStatus.fromString(value as String);
+        returnTask = returnTask.copyWith(status: status);
+      default:
+        return returnTask;
+    }
+
+    return returnTask;
   }
 
   void _syncControllerAndState() =>
@@ -35,12 +69,16 @@ class NewTaskTextNotifier extends AutoDisposeNotifier<TaskPropertiesEntity> {
 
   void clear() => controller.clear();
 
-  void updateValue({
+  void updateValue(TaskEntity Function(TaskEntity) update) => state = update(state);
+
+  @Deprecated('Use updateValue instead')
+  void updateValueOld({
     String? name,
     TaskStatus? status,
     DateTime? dueDate,
     String? projectId,
     String? contextId,
+    String? id,
   }) =>
       state = state.copyWith(
         name: name ?? state.name,

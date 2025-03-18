@@ -28,6 +28,6 @@ class ContextPickerTileRenderer extends SearchRenderer<ContextEntity> {
     _container.read(newTaskProvider.notifier).focusNode.requestFocus();
     _container.read(currentStickyTextFieldTypeProvider.notifier).update((_) => null);
 
-    _container.read(newTaskProvider.notifier).updateValue(contextId: item.id);
+    _container.read(newTaskProvider.notifier).updateValueOld(contextId: item.id);
   }
 }

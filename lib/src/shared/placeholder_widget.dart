@@ -10,11 +10,11 @@ class PlaceholderWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _fonts = ref.watch(fontsProvider);
+    final fonts = ref.watch(fontsProvider);
     return Center(
       child: Text(
         text,
-        style: _fonts.headline.lg.medium,
+        style: fonts.headline.lg.medium,
       ),
     );
   }

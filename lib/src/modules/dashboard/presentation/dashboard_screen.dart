@@ -9,8 +9,7 @@ import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
 import '../../tasks/presentation/state/new_checklist_provider.dart';
 import '../../tasks/presentation/state/new_task_provider.dart';
-import '../../tasks/presentation/state/task_filter_provider.dart';
-import '../../tasks/presentation/state/tasks_provider.dart';
+import '../../tasks/presentation/state/task_view_provider.dart';
 import 'state/keyboard_visibility_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -27,23 +26,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Activating the listener here.
+      ref.read(loadedTaskViewsProvider);
+      final selectedTaskView = ref.read(selectedTaskViewProvider);
+
+      ref.read(loadedTaskViewsProvider.notifier).update(
+        (state) {
+          if (state.contains(selectedTaskView)) return state;
+
+          return {...state, selectedTaskView};
+        },
+      );
+    });
+
     ref
       ..listenManual(keyboardVisibilityProvider, (previous, next) {
-        final _previousValue = previous?.valueOrNull ?? false;
-        final _nextValue = next.valueOrNull ?? false;
+        final previousValue = previous?.valueOrNull ?? false;
+        final nextValue = next.valueOrNull ?? false;
 
-        if (_previousValue && !_nextValue) {
+        if (previousValue && !nextValue) {
           ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((_) => false);
           ref.read(isChecklistTextInputFieldVisibleProvider.notifier).update((_) => false);
         }
       })
       ..read(projectsProvider)
       ..read(contextsProvider);
-
-    final _currentFilter = ref.read(tasksFilterProvider).first;
-    ref
-      ..read(tasksCountNotifierProvider(_currentFilter))
-      ..read(tasksProvider(_currentFilter));
   }
 
   @override

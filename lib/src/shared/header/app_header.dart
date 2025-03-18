@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../design_system/design_system.dart';
+import '../../design_system/icons/app_icons.dart';
+import '../buttons/clickable_svg.dart';
 
 class AppHeader extends ConsumerWidget {
   const AppHeader({
@@ -34,11 +35,10 @@ class AppHeader extends ConsumerWidget {
       actions: [
         IconButton(
           onPressed: () {},
-          icon: SvgPicture.asset(
-            Assets.search,
-            height: 24,
-            width: 24,
-            colorFilter: ColorFilter.mode(colors.textTokens.primary, BlendMode.srcIn),
+          icon: AppIconButton(
+            icon: AppIcons.search,
+            size: 24,
+            color: colors.textTokens.primary,
           ),
         ),
         SizedBox(width: spacing.xs),

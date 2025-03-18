@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
+import '../../../../design_system/icons/app_icons.dart';
 import '../../../../shared/header/app_header.dart';
 import '../../../../shared/tab_bar/chip_tab_bar.dart';
 import '../../../context/presentation/screens/context_screen.dart';
@@ -28,9 +29,9 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _spacing = ref.watch(spacingProvider);
+    final spacing = ref.watch(spacingProvider);
 
-    final _selectedTab = ref.watch(projectAndContextProvider);
+    final selectedTab = ref.watch(projectAndContextProvider);
 
     return Scaffold(
       body: NestedScrollView(
@@ -40,7 +41,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             SliverToBoxAdapter(
               child: ChipTabBar(
                 pageController: _pageController,
-                selectedIndex: _selectedTab.indexValue,
+                selectedIndex: selectedTab.indexValue,
                 onTabChanged: (index) {
                   ref
                       .read(projectAndContextProvider.notifier)
@@ -54,16 +55,16 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                 items: const [
                   ChipTabBarItem(
                     label: 'Project',
-                    icon: AssetsV2.hammerOutlined,
+                    icon: AppIcons.hammerOutlined,
                   ),
                   ChipTabBarItem(
                     label: 'Context',
-                    icon: Assets.tag,
+                    icon: AppIcons.tagOutlined,
                   ),
                 ],
               ),
             ),
-            SliverToBoxAdapter(child: SizedBox(height: _spacing.xxl)),
+            SliverToBoxAdapter(child: SizedBox(height: spacing.xxl)),
           ];
         },
         body: PageView(

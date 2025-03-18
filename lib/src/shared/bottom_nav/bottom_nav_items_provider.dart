@@ -1,11 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/routes.dart';
-import '../../design_system/design_system.dart';
+import '../../design_system/icons/app_icons.dart';
 
 typedef BottomNavItemData = ({
-  String iconPath,
+  IconData icon,
   String label,
   String path,
 });
@@ -16,11 +17,11 @@ typedef SelectedBottomNavItem = ({
 });
 
 final bottomNavItemsProvider = Provider<List<BottomNavItemData>>((ref) => [
-      (iconPath: Assets.home, label: 'Home', path: AppRoute.home.path),
-      (iconPath: Assets.addTask, label: 'Tasks', path: AppRoute.tasks.path),
-      (iconPath: Assets.bookmarkAdd, label: 'Pages', path: AppRoute.pages.path),
-      (iconPath: AssetsV2.hammerOutlined, label: 'Projects', path: AppRoute.projects.path),
-      (iconPath: Assets.explore, label: 'Area', path: AppRoute.area.path),
+      (icon: AppIcons.houseSmile, label: 'Home', path: AppRoute.home.path),
+      (icon: AppIcons.addTaskOutlined, label: 'Tasks', path: AppRoute.tasks.path),
+      (icon: AppIcons.bookmarkAddOutlined, label: 'Pages', path: AppRoute.pages.path),
+      (icon: AppIcons.hammerOutlined, label: 'Projects', path: AppRoute.projects.path),
+      (icon: AppIcons.area, label: 'Area', path: AppRoute.area.path),
     ]);
 
 final selectedBottomNavProvider = StateProvider<SelectedBottomNavItem>(

@@ -1,78 +1,26 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
-import '../../../../services/database/model_meta_data.dart';
-
 @immutable
-class ContextPropertiesEntity {
-  const ContextPropertiesEntity({
-    required this.name,
-  });
-
-  final String name;
-
-  ContextPropertiesEntity copyWith({
-    String? name,
-  }) =>
-      ContextPropertiesEntity(
-        name: name ?? this.name,
-      );
-
-  Map<String, Object?> toMap() => {
-        'name': name,
-      };
-
-  @override
-  String toString() => 'ContextPropertiesEntity(name: $name)';
-
-  @override
-  bool operator ==(covariant ContextPropertiesEntity other) {
-    if (identical(this, other)) return true;
-
-    return other.name == name;
-  }
-
-  @override
-  int get hashCode => name.hashCode;
-}
-
-@immutable
-class ContextEntity extends ContextPropertiesEntity implements ModelMetaData, Searchable {
+class ContextEntity implements Searchable {
   const ContextEntity({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required super.name,
+    required this.name,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory ContextEntity.fromContextProperties({
-    required ContextPropertiesEntity context,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-    required Id id,
-  }) =>
-      ContextEntity(
-        id: id,
-        name: context.name,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  @override
-  final Id id;
-
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
+  final String? id;
+  final String name;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   @override
   String get stringifiedValue => name;
 
-  @override
   ContextEntity copyWith({
-    Id? id,
+    String? id,
     String? name,
     DateTime? createdAt,
     DateTime? updatedAt,

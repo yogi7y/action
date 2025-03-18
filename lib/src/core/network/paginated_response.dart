@@ -1,25 +1,47 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 
 typedef Cursor = String;
 
+/// A class representing a paginated response.
+///
+/// [T] is the type of the items in the results list.
 @immutable
 class PaginatedResponse<T> {
+  /// Creates a new instance of [PaginatedResponse].
+  ///
+  /// [results] is the list of result.
+  /// [total] is the total number of results available.
   const PaginatedResponse({
     required this.results,
+    required this.total,
   });
 
+  /// The list of result.
   final List<T> results;
 
+  /// The total number of results available.
+  final int total;
+
+  PaginatedResponse<T> copyWith({
+    List<T>? results,
+    int? total,
+  }) =>
+      PaginatedResponse<T>(
+        results: results ?? this.results,
+        total: total ?? this.total,
+      );
+
   @override
-  String toString() => 'PaginatedResponse(results: $results)';
+  String toString() => 'PaginatedResponse(results: $results, total: $total)';
 
   @override
   bool operator ==(covariant PaginatedResponse<T> other) {
     if (identical(this, other)) return true;
 
-    return other.results == results;
+    return other.results == results && other.total == total;
   }
 
   @override
-  int get hashCode => results.hashCode;
+  int get hashCode => results.hashCode ^ total.hashCode;
 }

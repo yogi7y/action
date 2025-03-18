@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../design_system/design_system.dart';
-import '../../../../shared/buttons/icon_button.dart';
+import '../../../../design_system/icons/app_icons.dart';
+import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
 import '../state/project_detail_provider.dart';
@@ -106,7 +107,7 @@ class _ProjectDetailDataState extends ConsumerWidget {
             child: TabBarView(
               controller: tabController,
               children: const [
-                Center(child: Text('Tasks')),
+                ProjectTaskView(),
                 Center(child: Text('Pages')),
               ],
             ),
@@ -114,6 +115,17 @@ class _ProjectDetailDataState extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class ProjectTaskView extends ConsumerWidget {
+  const ProjectTaskView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    throw UnimplementedError();
   }
 }
 
@@ -190,15 +202,15 @@ class _ProjectRelationDetailMetaData extends ConsumerWidget {
         children: [
           _ProjectMetaDataItem(
             label: '${project.metadata?.completedTasks}/${project.metadata?.totalTasks} Tasks',
-            iconPath: AssetsV2.addTask,
+            iconData: AppIcons.addTaskOutlined,
           ),
           _ProjectMetaDataItem(
             label: '${project.metadata?.totalPages} Pages',
-            iconPath: AssetsV2.bookmarkAdd,
+            iconData: AppIcons.bookmarkAddOutlined,
           ),
           const _ProjectMetaDataItem(
             label: '7th Dec 2024',
-            iconPath: AssetsV2.clock,
+            iconData: AppIcons.clockOutlined,
           ),
         ],
       ),
@@ -209,11 +221,11 @@ class _ProjectRelationDetailMetaData extends ConsumerWidget {
 class _ProjectMetaDataItem extends ConsumerWidget {
   const _ProjectMetaDataItem({
     required this.label,
-    required this.iconPath,
+    required this.iconData,
   });
 
   final String label;
-  final String iconPath;
+  final IconData iconData;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -224,7 +236,7 @@ class _ProjectMetaDataItem extends ConsumerWidget {
     return Row(
       children: [
         AppIconButton(
-          svgIconPath: iconPath,
+          icon: iconData,
           size: 16,
           color: colors.textTokens.secondary,
         ),
@@ -251,7 +263,7 @@ class _ProjectDetailProperties extends ConsumerWidget {
       properties: [
         PropertyData(
           label: 'Status',
-          labelIcon: AssetsV2.loader,
+          labelIcon: AppIcons.loaderOutlined,
           valuePlaceholder: 'Status is not set',
           value: StatusWidget(
             state: project.status.toAppCheckboxState(),
@@ -260,7 +272,7 @@ class _ProjectDetailProperties extends ConsumerWidget {
         ),
         PropertyData(
           label: 'Due',
-          labelIcon: AssetsV2.calendar,
+          labelIcon: AppIcons.calendarOutlined,
           valuePlaceholder: 'Empty',
           isRemovable: true,
           value: project.dueDate != null
