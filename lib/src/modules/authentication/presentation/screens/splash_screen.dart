@@ -24,27 +24,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void _checkAuthState() {
-    final _authUseCase = ref.read(authUseCaseProvider);
-    final _router = ref.read(routerProvider);
+    final authUseCase = ref.read(authUseCaseProvider);
+    final router = ref.read(routerProvider);
 
-    if (_authUseCase.isSignedIn) {
-      _router.goNamed(AppRoute.home.name);
+    if (authUseCase.isSignedIn) {
+      router.goNamed(AppRoute.home.name);
     } else {
-      _router.goNamed(AppRoute.auth.name);
+      router.goNamed(AppRoute.auth.name);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final _colors = ref.watch(appThemeProvider);
-    final _fonts = ref.watch(fontsProvider);
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
 
     return Scaffold(
-      backgroundColor: _colors.surface.background,
+      backgroundColor: colors.surface.background,
       body: Center(
         child: Text(
           'Splash Screen',
-          style: _fonts.headline.md.semibold,
+          style: fonts.headline.md.semibold,
         ),
       ),
     );
