@@ -34,12 +34,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // GoRoute(
-      //   parentNavigatorKey: rootNavigatorKey,
-      //   path: AppRoute.splash.path,
-      //   name: AppRoute.splash.name,
-      //   builder: (context, state) => const SplashScreen(),
-      // ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
         path: AppRoute.auth.path,
