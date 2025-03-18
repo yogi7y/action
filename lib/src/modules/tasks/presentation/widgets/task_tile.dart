@@ -16,6 +16,7 @@ import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/scoped_task_provider.dart';
+import '../state/task_view_provider.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
@@ -34,78 +35,97 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
 
     final topPadding = spacing.xs;
     final bottomPadding = spacing.sm;
+    final selectedTaskView = ref.watch(selectedTaskViewProvider);
+    final tasks = ref.watch(tasksNotifierProvider(selectedTaskView)).valueOrNull ?? [];
 
-    return Stack(
+    return Column(
       children: [
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () async => context.goNamed(
-            AppRoute.taskDetail.name,
-            extra: (value: (data: task, id: null), index: index),
-            pathParameters: {'id': task.id ?? ''},
-          ),
-          child: Container(
-            padding: EdgeInsets.only(
+        Stack(
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async => context.goNamed(
+                AppRoute.taskDetail.name,
+                extra: (value: (data: task, id: null), index: index),
+                pathParameters: {'id': task.id ?? ''},
+              ),
+              child: Container(
+                padding: EdgeInsets.only(
+                  right: spacing.lg,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppCheckbox(
+                      padding: EdgeInsets.only(
+                        right: spacing.xs,
+                        top: 4 + topPadding,
+                        left: spacing.lg,
+                        bottom: bottomPadding,
+                      ),
+                      state: AppCheckboxState.fromTaskStatus(status: task.status),
+                      onChanged: (state) async {
+                        final taskView = ref.read(scopedTaskViewProvider);
+                        unawaited(
+                          ref
+                              .read(tasksNotifierProvider(taskView).notifier)
+                              .toggleCheckbox(index, TaskStatus.fromAppCheckboxState(state)),
+                        );
+                      },
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 60, top: topPadding),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const AnimatedTaskName(),
+                                Text(task.id ?? '', style: fonts.text.xs.regular),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: spacing.xxs),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: _TaskMetaDataRow(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: spacing.xs,
               right: spacing.lg,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppCheckbox(
-                  padding: EdgeInsets.only(
-                    right: spacing.xs,
-                    top: 4 + topPadding,
-                    left: spacing.lg,
-                    bottom: bottomPadding,
-                  ),
-                  state: AppCheckboxState.fromTaskStatus(status: task.status),
-                  onChanged: (state) async {
-                    final taskView = ref.read(scopedTaskViewProvider);
-                    unawaited(
-                      ref
-                          .read(tasksNotifierProvider(taskView).notifier)
-                          .toggleCheckbox(index, TaskStatus.fromAppCheckboxState(state)),
-                    );
-                  },
+              child: Text(
+                task.createdAt?.timeAgo ?? '',
+                style: fonts.text.xs.regular.copyWith(
+                  fontSize: 10,
+                  height: 16 / 10,
+                  color: colors.textTokens.secondary,
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 60, top: topPadding),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const AnimatedTaskName(),
-                            Text(task.id ?? '', style: fonts.text.xs.regular),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: spacing.xxs),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: _TaskMetaDataRow(),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-        Positioned(
-          top: spacing.xs,
-          right: spacing.lg,
-          child: Text(
-            task.createdAt?.timeAgo ?? '',
-            style: fonts.text.xs.regular.copyWith(
-              fontSize: 10,
-              height: 16 / 10,
-              color: colors.textTokens.secondary,
-            ),
+        Visibility(
+          visible: index == tasks.length - 1,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+                child: Text(
+              'All caught up!',
+              style: fonts.text.xs.regular.copyWith(
+                color: colors.textTokens.secondary,
+              ),
+            )),
           ),
-        ),
+        )
       ],
     );
   }
