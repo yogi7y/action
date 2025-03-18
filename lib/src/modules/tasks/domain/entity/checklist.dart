@@ -33,6 +33,20 @@ class ChecklistEntity {
     this.updatedAt,
   });
 
+  factory ChecklistEntity.newChecklist(String title) {
+    if (title.isEmpty)
+      throw ValidationException(
+        exception: 'Title cannot be empty',
+        stackTrace: StackTrace.current,
+        userFriendlyMessage: 'Title cannot be empty',
+      );
+
+    return ChecklistEntity(
+      taskId: '',
+      title: title,
+    );
+  }
+
   final String? id;
   final TaskId taskId;
   final String title;
