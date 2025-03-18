@@ -17,7 +17,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 typedef TaskDetailRouteData = ({TaskDataOrId? value, int? index});
 
 enum AppRoute {
-  splash(path: '/splash', name: 'splash'),
+  // splash(path: '/splash', name: 'splash'),
   auth(path: '/auth', name: 'auth'),
   home(path: '/home', name: 'home'),
   tasks(path: '/tasks', name: 'tasks'),
