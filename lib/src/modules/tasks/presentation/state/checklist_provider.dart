@@ -23,21 +23,35 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
   }
 
   Future<void> upsertChecklist(
-    String checklistTitle, {
-    DateTime? createdAt,
+    ChecklistEntity checklist, {
+    /// pass in when updating an existing checklist
+    int? indexProp,
   }) async {
     final previousState = state;
-    final now = createdAt ?? DateTime.now();
 
-    final tempOptimisticChecklist = ChecklistEntity(
-      taskId: arg,
-      title: checklistTitle,
-      createdAt: now,
-      updatedAt: now,
+    final now = checklist.createdAt ?? DateTime.now();
+
+    final isNewChecklist = checklist.id == null;
+
+    final tempOptimisticChecklist = checklist.copyWith(
+      taskId: checklist.taskId.isEmpty ? arg : checklist.taskId,
+      createdAt: checklist.createdAt ?? now,
+      updatedAt: checklist.updatedAt ?? now,
     );
 
     // do optimistic update
-    state = AsyncData([tempOptimisticChecklist, ...(state.valueOrNull ?? [])]);
+    if (isNewChecklist) {
+      state = AsyncData([tempOptimisticChecklist, ...(state.valueOrNull ?? [])]);
+    } else {
+      // find the index of the checklist
+      final index =
+          indexProp ?? state.valueOrNull?.indexWhere((element) => element.id == checklist.id);
+
+      if (index != null) {
+        state.valueOrNull?[index] = tempOptimisticChecklist;
+        state = AsyncData(state.valueOrNull ?? []);
+      }
+    }
 
     // make api call
     final result = await _useCase.upsertChecklist(tempOptimisticChecklist);
@@ -71,12 +85,6 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
       },
     );
   }
-
-  @Deprecated('')
-  Future<void> addChecklist(String checklistTitle) async {}
-
-  @Deprecated('')
-  Future<void> updateChecklist(ChecklistEntity checklist) async {}
 }
 
 // Global key for AnimatedList

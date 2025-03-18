@@ -41,11 +41,9 @@ class ChecklistItem extends ConsumerWidget {
 
                 final taskId = ref.read(taskDetailNotifierProvider).id;
 
-                await ref.read(checklistProvider(taskId!).notifier).updateChecklist(
-                      checklist.copyWith(
-                        status: newStatus,
-                      ),
-                    );
+                // await ref
+                //     .read(checklistProvider(taskId!).notifier)
+                //     .updateChecklist(status: newStatus);
               },
             ),
           ),

@@ -9,6 +9,6 @@ mixin ChecklistUiTriggerMixin {
     required String checklistText,
   }) async {
     final taskId = ref.read(taskDetailNotifierProvider).id;
-    await ref.read(checklistProvider(taskId!).notifier).addChecklist(checklistText);
+    // await ref.read(checklistProvider(taskId!).notifier).updateChecklist(checklistText);
   }
 }
