@@ -30,21 +30,6 @@ class SupabaseChecklistRepository with ChecklistModelMixin implements ChecklistR
   }
 
   @override
-  AsyncSingleChecklistResult createChecklist(ChecklistEntity checklist) async {
-    try {
-      final response =
-          await client.from('checklist_items').insert(checklist.toMap()).select().single();
-
-      return Success(fromMapToChecklistEntity(response));
-    } catch (e, stackTrace) {
-      return Failure(AppException(
-        exception: e.toString(),
-        stackTrace: stackTrace,
-      ));
-    }
-  }
-
-  @override
   AsyncSingleChecklistResult deleteChecklist(ChecklistId id) async {
     try {
       final response = await client.from('checklist_items').delete().eq('id', id).select().single();
@@ -59,17 +44,10 @@ class SupabaseChecklistRepository with ChecklistModelMixin implements ChecklistR
   }
 
   @override
-  AsyncSingleChecklistResult updateChecklist(ChecklistEntity checklist) async {
+  AsyncSingleChecklistResult upsertChecklist(ChecklistEntity checklist) async {
     try {
-      final id = checklist.id!; // handle the bang operator.
-      final data = checklist.toMap();
-
-      final response = await client
-          .from('checklist_items') //
-          .update(data)
-          .eq('id', id)
-          .select()
-          .single();
+      final response =
+          await client.from('checklist_items').upsert(checklist.toMap()).select().single();
 
       return Success(fromMapToChecklistEntity(response));
     } catch (e, stackTrace) {

@@ -25,11 +25,6 @@ class TaskUseCase {
 
   final TaskRepository repository;
 
-  Future<Result<TaskEntity, AppException>> createTask(TaskEntity task) {
-    task.validate();
-    return repository.createTask(task);
-  }
-
   AsyncTaskPaginatedResult fetchTasks(Filter filter) async {
     final fetchTaskResult = await repository.fetchTasks(filter: filter);
 

@@ -14,8 +14,8 @@ typedef AsyncSingleChecklistResult = Future<SingleChecklistResult>;
 
 abstract class ChecklistRepository {
   AsyncChecklistResult getChecklistsByTaskId(TaskId taskId);
-  AsyncSingleChecklistResult createChecklist(ChecklistEntity checklist);
-  AsyncSingleChecklistResult updateChecklist(ChecklistEntity checklist);
+  AsyncSingleChecklistResult upsertChecklist(ChecklistEntity checklist);
+
   AsyncSingleChecklistResult deleteChecklist(ChecklistId id);
 }
 

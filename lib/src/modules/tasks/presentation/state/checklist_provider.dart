@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/checklist.dart';
 import '../../domain/use_case/checklist_use_case.dart';
 import '../../domain/use_case/task_use_case.dart';
+import 'new_checklist_provider.dart';
 
 final checklistProvider =
     AsyncNotifierProviderFamily<ChecklistNotifier, Checklists, TaskId>(ChecklistNotifier.new);
@@ -29,6 +30,9 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
   }) async {
     final previousState = state;
 
+    /// storing the value in case we wanna revert it back.
+    final storeTextFieldValue = ref.read(newChecklistProvider.notifier).controller.text;
+
     final now = checklist.createdAt ?? DateTime.now();
 
     final isNewChecklist = checklist.id == null;
@@ -42,6 +46,7 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
     // do optimistic update
     if (isNewChecklist) {
       state = AsyncData([tempOptimisticChecklist, ...(state.valueOrNull ?? [])]);
+      ref.read(checklistAnimatedListKeyProvider).currentState?.insertItem(0);
     } else {
       // find the index of the checklist
       final index =
@@ -52,6 +57,9 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
         state = AsyncData(state.valueOrNull ?? []);
       }
     }
+
+    // clear the text field.
+    ref.read(newChecklistProvider.notifier).controller.clear();
 
     // make api call
     final result = await _useCase.upsertChecklist(tempOptimisticChecklist);
@@ -82,6 +90,9 @@ class ChecklistNotifier extends FamilyAsyncNotifier<Checklists, TaskId> {
       onFailure: (error) {
         // revert to previous state
         state = previousState;
+
+        // revert the text field value.
+        ref.read(newChecklistProvider.notifier).controller.text = storeTextFieldValue;
       },
     );
   }

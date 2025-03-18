@@ -3,6 +3,7 @@
 import 'package:action/src/modules/tasks/domain/entity/checklist.dart';
 import 'package:action/src/modules/tasks/domain/use_case/checklist_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/state/checklist_provider.dart';
+import 'package:action/src/modules/tasks/presentation/state/new_checklist_provider.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +19,7 @@ void main() {
   late MockChecklistUseCase mockChecklistUseCase;
 
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(FakeChecklistEntity());
   });
 
@@ -379,4 +381,50 @@ void main() {
       });
     },
   );
+
+  group('text field', () {
+    const taskId = 'task-id-1';
+    final fakeChecklistItem = ChecklistEntity.newChecklist('title');
+
+    test('should be cleared when item is added/updated', () async {
+      // stub use case upsert method.
+      when(() => mockChecklistUseCase.upsertChecklist(any()))
+          .thenAnswer((_) async => Success(fakeChecklistItem));
+
+      final container = createContainer(overrides: [
+        checklistUseCaseProvider.overrideWithValue(mockChecklistUseCase),
+      ]);
+
+      // prefill text in the controller.
+      container.read(newChecklistProvider.notifier).controller.text = 'title';
+
+      await container.read(checklistProvider(taskId).future);
+
+      await container.read(checklistProvider(taskId).notifier).upsertChecklist(fakeChecklistItem);
+
+      // verify newCheckListProvider controller is empty
+      expect(container.read(newChecklistProvider.notifier).controller.text, isEmpty);
+    });
+
+    test('should revert to previous value if api fails', () async {
+      // stub use case upsert method.
+      when(() => mockChecklistUseCase.upsertChecklist(any())).thenAnswer((_) async => const Failure(
+          AppException(exception: 'Failed to upsert checklist', stackTrace: StackTrace.empty)));
+
+      final container = createContainer(overrides: [
+        checklistUseCaseProvider.overrideWithValue(mockChecklistUseCase),
+      ]);
+
+      // prefill text in the controller.
+      container.read(newChecklistProvider.notifier).controller.text = 'title';
+
+      await container.read(checklistProvider(taskId).future);
+
+      await container.read(checklistProvider(taskId).notifier).upsertChecklist(fakeChecklistItem);
+
+      // verify newCheckListProvider controller is empty
+      expect(container.read(newChecklistProvider.notifier).controller.text, isNotEmpty);
+      expect(container.read(newChecklistProvider.notifier).controller.text, 'title');
+    });
+  });
 }

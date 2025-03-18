@@ -10,11 +10,7 @@ abstract class TaskRepository {
     required Filter filter,
   });
 
-  AsyncTaskResult createTask(TaskEntity task);
-
   AsyncTaskResult getTaskById(TaskId id);
-
-  AsyncTaskResult updateTask(TaskEntity task);
 
   AsyncTaskResult upsertTask(TaskEntity task);
 }

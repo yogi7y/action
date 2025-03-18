@@ -72,7 +72,7 @@ class ChecklistEntity {
       );
 
   Map<String, Object?> toMap() => {
-        'id': id,
+        if ((id ?? '').isNotEmpty) 'id': id,
         'task_id': taskId,
         'title': title,
         'status': status.value,

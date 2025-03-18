@@ -29,16 +29,6 @@ class SupabaseTaskRepository implements TaskRepository {
   }
 
   @override
-  AsyncTaskResult createTask(TaskEntity task) {
-    throw UnimplementedError();
-  }
-
-  @override
-  AsyncTaskResult updateTask(TaskEntity task) {
-    throw UnimplementedError();
-  }
-
-  @override
   AsyncTaskResult getTaskById(TaskId id) {
     throw UnimplementedError();
   }

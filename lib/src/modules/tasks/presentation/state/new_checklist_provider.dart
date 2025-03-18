@@ -24,7 +24,6 @@ class NewChecklistTextNotifier extends AutoDisposeNotifier<ChecklistEntity> {
     return const ChecklistEntity(
       taskId: '',
       title: '',
-      status: ChecklistStatus.todo,
     );
   }
 
