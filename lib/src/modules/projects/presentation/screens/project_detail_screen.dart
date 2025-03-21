@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +35,11 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
   late final TabController tabController = TabController(length: 2, vsync: this);
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     scrollController.dispose();
     tabController.dispose();
@@ -55,6 +62,10 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
                   ),
                   smallerChips: true,
                   showFilters: false,
+                  onRefresh: () async {
+                    final projectOrId = (id: project.project.id, value: null);
+                    return ref.refresh(projectDetailProvider(projectOrId));
+                  },
                 ),
               ),
             ],
@@ -86,42 +97,39 @@ class _ProjectDetailDataState extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.surface.background,
-      body: RefreshIndicator(
-        onRefresh: () async => Future<void>.delayed(const Duration(milliseconds: 1000)),
-        child: NestedScrollView(
-          controller: controller,
-          headerSliverBuilder: (context, innerBoxScrolled) => [
-            ProjectDetailTitle(controller: controller),
-            SliverToBoxAdapter(
-              child: Container(
-                height: spacing.sm,
-                color: colors.l2Screen.background,
-              ),
+      body: NestedScrollView(
+        controller: controller,
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          ProjectDetailTitle(controller: controller),
+          SliverToBoxAdapter(
+            child: Container(
+              height: spacing.sm,
+              color: colors.l2Screen.background,
             ),
-            const SliverToBoxAdapter(child: _ProjectDetailProperties()),
-            SliverToBoxAdapter(
-              child: Container(
-                height: spacing.xs,
-                color: colors.l2Screen.background,
-              ),
+          ),
+          const SliverToBoxAdapter(child: _ProjectDetailProperties()),
+          SliverToBoxAdapter(
+            child: Container(
+              height: spacing.xs,
+              color: colors.l2Screen.background,
             ),
-            const SliverToBoxAdapter(
-              child: _ProjectRelationDetailMetaData(),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _SliverTabBarDelegate(tabController: tabController),
-            ),
-          ],
-          body: Padding(
-            padding: EdgeInsets.only(top: spacing.sm),
-            child: TabBarView(
-              controller: tabController,
-              children: const [
-                TaskModule(),
-                Center(child: Text('Pages')),
-              ],
-            ),
+          ),
+          const SliverToBoxAdapter(
+            child: _ProjectRelationDetailMetaData(),
+          ),
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _SliverTabBarDelegate(tabController: tabController),
+          ),
+        ],
+        body: Padding(
+          padding: EdgeInsets.only(top: spacing.sm),
+          child: TabBarView(
+            controller: tabController,
+            children: const [
+              TaskModule(),
+              Center(child: Text('Pages')),
+            ],
           ),
         ),
       ),

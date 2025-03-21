@@ -184,12 +184,14 @@ class TaskModuleData {
     this.isSliver = false,
     this.smallerChips = false,
     this.showFilters = true,
+    this.onRefresh,
   });
 
   final List<TaskView> taskViews;
   final bool isSliver;
   final bool smallerChips;
   final bool showFilters;
+  final Future<void> Function()? onRefresh;
 
   @override
   String toString() =>
@@ -201,9 +203,17 @@ class TaskModuleData {
 
     return listEquals(other.taskViews, taskViews) &&
         other.isSliver == isSliver &&
-        other.smallerChips == smallerChips;
+        other.smallerChips == smallerChips &&
+        other.showFilters == showFilters &&
+        other.onRefresh == onRefresh;
   }
 
   @override
-  int get hashCode => taskViews.hashCode ^ isSliver.hashCode ^ smallerChips.hashCode;
+  int get hashCode => Object.hash(
+        taskViews,
+        isSliver,
+        smallerChips,
+        showFilters,
+        onRefresh,
+      );
 }
