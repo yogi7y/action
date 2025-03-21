@@ -35,11 +35,6 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
   late final TabController tabController = TabController(length: 2, vsync: this);
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     scrollController.dispose();
     tabController.dispose();

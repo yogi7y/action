@@ -6,46 +6,6 @@ import '../models/task_view.dart';
 final taskViewProvider = Provider<List<TaskView>>(
   name: 'taskViewProvider',
   (ref) => throw UnimplementedError('Ensure to override taskViewProvider with a value'),
-  // (ref) => [
-  //   StatusTaskView(
-  //     status: TaskStatus.inProgress,
-  //     ui: const TaskViewUI(label: 'In Progress'),
-  //     id: TaskView.generateId(
-  //       screenName: 'tasks_screen',
-  //       viewName: 'in_progress_tasks_view',
-  //     ),
-  //   ),
-  //   StatusTaskView(
-  //     status: TaskStatus.todo,
-  //     ui: const TaskViewUI(label: 'Todo'),
-  //     id: TaskView.generateId(
-  //       screenName: 'tasks_screen',
-  //       viewName: 'todo_tasks_view',
-  //     ),
-  //   ),
-  //   StatusTaskView(
-  //     status: TaskStatus.done,
-  //     ui: const TaskViewUI(label: 'Done'),
-  //     id: TaskView.generateId(
-  //       screenName: 'tasks_screen',
-  //       viewName: 'done_tasks_view',
-  //     ),
-  //   ),
-  //   AllTasksView(
-  //     ui: const TaskViewUI(label: 'All'),
-  //     id: TaskView.generateId(
-  //       screenName: 'tasks_screen',
-  //       viewName: 'all_tasks_view',
-  //     ),
-  //   ),
-  //   UnorganizedTaskView(
-  //     ui: const TaskViewUI(label: 'Unorganized'),
-  //     id: TaskView.generateId(
-  //       screenName: 'tasks_screen',
-  //       viewName: 'unorganized_tasks_view',
-  //     ),
-  //   ),
-  // ],
 );
 
 /// responsible to maintain the selected task view.
