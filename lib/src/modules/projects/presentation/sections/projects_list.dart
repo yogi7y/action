@@ -10,25 +10,28 @@ class ProjectGridView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _size = MediaQuery.of(context).size.width;
-    final _spacing = ref.watch(spacingProvider);
-    final _cardWidth = (_size - _spacing.lg + _spacing.lg + _spacing.sm) / 2;
+    final size = MediaQuery.of(context).size.width;
+    final spacing = ref.watch(spacingProvider);
+    final cardWidth = (size - spacing.lg + spacing.lg + spacing.sm) / 2;
 
     return ref.watch(projectsProvider).when(
-          data: (projects) => GridView.builder(
-            padding: EdgeInsets.symmetric(horizontal: _spacing.lg),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: _cardWidth,
-              crossAxisSpacing: _spacing.sm,
-              mainAxisSpacing: _spacing.sm,
-              mainAxisExtent: _cardWidth * .7,
-            ),
-            itemCount: projects.length,
-            itemBuilder: (context, index) => ProviderScope(
-              overrides: [
-                scopedProjectProvider.overrideWithValue(projects[index]),
-              ],
-              child: const ProjectCard(),
+          data: (projects) => RefreshIndicator(
+            onRefresh: () async => ref.refresh(projectsProvider),
+            child: GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: spacing.lg),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: cardWidth,
+                crossAxisSpacing: spacing.sm,
+                mainAxisSpacing: spacing.sm,
+                mainAxisExtent: cardWidth * .7,
+              ),
+              itemCount: projects.length,
+              itemBuilder: (context, index) => ProviderScope(
+                overrides: [
+                  scopedProjectProvider.overrideWithValue(projects[index]),
+                ],
+                child: const ProjectCard(),
+              ),
             ),
           ),
           error: (error, _) => Center(

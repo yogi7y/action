@@ -7,6 +7,8 @@ import 'package:action/src/modules/filter/domain/entity/filter.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_entity.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
+import 'package:action/src/modules/tasks/presentation/screens/task_screen.dart';
+import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/task_detail_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
@@ -68,6 +70,9 @@ void main() {
         final container = createContainer(overrides: [
           taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task)),
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+          newTaskProvider.overrideWith(NewTaskTextNotifier.new),
+          selectedTaskViewProvider.overrideWith(SelectedTaskView.new),
+          taskViewProvider.overrideWithValue(taskViews),
         ]);
 
         final notifier = container.read(taskDetailNotifierProvider.notifier);
@@ -103,6 +108,7 @@ void main() {
         final container = createContainer(overrides: [
           taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task)),
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+          ...overrideTasksProvider,
         ]);
 
         final notifier = container.read(taskDetailNotifierProvider.notifier);
@@ -137,6 +143,7 @@ void main() {
         final container = createContainer(overrides: [
           taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(initialTask)),
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+          ...overrideTasksProvider,
         ]);
 
         final notifier = container.read(taskDetailNotifierProvider.notifier);
@@ -175,6 +182,7 @@ void main() {
         final container = createContainer(overrides: [
           taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(task)),
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+          ...overrideTasksProvider,
         ]);
 
         final notifier = container.read(taskDetailNotifierProvider.notifier);
@@ -268,6 +276,7 @@ void main() {
               doneTaskView,
             }),
         taskDetailNotifierProvider.overrideWith(() => TaskDetailNotifier(unorganizedTask3)),
+        ...overrideTasksProvider,
       ]);
 
       // select the unorganized task view

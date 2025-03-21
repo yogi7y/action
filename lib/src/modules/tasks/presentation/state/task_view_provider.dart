@@ -1,54 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entity/task_status.dart';
 import '../models/task_view.dart';
-import '../models/task_view_variants.dart';
 
 final taskViewProvider = Provider<List<TaskView>>(
-  (ref) => [
-    StatusTaskView(
-      status: TaskStatus.inProgress,
-      ui: const TaskViewUI(label: 'In Progress'),
-      id: TaskView.generateId(
-        screenName: 'tasks_screen',
-        viewName: 'in_progress_tasks_view',
-      ),
-    ),
-    StatusTaskView(
-      status: TaskStatus.todo,
-      ui: const TaskViewUI(label: 'Todo'),
-      id: TaskView.generateId(
-        screenName: 'tasks_screen',
-        viewName: 'todo_tasks_view',
-      ),
-    ),
-    StatusTaskView(
-      status: TaskStatus.done,
-      ui: const TaskViewUI(label: 'Done'),
-      id: TaskView.generateId(
-        screenName: 'tasks_screen',
-        viewName: 'done_tasks_view',
-      ),
-    ),
-    AllTasksView(
-      ui: const TaskViewUI(label: 'All'),
-      id: TaskView.generateId(
-        screenName: 'tasks_screen',
-        viewName: 'all_tasks_view',
-      ),
-    ),
-    UnorganizedTaskView(
-      ui: const TaskViewUI(label: 'Unorganized'),
-      id: TaskView.generateId(
-        screenName: 'tasks_screen',
-        viewName: 'unorganized_tasks_view',
-      ),
-    ),
-  ],
+  name: 'taskViewProvider',
+  (ref) => throw UnimplementedError('Ensure to override taskViewProvider with a value'),
+  // (ref) => [
+  //   StatusTaskView(
+  //     status: TaskStatus.inProgress,
+  //     ui: const TaskViewUI(label: 'In Progress'),
+  //     id: TaskView.generateId(
+  //       screenName: 'tasks_screen',
+  //       viewName: 'in_progress_tasks_view',
+  //     ),
+  //   ),
+  //   StatusTaskView(
+  //     status: TaskStatus.todo,
+  //     ui: const TaskViewUI(label: 'Todo'),
+  //     id: TaskView.generateId(
+  //       screenName: 'tasks_screen',
+  //       viewName: 'todo_tasks_view',
+  //     ),
+  //   ),
+  //   StatusTaskView(
+  //     status: TaskStatus.done,
+  //     ui: const TaskViewUI(label: 'Done'),
+  //     id: TaskView.generateId(
+  //       screenName: 'tasks_screen',
+  //       viewName: 'done_tasks_view',
+  //     ),
+  //   ),
+  //   AllTasksView(
+  //     ui: const TaskViewUI(label: 'All'),
+  //     id: TaskView.generateId(
+  //       screenName: 'tasks_screen',
+  //       viewName: 'all_tasks_view',
+  //     ),
+  //   ),
+  //   UnorganizedTaskView(
+  //     ui: const TaskViewUI(label: 'Unorganized'),
+  //     id: TaskView.generateId(
+  //       screenName: 'tasks_screen',
+  //       viewName: 'unorganized_tasks_view',
+  //     ),
+  //   ),
+  // ],
 );
 
-final selectedTaskViewProvider = NotifierProvider<SelectedTaskView, TaskView>(SelectedTaskView.new);
+/// responsible to maintain the selected task view.
+final selectedTaskViewProvider = NotifierProvider<SelectedTaskView, TaskView>(
+  name: 'selectedTaskViewProvider',
+  () => throw UnimplementedError('Ensure to override selectedTaskViewProvider with a value'),
+);
 
 class SelectedTaskView extends Notifier<TaskView> {
   @override
@@ -79,10 +83,12 @@ final loadedTaskViewsProvider = StateProvider<Set<TaskView>>((ref) {
   );
 
   return {};
-});
+}, dependencies: [
+  selectedTaskViewProvider,
+]);
 
-final tasksPageControllerProvider = Provider<PageController>((ref) {
-  final controller = PageController();
-  ref.onDispose(controller.dispose);
-  return controller;
-});
+/// handles the page controller for task so we can navigate between task views
+final tasksPageControllerProvider = Provider<PageController>(
+  (ref) => throw UnimplementedError('Ensure to override tasksPageControllerProvider with a value'),
+  name: 'tasksPageControllerProvider',
+);

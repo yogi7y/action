@@ -14,7 +14,8 @@ final isTaskTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);
 
 /// holds the task entered by the user.
 final newTaskProvider = AutoDisposeNotifierProvider<NewTaskTextNotifier, TaskEntity>(
-  NewTaskTextNotifier.new,
+  name: 'newTaskProvider',
+  () => throw UnimplementedError('Ensure to override newTaskProvider with a value'),
 );
 
 class NewTaskTextNotifier extends AutoDisposeNotifier<TaskEntity> {
@@ -29,7 +30,6 @@ class NewTaskTextNotifier extends AutoDisposeNotifier<TaskEntity> {
 
     var task = const TaskEntity(
       name: '',
-      status: TaskStatus.todo,
     );
 
     if (filter is PropertyFilter) {

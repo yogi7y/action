@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
+import '../../../projects/presentation/state/project_detail_provider.dart';
 import '../../domain/entity/task_entity.dart';
 import '../../domain/entity/task_status.dart';
 import '../../domain/use_case/task_use_case.dart';
@@ -13,7 +14,15 @@ import 'new_task_provider.dart';
 import 'task_view_provider.dart';
 
 final tasksNotifierProvider =
-    AsyncNotifierProviderFamily<TasksNotifier, List<TaskEntity>, TaskView>(TasksNotifier.new);
+    AsyncNotifierProviderFamily<TasksNotifier, List<TaskEntity>, TaskView>(
+  TasksNotifier.new,
+  name: 'tasksNotifierProvider',
+  dependencies: [
+    newTaskProvider,
+    taskUseCaseProvider,
+    loadedTaskViewsProvider,
+  ],
+);
 
 /// [TasksNotifier] is a notifier that contains the list of tasks.
 ///
@@ -82,9 +91,14 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     /// The previous state of the tasks.
     final previousState = previousStateArg ?? state.valueOrNull;
     final now = DateTime.now();
+    final projectId = ref.read(projectNotifierProvider).project.id;
 
     /// Temp optimistic task to render on the UI.
-    final tempOptimisticTask = task.copyWith(createdAt: task.createdAt ?? now);
+    final tempOptimisticTask = task.copyWith(
+      createdAt: task.createdAt ?? now,
+      projectId: projectId,
+    );
+
     final tempTextFieldState = ref.read(newTaskProvider.notifier).controller.text;
 
     // clear textfield
@@ -93,7 +107,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     /// Check in which all the task views the task should be added/updated.
     handleInMemoryTask(tempOptimisticTask);
 
-    final result = await useCase.upsertTask(task);
+    final result = await useCase.upsertTask(tempOptimisticTask);
 
     result.fold(
       onSuccess: (taskResult) {

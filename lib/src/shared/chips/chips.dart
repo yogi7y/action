@@ -11,6 +11,7 @@ class AppChips extends ConsumerWidget {
     this.count = 0,
     this.isSelected = false,
     this.onClick,
+    this.smallerChips = false,
     super.key,
   });
 
@@ -20,6 +21,9 @@ class AppChips extends ConsumerWidget {
   final IconData? icon;
   final VoidCallback? onClick;
 
+  /// Smaller version of the chips.
+  final bool smallerChips;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(appThemeProvider);
@@ -27,15 +31,21 @@ class AppChips extends ConsumerWidget {
     final fonts = ref.watch(fontsProvider);
 
     final chipsTheme = isSelected ? colors.selectedChips : colors.unselectedChips;
-    final labelStyle = isSelected ? fonts.text.md.semibold : fonts.text.md.regular;
+
+    final labelStyle = smallerChips
+        ? fonts.text.sm.medium
+        : isSelected
+            ? fonts.text.md.semibold
+            : fonts.text.md.regular;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onClick,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(
-          horizontal: spacing.md,
-          vertical: spacing.xs,
+          horizontal: smallerChips ? spacing.sm : spacing.md,
+          vertical: smallerChips ? spacing.xxs : spacing.xs,
         ),
         decoration: BoxDecoration(
           color: chipsTheme.background,

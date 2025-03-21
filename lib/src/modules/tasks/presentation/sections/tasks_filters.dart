@@ -17,10 +17,12 @@ typedef TaskFilterView = ({
 class TasksFilters extends ConsumerWidget {
   const TasksFilters({
     required this.filterViews,
+    this.smallerChips = false,
     super.key,
   });
 
   final List<TaskFilterView> filterViews;
+  final bool smallerChips;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,6 +43,7 @@ class TasksFilters extends ConsumerWidget {
                           curve: Curves.linear,
                         ));
                   },
+                  smallerChips: smallerChips,
                   key: filterView.key,
                   label: filterView.filter.ui.label,
                   icon: filterView.filter.ui.icon,

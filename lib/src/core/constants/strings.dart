@@ -6,4 +6,9 @@ abstract class AppStrings {
 
   // Project
   static const failedToFetchProjects = 'Failed to fetch projects from the server';
+
+  static const inProgress = 'In Progress';
+  static const todo = 'Todo';
+  static const done = 'Done';
+  static const all = 'All';
 }

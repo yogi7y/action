@@ -7,6 +7,11 @@ import '../../../../design_system/icons/app_icons.dart';
 import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
+import '../../../tasks/presentation/mixin/task_module_scope.dart';
+import '../../../tasks/presentation/screens/task_module.dart';
+import '../../../tasks/presentation/sections/tasks_filters.dart';
+import '../../../tasks/presentation/state/filter_keys_provider.dart';
+import '../sections/project_task_view.dart';
 import '../state/project_detail_provider.dart';
 import '../widgets/project_detail_header.dart';
 
@@ -23,7 +28,7 @@ class ProjectDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, TaskModuleScope {
   late final ScrollController scrollController = ScrollController();
   late final TabController tabController = TabController(length: 2, vsync: this);
 
@@ -38,27 +43,33 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
   Widget build(BuildContext context) {
     final projectViewModel = ref.watch(projectDetailProvider(widget.projectOrId));
 
-    return ProviderScope(
-      child: Scaffold(
-        body: switch (projectViewModel) {
-          AsyncData(value: final project) => ProviderScope(
-              overrides: [
-                projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
-              ],
-              child: _ProjectDetailDataState(
-                tabController: tabController,
-                controller: scrollController,
+    return Scaffold(
+      body: switch (projectViewModel) {
+        AsyncData(value: final project) => ProviderScope(
+            overrides: [
+              projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
+              ...createTaskModuleScope(
+                TaskModuleData(
+                  taskViews: projectTaskViews(
+                    project.project.id!,
+                  ),
+                  smallerChips: true,
+                  showFilters: false,
+                ),
               ),
+            ],
+            child: _ProjectDetailDataState(
+              tabController: tabController,
+              controller: scrollController,
             ),
-          AsyncError(error: final error) => Center(child: Text(error.toString())),
-          _ => const Center(child: CircularProgressIndicator()),
-        },
-      ),
+          ),
+        AsyncError(error: final error) => Center(child: Text(error.toString())),
+        _ => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
 
-@immutable
 class _ProjectDetailDataState extends ConsumerWidget {
   const _ProjectDetailDataState({
     required this.controller,
@@ -103,11 +114,11 @@ class _ProjectDetailDataState extends ConsumerWidget {
             ),
           ],
           body: Padding(
-            padding: const EdgeInsets.only(top: 20),
+            padding: EdgeInsets.only(top: spacing.sm),
             child: TabBarView(
               controller: tabController,
               children: const [
-                ProjectTaskView(),
+                TaskModule(),
                 Center(child: Text('Pages')),
               ],
             ),
@@ -115,17 +126,6 @@ class _ProjectDetailDataState extends ConsumerWidget {
         ),
       ),
     );
-  }
-}
-
-class ProjectTaskView extends ConsumerWidget {
-  const ProjectTaskView({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    throw UnimplementedError();
   }
 }
 
@@ -142,27 +142,41 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
       builder: (context, ref, _) {
         final colors = ref.watch(appThemeProvider);
         final fonts = ref.watch(fontsProvider);
-
+        final spacing = ref.watch(spacingProvider);
         final textStyle = fonts.headline.xs.medium;
+        ref.watch(filterKeysProvider); // watching for any rebuilds.
 
-        return Container(
-          color: colors.l2Screen.background,
-          padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(top: _topPadding),
-          child: TabBar(
-            tabAlignment: TabAlignment.start,
-            isScrollable: true,
-            controller: tabController,
-            labelPadding: const EdgeInsets.only(right: 20),
-            indicatorSize: TabBarIndicatorSize.label,
-            labelStyle: textStyle,
-            unselectedLabelStyle: textStyle,
-            labelColor: colors.tabBar.selectedTextColor,
-            unselectedLabelColor: colors.tabBar.unselectedTextColor,
-            dividerColor: Colors.transparent,
-            indicatorColor: colors.tabBar.indicator,
-            tabs: const [
-              Tab(text: 'Tasks'),
-              Tab(text: 'Pages'),
+        return ColoredBox(
+          color: colors.surface.background,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: colors.l2Screen.background,
+                padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(top: _topPadding),
+                child: TabBar(
+                  tabAlignment: TabAlignment.start,
+                  isScrollable: true,
+                  controller: tabController,
+                  labelPadding: const EdgeInsets.only(right: 20),
+                  indicatorSize: TabBarIndicatorSize.label,
+                  labelStyle: textStyle,
+                  unselectedLabelStyle: textStyle,
+                  labelColor: colors.tabBar.selectedTextColor,
+                  unselectedLabelColor: colors.tabBar.unselectedTextColor,
+                  dividerColor: Colors.transparent,
+                  indicatorColor: colors.tabBar.indicator,
+                  tabs: const [
+                    Tab(text: 'Tasks'),
+                    Tab(text: 'Pages'),
+                  ],
+                ),
+              ),
+              SizedBox(height: spacing.md),
+              TasksFilters(
+                filterViews: ref.watch(filterKeysProvider.notifier).getFilterViews(),
+                smallerChips: ref.watch(taskModelDataProvider).smallerChips,
+              ),
             ],
           ),
         );
@@ -173,10 +187,10 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   static const _topPadding = 0.0;
 
   @override
-  double get maxExtent => 48 + _topPadding;
+  double get maxExtent => 48 + _topPadding + 48;
 
   @override
-  double get minExtent => 48 + _topPadding;
+  double get minExtent => 48 + _topPadding + 48;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
