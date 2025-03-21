@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../utils/provider_container.dart';
+import 'tasks_provider_test.dart';
 
 class FakeTaskOperation extends Fake implements TaskViewOperations {}
 
@@ -51,6 +52,7 @@ void main() {
         () {
           final container = createContainer(overrides: [
             taskViewProvider.overrideWithValue(fakeTaskViews),
+            ...overrideTasksProvider,
           ])
             ..read(loadedTaskViewsProvider);
 
@@ -67,6 +69,7 @@ void main() {
         () {
           final container = createContainer(overrides: [
             taskViewProvider.overrideWithValue(fakeTaskViews),
+            ...overrideTasksProvider,
           ])
             ..read(loadedTaskViewsProvider);
 

@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final showStickyTextFieldProvider = Provider.autoDispose<bool>((ref) {
-  final currentStickyTextFieldType = ref.watch(currentStickyTextFieldTypeProvider);
-  return currentStickyTextFieldType != null;
+  return false;
+  // final currentStickyTextFieldType = ref.watch(currentStickyTextFieldTypeProvider);
+  // return currentStickyTextFieldType != null;
 });
 
 enum StickyTextFieldType { project, context }

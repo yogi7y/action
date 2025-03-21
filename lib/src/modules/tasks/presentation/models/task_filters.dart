@@ -52,3 +52,28 @@ class StatusFilter extends EqualsFilter {
   @override
   int get hashCode => status.hashCode;
 }
+
+@immutable
+class ProjectFilter extends EqualsFilter {
+  const ProjectFilter(
+    this.projectId,
+  ) : super(
+          key: InMemoryTaskFilterOperations.projectIdKey,
+          value: projectId,
+        );
+
+  final String projectId;
+
+  @override
+  String toString() => 'ProjectFilter(projectId: $projectId)';
+
+  @override
+  bool operator ==(covariant Filter other) {
+    if (identical(this, other)) return true;
+
+    return other is ProjectFilter && other.projectId == projectId;
+  }
+
+  @override
+  int get hashCode => projectId.hashCode;
+}

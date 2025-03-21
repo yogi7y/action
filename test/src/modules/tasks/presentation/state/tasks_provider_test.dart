@@ -4,11 +4,16 @@ import 'dart:async';
 
 import 'package:action/src/core/network/paginated_response.dart';
 import 'package:action/src/modules/filter/domain/entity/filter.dart';
+import 'package:action/src/modules/projects/domain/entity/project.dart';
+import 'package:action/src/modules/projects/presentation/state/project_detail_provider.dart';
+import 'package:action/src/modules/projects/presentation/view_models/project_view_model.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_entity.dart';
 import 'package:action/src/modules/tasks/domain/entity/task_status.dart';
 import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
 import 'package:action/src/modules/tasks/presentation/models/task_view_variants.dart';
+import 'package:action/src/modules/tasks/presentation/screens/task_screen.dart';
+import 'package:action/src/modules/tasks/presentation/state/filter_keys_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
@@ -184,6 +189,7 @@ void main() {
               todoTaskView,
               doneTaskView,
             }),
+        ...overrideTasksProvider
       ]);
 
       taskView = unorganizedTaskView;
@@ -1011,6 +1017,7 @@ void main() {
       final container = createContainer(
         overrides: [
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
+          ...overrideTasksProvider,
         ],
       );
 
@@ -1297,4 +1304,20 @@ class RemoveIfTaskExistsCall {
 
   @override
   int get hashCode => Object.hash(task.id, taskView, index);
+}
+
+final overrideTasksProvider = [
+  newTaskProvider.overrideWith(NewTaskTextNotifier.new),
+  selectedTaskViewProvider.overrideWith(SelectedTaskView.new),
+  taskViewProvider.overrideWithValue(taskViews),
+  filterKeysProvider.overrideWith(FilterKeysNotifier.new),
+  projectNotifierProvider.overrideWith(() => ProjectNotifier(ProjectViewModel(
+        project: FakeProject(),
+        metadata: null,
+      ))),
+];
+
+class FakeProject extends Fake implements ProjectEntity {
+  @override
+  String? get id => null;
 }

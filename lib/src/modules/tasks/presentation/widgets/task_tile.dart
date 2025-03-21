@@ -44,7 +44,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           children: [
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async => context.goNamed(
+              onTap: () async => context.pushNamed(
                 AppRoute.taskDetail.name,
                 extra: (value: (data: task, id: null), index: index),
                 pathParameters: {'id': task.id ?? ''},

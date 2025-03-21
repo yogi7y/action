@@ -37,7 +37,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
-            const AppHeader(title: 'Projects'),
+            const AppHeader(title: 'Projects', isSliver: true),
             SliverToBoxAdapter(
               child: ChipTabBar(
                 pageController: _pageController,

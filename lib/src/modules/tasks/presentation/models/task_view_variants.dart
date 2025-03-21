@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 
 import '../../../filter/domain/entity/composite/and_filter.dart';
-import '../../../filter/domain/entity/variants/not_filter.dart';
 import '../../../filter/domain/entity/variants/select_filter.dart';
 import '../../domain/entity/task_status.dart';
 import 'task_filters.dart';
@@ -20,6 +19,28 @@ class StatusTaskView extends TaskView {
         );
 
   final TaskStatus status;
+}
+
+class ProjectTaskView extends TaskView {
+  ProjectTaskView({
+    required this.projectId,
+    required super.ui,
+    required super.id,
+    this.status,
+  }) : super(
+          operations: TaskViewOperations(
+            filter: AndFilter(
+              [
+                const OrganizedFilter(),
+                ProjectFilter(projectId),
+                if (status != null) StatusFilter(status),
+              ],
+            ),
+          ),
+        );
+
+  final String projectId;
+  final TaskStatus? status;
 }
 
 @immutable

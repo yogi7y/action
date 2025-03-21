@@ -24,5 +24,6 @@ final projectByIdProvider = Provider.family<ProjectViewModel?, String>((ref, pro
   );
 });
 
+/// Overriding in the list view while rendering the project card.
 final scopedProjectProvider = Provider<ProjectViewModel>(
     (ref) => throw UnimplementedError('Ensure to override scopedProjectProvider'));

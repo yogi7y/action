@@ -6,7 +6,7 @@ import '../../modules/home/presentation/screens/home_screen.dart';
 import '../../modules/pages/presentation/screens/pages_screen.dart';
 import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
-import '../../modules/tasks/presentation/screens/tasks_screen.dart';
+import '../../modules/tasks/presentation/screens/task_screen.dart';
 import '../../modules/tasks/presentation/state/task_detail_provider.dart';
 import 'handlers/project_detail_route_handler.dart';
 import 'route_adapter.dart';
@@ -62,7 +62,7 @@ final shellBranches = [
       GoRoute(
           name: AppRoute.tasks.name,
           path: AppRoute.tasks.path,
-          builder: (context, state) => const TasksScreen(),
+          builder: (context, state) => const TaskScreen(),
           routes: [
             GoRoute(
               name: AppRoute.taskDetail.name,
