@@ -65,7 +65,7 @@ class PropertyData {
     this.isRemovable = false,
     this.onRemove,
     this.value,
-    this.onTap,
+    this.onValueTap,
   });
 
   final String label;
@@ -74,7 +74,10 @@ class PropertyData {
   final String valuePlaceholder;
   final bool isRemovable;
   final VoidCallback? onRemove;
-  final VoidCallback? onTap;
+
+  /// Called when the value section of the tile is clicked.
+  /// The [position] parameter contains the global offset of the tile from the top-left corner.
+  final void Function(Offset position)? onValueTap;
 }
 
 class SelectedValueWidget extends ConsumerWidget {
@@ -124,27 +127,22 @@ class _PropertyTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: data.onTap,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: _PropertyTileLabel(
-              data: data,
-            ),
-          ),
-          Expanded(
-            flex: 8,
-            child: _PropertyTileValue(data: data),
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: _PropertyTileLabel(data: data),
+        ),
+        Expanded(
+          flex: 8,
+          child: _PropertyTileValue(data: data),
+        ),
+      ],
     );
   }
 }
 
-class _PropertyTileValue extends ConsumerWidget {
+class _PropertyTileValue extends ConsumerStatefulWidget {
   const _PropertyTileValue({
     required this.data,
   });
@@ -152,38 +150,60 @@ class _PropertyTileValue extends ConsumerWidget {
   final PropertyData data;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PropertyTileValue> createState() => _PropertyTileValueState();
+}
+
+class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
+  final _key = GlobalKey();
+
+  void _handleTap() {
+    final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final position = renderBox.localToGlobal(Offset.zero);
+      widget.data.onValueTap?.call(position);
+    } else {
+      widget.data.onValueTap?.call(Offset.zero);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final spacing = ref.watch(spacingProvider);
     final color = ref.watch(appThemeProvider);
     final fonts = ref.watch(fontsProvider);
-    final hasValue = data.value != null;
+    final hasValue = widget.data.value != null;
 
     final theme =
         hasValue ? color.textDetailOverviewTileHasValue : color.textDetailOverviewTileNoValue;
 
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            margin: EdgeInsets.only(left: spacing.sm),
-            alignment: Alignment.centerLeft,
-            child: hasValue
-                ? data.value
-                : _placeholderWidget(
-                    fonts: fonts,
-                    color: theme,
-                    ref: ref,
-                  ),
+    return GestureDetector(
+      key: _key,
+      behavior: HitTestBehavior.opaque,
+      onTap: _handleTap,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(left: spacing.sm),
+              alignment: Alignment.centerLeft,
+              child: hasValue
+                  ? widget.data.value
+                  : _placeholderWidget(
+                      fonts: fonts,
+                      color: theme,
+                      ref: ref,
+                    ),
+            ),
           ),
-        ),
-        if (data.value != null && data.isRemovable)
-          AppIconButton(
-            icon: AppIcons.xmark,
-            size: 20,
-            color: color.textTokens.tertiary,
-            onClick: data.onRemove,
-          ),
-      ],
+          if (widget.data.value != null && widget.data.isRemovable)
+            AppIconButton(
+              icon: AppIcons.xmark,
+              size: 20,
+              color: color.textTokens.tertiary,
+              onClick: widget.data.onRemove,
+            ),
+        ],
+      ),
     );
   }
 
@@ -197,7 +217,7 @@ class _PropertyTileValue extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          data.valuePlaceholder,
+          widget.data.valuePlaceholder,
           style: fonts.text.sm.regular.copyWith(
             color: color.valueForeground,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meta/meta.dart';
 
 import '../dark/dark_theme.dart';
 import '../light/light_theme.dart';
@@ -8,6 +9,8 @@ import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/l2_screen_header_tokens.dart';
+import 'semantics/overlay.dart';
+import 'semantics/overlay_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
@@ -78,6 +81,7 @@ abstract class AppTheme extends BaseTheme {
     required this.textDetailOverviewTileNoValue,
     required this.l2Screen,
     required this.tabBar,
+    required this.overlay,
   });
 
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -100,4 +104,5 @@ abstract class AppTheme extends BaseTheme {
   final TextDetailOverviewTileTokens textDetailOverviewTileNoValue;
   final L2ScreenHeaderTokens l2Screen;
   final TabBarTokens tabBar;
+  final OverlayTokens overlay;
 }

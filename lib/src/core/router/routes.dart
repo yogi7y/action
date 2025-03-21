@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../modules/area/presentation/screens/area_screen.dart';
@@ -72,9 +73,14 @@ final shellBranches = [
 
                 if (task == null) throw Exception('TaskDetailRouteData is required');
 
-                return TaskDetailScreen(
-                  taskDataOrId: task.value!,
-                  index: task.index,
+                final container = ProviderScope.containerOf(context);
+
+                return UncontrolledProviderScope(
+                  container: container,
+                  child: TaskDetailScreen(
+                    taskDataOrId: task.value!,
+                    index: task.index,
+                  ),
                 );
               },
             ),
