@@ -188,7 +188,7 @@ class TaskDetailProperties extends ConsumerWidget {
               }),
               dayForegroundColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.disabled)) {
-                  return colors.textTokens.tertiary.withOpacity(0.5);
+                  return colors.textTokens.tertiary.withValues(alpha: .5);
                 }
                 if (states.contains(WidgetState.selected)) {
                   return colors.textTokens.primary;
