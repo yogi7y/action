@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../design_system/icons/app_icons.dart';
 import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
-import '../../domain/entity/project.dart';
 import '../state/project_picker_provider.dart';
+import '../view_models/project_view_model.dart';
 
 class ProjectPicker extends ConsumerStatefulWidget {
   const ProjectPicker({
@@ -84,7 +84,8 @@ class _ProjectPickerState extends ConsumerState<ProjectPicker> {
             ),
           ),
           // Picker UI
-          Positioned(
+          AnimatedPositioned(
+            duration: defaultAnimationDuration,
             bottom: 0,
             left: 0,
             right: 0,
@@ -240,7 +241,7 @@ class _ProjectPickerResults extends ConsumerWidget {
       itemBuilder: (context, index) {
         final projectViewModel = filteredProjects[index];
         return ProjectPickerItem(
-          project: projectViewModel.project,
+          project: projectViewModel,
         );
       },
     );
@@ -252,7 +253,7 @@ class ProjectPickerItem extends ConsumerWidget {
     required this.project,
     super.key,
   });
-  final ProjectEntity project;
+  final ProjectViewModel project;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -293,7 +294,7 @@ class ProjectPickerItem extends ConsumerWidget {
             SizedBox(width: spacing.sm),
             Expanded(
               child: Text(
-                project.name,
+                project.project.name,
                 style: fonts.text.sm.medium.copyWith(
                   color: colors.textTokens.primary,
                 ),

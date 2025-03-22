@@ -27,7 +27,6 @@ class TaskDetailProperties extends ConsumerWidget {
     final projectViewModel = ref.watch(projectByIdProvider(task.projectId ?? ''));
     // ignore: no_leading_underscores_for_local_identifiers
     final _context = ref.watch(contextByIdProvider(task.contextId ?? ''));
-    final project = projectViewModel?.project;
     final colors = ref.watch(appThemeProvider);
 
     final properties = <PropertyData>[
@@ -95,7 +94,7 @@ class TaskDetailProperties extends ConsumerWidget {
         overlayChildBuilder: (context, controller) => ProjectPicker(
           controller: controller,
           data: ProjectPickerData(
-            selectedProject: project,
+            selectedProject: projectViewModel,
             onRemove: (entity) async {
               return ref
                   .read(taskDetailNotifierProvider.notifier)
@@ -103,13 +102,13 @@ class TaskDetailProperties extends ConsumerWidget {
             },
             onProjectSelected: (project) async => ref
                 .read(taskDetailNotifierProvider.notifier)
-                .updateTask((task) => task.copyWith(projectId: project.id)),
+                .updateTask((task) => task.copyWith(projectId: project.project.id)),
           ),
         ),
-        value: project?.name != null
+        value: projectViewModel?.project.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.hammerOutlined,
-                label: project?.name ?? '',
+                label: projectViewModel?.project.name ?? '',
               )
             : null,
       ),

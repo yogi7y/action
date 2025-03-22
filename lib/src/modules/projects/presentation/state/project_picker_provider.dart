@@ -36,7 +36,7 @@ extension ProjectPickerTextControllerSync on TextEditingController {
 }
 
 /// Provider to hold the currently selected project in the picker
-final selectedProjectPickerProvider = StateProvider<ProjectEntity?>((ref) => null);
+final selectedProjectPickerProvider = StateProvider<ProjectViewModel?>((ref) => null);
 
 final projectPickerDataProvider = Provider<ProjectPickerData>(
   (ref) => throw UnimplementedError('Ensure to override projectPickerDataProvider'),
@@ -52,13 +52,13 @@ class ProjectPickerData {
   });
 
   /// Called when a project is selected.
-  final void Function(ProjectEntity entity) onProjectSelected;
+  final void Function(ProjectViewModel viewModel) onProjectSelected;
 
   /// Called when a project is removed.
-  final void Function(ProjectEntity entity)? onRemove;
+  final void Function(ProjectViewModel viewModel)? onRemove;
 
   /// Selected project.
-  final ProjectEntity? selectedProject;
+  final ProjectViewModel? selectedProject;
 
   @override
   String toString() => 'ProjectPickerData(onProjectSelected: $onProjectSelected)';

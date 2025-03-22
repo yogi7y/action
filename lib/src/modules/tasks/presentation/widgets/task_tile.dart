@@ -55,9 +55,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                 );
               },
               child: Container(
-                padding: EdgeInsets.only(
-                  right: spacing.lg,
-                ),
+                padding: EdgeInsets.only(right: spacing.lg, bottom: spacing.xxs),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
