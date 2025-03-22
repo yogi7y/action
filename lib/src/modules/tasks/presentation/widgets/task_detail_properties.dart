@@ -174,13 +174,22 @@ class TaskDetailProperties extends ConsumerWidget {
               headerHeadlineStyle: fonts.text.lg.medium.copyWith(
                 color: colors.textTokens.primary,
               ),
+              weekdayStyle: fonts.text.xs.medium.copyWith(
+                color: colors.textTokens.secondary,
+              ),
               dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
                   return colors.primary;
                 }
+                if (states.contains(WidgetState.disabled)) {
+                  return Colors.transparent;
+                }
                 return Colors.transparent;
               }),
               dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return colors.textTokens.tertiary.withOpacity(0.5);
+                }
                 if (states.contains(WidgetState.selected)) {
                   return colors.textTokens.primary;
                 }
