@@ -44,11 +44,16 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           children: [
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async => context.pushNamed(
-                AppRoute.taskDetail.name,
-                extra: (value: (data: task, id: null), index: index),
-                pathParameters: {'id': task.id ?? ''},
-              ),
+              onTap: () {
+                final container = ProviderScope.containerOf(context);
+                unawaited(
+                  context.pushNamed(
+                    AppRoute.taskDetail.name,
+                    extra: (value: (data: task, id: null), index: index, container: container),
+                    pathParameters: {'id': task.id ?? ''},
+                  ),
+                );
+              },
               child: Container(
                 padding: EdgeInsets.only(
                   right: spacing.lg,

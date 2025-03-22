@@ -16,7 +16,9 @@ final selectedTaskViewProvider = NotifierProvider<SelectedTaskView, TaskView>(
 
 class SelectedTaskView extends Notifier<TaskView> {
   @override
-  TaskView build() => ref.read(taskViewProvider).first;
+  TaskView build() {
+    return ref.read(taskViewProvider).first;
+  }
 
   void selectByIndex(int index) {
     final filters = ref.read(taskViewProvider);
