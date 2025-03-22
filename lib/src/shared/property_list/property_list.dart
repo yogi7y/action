@@ -66,6 +66,7 @@ class PropertyData {
     this.onRemove,
     this.value,
     this.onValueTap,
+    this.overlayChildBuilder,
   });
 
   final String label;
@@ -77,7 +78,13 @@ class PropertyData {
 
   /// Called when the value section of the tile is clicked.
   /// The [position] parameter contains the global offset of the tile from the top-left corner.
-  final void Function(Offset position)? onValueTap;
+  /// The [controller] parameter contains the controller of the overlay portal.
+  /// Either of one should be used.
+  final void Function(Offset position, OverlayPortalController controller)? onValueTap;
+
+  /// Optional builder for overlay child content.
+  /// Use this to build custom overlay content when the tile is tapped.
+  final WidgetBuilder? overlayChildBuilder;
 }
 
 class SelectedValueWidget extends ConsumerWidget {
@@ -155,14 +162,15 @@ class _PropertyTileValue extends ConsumerStatefulWidget {
 
 class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
   final _key = GlobalKey();
+  late final _controller = OverlayPortalController();
 
   void _handleTap() {
     final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final position = renderBox.localToGlobal(Offset.zero);
-      widget.data.onValueTap?.call(position);
+      widget.data.onValueTap?.call(position, _controller);
     } else {
-      widget.data.onValueTap?.call(Offset.zero);
+      widget.data.onValueTap?.call(Offset.zero, _controller);
     }
   }
 
@@ -180,29 +188,34 @@ class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
       key: _key,
       behavior: HitTestBehavior.opaque,
       onTap: _handleTap,
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: spacing.sm),
-              alignment: Alignment.centerLeft,
-              child: hasValue
-                  ? widget.data.value
-                  : _placeholderWidget(
-                      fonts: fonts,
-                      color: theme,
-                      ref: ref,
-                    ),
+      child: OverlayPortal(
+        controller: _controller,
+        overlayChildBuilder:
+            widget.data.overlayChildBuilder ?? (context) => const SizedBox.shrink(),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.only(left: spacing.sm),
+                alignment: Alignment.centerLeft,
+                child: hasValue
+                    ? widget.data.value
+                    : _placeholderWidget(
+                        fonts: fonts,
+                        color: theme,
+                        ref: ref,
+                      ),
+              ),
             ),
-          ),
-          if (widget.data.value != null && widget.data.isRemovable)
-            AppIconButton(
-              icon: AppIcons.xmark,
-              size: 20,
-              color: color.textTokens.tertiary,
-              onClick: widget.data.onRemove,
-            ),
-        ],
+            if (widget.data.value != null && widget.data.isRemovable)
+              AppIconButton(
+                icon: AppIcons.xmark,
+                size: 20,
+                color: color.textTokens.tertiary,
+                onClick: widget.data.onRemove,
+              ),
+          ],
+        ),
       ),
     );
   }

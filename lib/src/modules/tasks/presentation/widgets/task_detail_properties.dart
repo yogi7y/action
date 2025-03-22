@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../design_system/icons/app_icons.dart';
-import '../../../../shared/buttons/clickable_svg.dart';
-import '../../../../shared/checkbox/checkbox.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
 import '../../../context/presentation/state/context_provider.dart';
@@ -39,7 +37,7 @@ class TaskDetailProperties extends ConsumerWidget {
           state: task.status.toAppCheckboxState(),
           label: task.status.displayStatus,
         ),
-        onValueTap: (position) async {
+        onValueTap: (position, _) async {
           final x = position.dx + 20;
           final y = position.dy + 40;
 
@@ -91,6 +89,11 @@ class TaskDetailProperties extends ConsumerWidget {
         labelIcon: AppIcons.hammerOutlined,
         valuePlaceholder: 'Empty',
         isRemovable: true,
+        onValueTap: (position, controller) {
+          // projectController.openAndFocus();
+          controller.toggle();
+        },
+        overlayChildBuilder: (context) => const ProjectPicker(),
         value: project?.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.hammerOutlined,
@@ -116,4 +119,214 @@ class TaskDetailProperties extends ConsumerWidget {
       properties: properties,
     );
   }
+}
+
+class ProjectPicker extends ConsumerStatefulWidget {
+  const ProjectPicker({
+    super.key,
+  });
+
+  @override
+  ConsumerState<ProjectPicker> createState() => _ProjectPickerState();
+}
+
+class _ProjectPickerState extends ConsumerState<ProjectPicker> {
+  late final TextEditingController _textController;
+  late final FocusNode _focusNode;
+
+  // Mock data for projects
+  final List<MockProject> _mockProjects = [
+    MockProject(id: '1', name: 'Q2 Marketing Strategy'),
+    MockProject(id: '2', name: 'Website Redesign'),
+    MockProject(id: '3', name: 'Learning Spanish'),
+    MockProject(id: '4', name: 'Photography Portfolio'),
+    MockProject(id: '5', name: 'Client Proposal: Acme Corp'),
+    MockProject(id: '6', name: 'Client Proposal: Acme Corp'),
+    MockProject(id: '7', name: 'Client Proposal: Acme Corp'),
+    MockProject(id: '8', name: 'Client Proposal: Acme Corp'),
+    MockProject(id: '9', name: 'Client Proposal: Acme Corp'),
+    MockProject(id: '10', name: 'Client Proposal: Acme Corp'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Results card
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: spacing.md),
+            constraints: BoxConstraints(
+              maxHeight: screenHeight * 0.35,
+            ),
+            decoration: ShapeDecoration(
+              color: colors.overlay.background,
+              shape: SmoothRectangleBorder(
+                borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1),
+                side: BorderSide(color: colors.overlay.borderStroke),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              itemCount: _mockProjects.length,
+              itemBuilder: (context, index) {
+                final project = _mockProjects[index];
+                return ProjectPickerItem(
+                  project: project,
+                  onTap: () {
+                    // Project selection logic would go here
+                  },
+                );
+              },
+            ),
+          ),
+
+          // Small spacing
+          SizedBox(height: spacing.sm),
+
+          // Search field at the bottom
+          Container(
+            margin: EdgeInsets.fromLTRB(spacing.md, 0, spacing.md, spacing.sm),
+            child: TextField(
+              autofocus: true,
+              controller: _textController,
+              focusNode: _focusNode,
+              style: fonts.text.md.regular.copyWith(
+                color: colors.textTokens.primary,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Search projects...',
+                hintStyle: fonts.text.md.regular.copyWith(
+                  color: colors.textTokens.secondary,
+                ),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Icon(
+                    AppIcons.search,
+                    size: 20,
+                    color: colors.textTokens.secondary,
+                  ),
+                ),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 44,
+                  minHeight: 44,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: colors.overlay.borderStroke,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: colors.overlay.borderStroke,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: colors.overlay.borderStroke,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                filled: true,
+                fillColor: colors.surface.backgroundContrast,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProjectPickerItem extends ConsumerWidget {
+  final MockProject project;
+  final VoidCallback onTap;
+
+  const ProjectPickerItem({
+    required this.project,
+    required this.onTap,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final spacing = ref.watch(spacingProvider);
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.sm),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: colors.overlay.borderStroke.withOpacity(0.3),
+              width: 0.5,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              AppIcons.hammerOutlined,
+              size: 20,
+              color: colors.textTokens.secondary,
+            ),
+            SizedBox(width: spacing.sm),
+            Expanded(
+              child: Text(
+                project.name,
+                style: fonts.text.sm.medium.copyWith(
+                  color: colors.textTokens.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Mock data class
+class MockProject {
+  final String id;
+  final String name;
+
+  MockProject({required this.id, required this.name});
 }
