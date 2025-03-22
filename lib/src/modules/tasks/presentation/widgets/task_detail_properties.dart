@@ -9,6 +9,7 @@ import '../../../../design_system/icons/app_icons.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
 import '../../../context/presentation/state/context_provider.dart';
+import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/task_detail_provider.dart';
@@ -93,7 +94,9 @@ class TaskDetailProperties extends ConsumerWidget {
           // projectController.openAndFocus();
           controller.toggle();
         },
-        overlayChildBuilder: (context) => const ProjectPicker(),
+        overlayChildBuilder: (context, controller) => ProjectPicker(
+          controller: controller,
+        ),
         value: project?.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.hammerOutlined,
@@ -123,8 +126,11 @@ class TaskDetailProperties extends ConsumerWidget {
 
 class ProjectPicker extends ConsumerStatefulWidget {
   const ProjectPicker({
+    required this.controller,
     super.key,
   });
+
+  final OverlayPortalController controller;
 
   @override
   ConsumerState<ProjectPicker> createState() => _ProjectPickerState();
@@ -153,6 +159,34 @@ class _ProjectPickerState extends ConsumerState<ProjectPicker> {
     super.initState();
     _textController = TextEditingController();
     _focusNode = FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _overlayAndKeyboardVisibilitySync();
+      // Listen to keyboard visibility changes
+      // ref.listen(keyboardVisibilityProvider, (_, keyboardVisibleAsync) {
+      //   if (keyboardVisibleAsync.value == true) {
+      //     widget.controller.show();
+      //   } else if (keyboardVisibleAsync.value == false) {
+      //     widget.controller.hide();
+      //   }
+      // });
+      // widget.controller.show();
+    });
+    // }
+  }
+
+  /// sync overlay's visibility with keyboard's visibility
+  /// should be shown when keyboard is shown
+  /// should be hidden when keyboard is hidden
+  void _overlayAndKeyboardVisibilitySync() {
+    ref.listenManual(
+      keyboardVisibilityProvider,
+      (_, next) {
+        final nextValue = next.valueOrNull ?? false;
+
+        if (!nextValue) widget.controller.hide();
+      },
+    );
   }
 
   @override
@@ -169,105 +203,126 @@ class _ProjectPickerState extends ConsumerState<ProjectPicker> {
     final spacing = ref.watch(spacingProvider);
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Results card
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: spacing.md),
-            constraints: BoxConstraints(
-              maxHeight: screenHeight * 0.35,
+    return Stack(
+      children: [
+        // Invisible overlay to detect taps outside
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              widget.controller.hide();
+            },
+            child: Container(
+              color: Colors.transparent,
             ),
-            decoration: ShapeDecoration(
-              color: colors.overlay.background,
-              shape: SmoothRectangleBorder(
-                borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1),
-                side: BorderSide(color: colors.overlay.borderStroke),
-              ),
-              shadows: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: .2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+          ),
+        ),
+        // Picker UI
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Results card
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: spacing.md),
+                constraints: BoxConstraints(
+                  maxHeight: screenHeight * 0.35,
                 ),
-              ],
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: _mockProjects.length,
-              itemBuilder: (context, index) {
-                final project = _mockProjects[index];
-                return ProjectPickerItem(
-                  project: project,
-                  onTap: () {
-                    // Project selection logic would go here
+                decoration: ShapeDecoration(
+                  color: colors.overlay.background,
+                  shape: SmoothRectangleBorder(
+                    borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1),
+                    side: BorderSide(color: colors.overlay.borderStroke),
+                  ),
+                  shadows: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: _mockProjects.length,
+                  itemBuilder: (context, index) {
+                    final project = _mockProjects[index];
+                    return ProjectPickerItem(
+                      project: project,
+                      onTap: () {
+                        // Project selection logic would go here
+                      },
+                    );
                   },
-                );
-              },
-            ),
-          ),
-
-          // Small spacing
-          SizedBox(height: spacing.sm),
-
-          // Search field at the bottom
-          Container(
-            margin: EdgeInsets.fromLTRB(spacing.md, 0, spacing.md, spacing.sm),
-            child: TextField(
-              autofocus: true,
-              controller: _textController,
-              focusNode: _focusNode,
-              style: fonts.text.md.regular.copyWith(
-                color: colors.textTokens.primary,
+                ),
               ),
-              decoration: InputDecoration(
-                hintText: 'Search projects...',
-                hintStyle: fonts.text.md.regular.copyWith(
-                  color: colors.textTokens.secondary,
-                ),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Icon(
-                    AppIcons.search,
-                    size: 20,
-                    color: colors.textTokens.secondary,
+
+              // Small spacing
+              SizedBox(height: spacing.sm),
+
+              // Search field at the bottom
+              GestureDetector(
+                // Prevent taps on TextField from closing the overlay
+                onTap: () {},
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(spacing.md, 0, spacing.md, spacing.sm),
+                  child: TextField(
+                    autofocus: true,
+                    controller: _textController,
+                    focusNode: _focusNode,
+                    style: fonts.text.md.regular.copyWith(
+                      color: colors.textTokens.primary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search projects...',
+                      hintStyle: fonts.text.md.regular.copyWith(
+                        color: colors.textTokens.secondary,
+                      ),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Icon(
+                          AppIcons.search,
+                          size: 20,
+                          color: colors.textTokens.secondary,
+                        ),
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 44,
+                        minHeight: 44,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colors.overlay.borderStroke,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colors.overlay.borderStroke,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colors.overlay.borderStroke,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      filled: true,
+                      fillColor: colors.surface.backgroundContrast,
+                    ),
                   ),
                 ),
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 44,
-                  minHeight: 44,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: colors.overlay.borderStroke,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: colors.overlay.borderStroke,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: colors.overlay.borderStroke,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                filled: true,
-                fillColor: colors.surface.backgroundContrast,
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

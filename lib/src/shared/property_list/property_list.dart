@@ -84,7 +84,9 @@ class PropertyData {
 
   /// Optional builder for overlay child content.
   /// Use this to build custom overlay content when the tile is tapped.
-  final WidgetBuilder? overlayChildBuilder;
+  /// The controller parameter gives access to the OverlayPortalController.
+  final Widget Function(BuildContext context, OverlayPortalController controller)?
+      overlayChildBuilder;
 }
 
 class SelectedValueWidget extends ConsumerWidget {
@@ -190,8 +192,11 @@ class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
       onTap: _handleTap,
       child: OverlayPortal(
         controller: _controller,
-        overlayChildBuilder:
-            widget.data.overlayChildBuilder ?? (context) => const SizedBox.shrink(),
+        overlayChildBuilder: (context) {
+          return widget.data.overlayChildBuilder != null
+              ? widget.data.overlayChildBuilder!(context, _controller)
+              : const SizedBox.shrink();
+        },
         child: Row(
           children: [
             Expanded(
