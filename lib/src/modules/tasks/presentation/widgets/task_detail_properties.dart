@@ -15,7 +15,6 @@ import '../../../../shared/status/status.dart';
 import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/project_picker_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
-import '../../../projects/presentation/view_models/project_view_model.dart';
 import '../../../projects/presentation/widgets/project_picker.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/task_detail_provider.dart';
@@ -30,8 +29,7 @@ class TaskDetailProperties extends ConsumerWidget {
     final task = ref.watch(taskDetailNotifierProvider);
 
     final projectViewModel = ref.watch(projectByIdProvider(task.projectId ?? ''));
-    // ignore: no_leading_underscores_for_local_identifiers
-    final _context = ref.watch(contextByIdProvider(task.contextId ?? ''));
+    final context_ = ref.watch(contextByIdProvider(task.contextId ?? ''));
 
     final properties = <PropertyTileData>[
       PropertyTileData(
@@ -47,7 +45,9 @@ class TaskDetailProperties extends ConsumerWidget {
       PropertyTileData(
         label: 'Due',
         labelIcon: AppIcons.calendarOutlined,
-        valuePlaceholder: 'Empty',
+        valuePlaceholder: 'Set due date',
+        onValueTap: (position, _) async => _onDueDateTap(context, ref),
+        action: task.dueDate != null ? const _DueDateTileAction() : null,
         child: task.dueDate != null
             ? SelectedValueWidget(
                 label: task.dueDate?.relativeDate ?? '',
@@ -59,7 +59,7 @@ class TaskDetailProperties extends ConsumerWidget {
         labelIcon: AppIcons.hammerOutlined,
         valuePlaceholder: 'Empty',
         onValueTap: (position, controller) => controller.toggle(),
-        actionBuilder: const _ProjectTileAction(),
+        action: const _ProjectTileAction(),
         overlayChildBuilder: (context, controller) => ProjectPicker(
           controller: controller,
           data: ProjectPickerData(
@@ -85,10 +85,10 @@ class TaskDetailProperties extends ConsumerWidget {
         label: 'Context',
         labelIcon: AppIcons.tagOutlined,
         valuePlaceholder: 'Empty',
-        child: _context?.name != null
+        child: context_?.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.tagOutlined,
-                label: _context?.name ?? '',
+                label: context_?.name ?? '',
               )
             : null,
       ),
@@ -135,6 +135,87 @@ class TaskDetailProperties extends ConsumerWidget {
 
     return;
   }
+
+  Future<void> _onDueDateTap(BuildContext context, WidgetRef ref) async {
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final task = ref.read(taskDetailNotifierProvider);
+
+    final initialDate = task.dueDate ?? DateTime.now();
+    final firstDate = DateTime.now();
+    final lastDate = DateTime.now().add(const Duration(days: 365 * 2));
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: colors.primary,
+              onPrimary: colors.textTokens.primary,
+              surface: colors.surface.modals,
+              onSurface: colors.textTokens.primary,
+            ),
+            dialogBackgroundColor: colors.surface.modals,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: colors.textTokens.secondary,
+                textStyle: fonts.text.sm.medium,
+              ),
+            ),
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: colors.surface.modals,
+              dayStyle: fonts.text.sm.medium,
+              yearStyle: fonts.text.sm.medium,
+              headerHelpStyle: fonts.text.sm.medium,
+              headerHeadlineStyle: fonts.text.lg.medium.copyWith(
+                color: colors.textTokens.primary,
+              ),
+              dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return colors.primary;
+                }
+                return Colors.transparent;
+              }),
+              dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return colors.textTokens.primary;
+                }
+                return colors.textTokens.primary;
+              }),
+              dividerColor: Colors.transparent,
+              shape: SmoothRectangleBorder(
+                borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1),
+              ),
+              surfaceTintColor: Colors.transparent,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      // Combine the picked date with the current time
+      final now = DateTime.now();
+      final combinedDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        now.hour,
+        now.minute,
+      );
+
+      await ref
+          .read(taskDetailNotifierProvider.notifier)
+          .updateTask((task) => task.copyWith(dueDate: combinedDateTime));
+    }
+
+    return;
+  }
 }
 
 class _ProjectTileAction extends ConsumerWidget {
@@ -158,6 +239,31 @@ class _ProjectTileAction extends ConsumerWidget {
         height: 20,
         width: 20,
         child: Placeholder(),
+      ),
+    );
+  }
+}
+
+class _DueDateTileAction extends ConsumerWidget {
+  const _DueDateTileAction();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = ref.watch(appThemeProvider);
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () async => ref
+          .read(taskDetailNotifierProvider.notifier)
+          .updateTask((task) => task.mark(dueDateAsNull: true)),
+      child: SizedBox(
+        height: 20,
+        width: 20,
+        child: Icon(
+          AppIcons.xmark,
+          size: 20,
+          color: colors.textTokens.tertiary,
+        ),
       ),
     );
   }

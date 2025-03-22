@@ -62,7 +62,7 @@ class PropertyTileData {
     required this.label,
     required this.labelIcon,
     required this.valuePlaceholder,
-    this.actionBuilder,
+    this.action,
     this.child,
     this.onValueTap,
     this.overlayChildBuilder,
@@ -74,7 +74,7 @@ class PropertyTileData {
   final Widget? child;
 
   /// The widget to the rightmost side when value is present.
-  final Widget? actionBuilder;
+  final Widget? action;
 
   final String valuePlaceholder;
 
@@ -214,8 +214,7 @@ class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
                       ),
               ),
             ),
-            if (widget.data.child != null && widget.data.actionBuilder != null)
-              widget.data.actionBuilder!,
+            if (widget.data.child != null && widget.data.action != null) widget.data.action!,
           ],
         ),
       ),
