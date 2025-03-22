@@ -94,7 +94,9 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     String? projectId;
     try {
       projectId = ref.read(projectNotifierProvider).project.id;
-    } catch (e) {}
+    } catch (e) {
+      projectId = null;
+    }
 
     /// Temp optimistic task to render on the UI.
     final tempOptimisticTask = task.copyWith(

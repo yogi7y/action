@@ -95,6 +95,12 @@ class TaskDetailProperties extends ConsumerWidget {
         overlayChildBuilder: (context, controller) => ProjectPicker(
           controller: controller,
           data: ProjectPickerData(
+            selectedProject: project,
+            onRemove: (entity) async {
+              return ref
+                  .read(taskDetailNotifierProvider.notifier)
+                  .updateTask((task) => task.mark(projectIdAsNull: true));
+            },
             onProjectSelected: (project) async => ref
                 .read(taskDetailNotifierProvider.notifier)
                 .updateTask((task) => task.copyWith(projectId: project.id)),

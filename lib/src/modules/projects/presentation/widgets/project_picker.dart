@@ -69,6 +69,7 @@ class _ProjectPickerState extends ConsumerState<ProjectPicker> {
     return ProviderScope(
       overrides: [
         projectPickerDataProvider.overrideWithValue(widget.data),
+        selectedProjectPickerProvider.overrideWith((ref) => widget.data.selectedProject),
       ],
       child: Stack(
         children: [
@@ -222,9 +223,6 @@ class _ProjectPickerResults extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Find the parent widget to access the controller
-    final projectPickerState = context.findAncestorStateOfType<_ProjectPickerState>();
-
     // Get the current query from the provider
     final query = ref.watch(projectPickerQueryProvider);
 
@@ -243,12 +241,6 @@ class _ProjectPickerResults extends ConsumerWidget {
         final projectViewModel = filteredProjects[index];
         return ProjectPickerItem(
           project: projectViewModel.project,
-          onTap: () {
-            // Hide the overlay on item selection
-            projectPickerState?.widget.controller.hide();
-
-            ref.read(projectPickerDataProvider).onProjectSelected(projectViewModel.project);
-          },
         );
       },
     );
@@ -258,11 +250,9 @@ class _ProjectPickerResults extends ConsumerWidget {
 class ProjectPickerItem extends ConsumerWidget {
   const ProjectPickerItem({
     required this.project,
-    required this.onTap,
     super.key,
   });
   final ProjectEntity project;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -270,8 +260,19 @@ class ProjectPickerItem extends ConsumerWidget {
     final fonts = ref.watch(fontsProvider);
     final spacing = ref.watch(spacingProvider);
 
+    final isSelected = ref.watch(selectedProjectPickerProvider) == project;
+
+    // Find the parent widget to access the controller
+    final projectPickerState = context.findAncestorStateOfType<_ProjectPickerState>();
+
     return InkWell(
-      onTap: onTap,
+      onTap: () {
+        ref.read(projectPickerDataProvider).onProjectSelected(project);
+        ref.read(selectedProjectPickerProvider.notifier).state = project;
+
+        // Hide the overlay on item selection
+        projectPickerState?.widget.controller.hide();
+      },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.sm),
         decoration: BoxDecoration(
@@ -298,6 +299,19 @@ class ProjectPickerItem extends ConsumerWidget {
                 ),
               ),
             ),
+            if (isSelected)
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  ref.read(projectPickerDataProvider).onRemove?.call(project);
+                  ref.read(selectedProjectPickerProvider.notifier).state = null;
+                },
+                child: Icon(
+                  AppIcons.xmark,
+                  size: 20,
+                  color: colors.textTokens.tertiary,
+                ),
+              ),
           ],
         ),
       ),
