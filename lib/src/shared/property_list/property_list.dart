@@ -12,7 +12,7 @@ class PropertyList extends ConsumerWidget {
     super.key,
   });
 
-  final List<PropertyData> properties;
+  final List<PropertyTileData> properties;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +30,7 @@ class PropertyList extends ConsumerWidget {
                 properties.length,
                 (index) {
                   final property = properties[index];
-                  final componentTheme = property.value != null
+                  final componentTheme = property.child != null
                       ? colors.textDetailOverviewTileHasValue
                       : colors.textDetailOverviewTileNoValue;
 
@@ -57,24 +57,26 @@ class PropertyList extends ConsumerWidget {
   }
 }
 
-class PropertyData {
-  const PropertyData({
+class PropertyTileData {
+  const PropertyTileData({
     required this.label,
     required this.labelIcon,
     required this.valuePlaceholder,
-    this.isRemovable = false,
-    this.onRemove,
-    this.value,
+    this.actionBuilder,
+    this.child,
     this.onValueTap,
     this.overlayChildBuilder,
   });
 
   final String label;
   final IconData labelIcon;
-  final Widget? value;
+
+  final Widget? child;
+
+  /// The widget to the rightmost side when value is present.
+  final Widget? actionBuilder;
+
   final String valuePlaceholder;
-  final bool isRemovable;
-  final VoidCallback? onRemove;
 
   /// Called when the value section of the tile is clicked.
   /// The [position] parameter contains the global offset of the tile from the top-left corner.
@@ -132,7 +134,7 @@ class _PropertyTile extends ConsumerWidget {
     required this.data,
   });
 
-  final PropertyData data;
+  final PropertyTileData data;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -156,7 +158,7 @@ class _PropertyTileValue extends ConsumerStatefulWidget {
     required this.data,
   });
 
-  final PropertyData data;
+  final PropertyTileData data;
 
   @override
   ConsumerState<_PropertyTileValue> createState() => _PropertyTileValueState();
@@ -181,7 +183,7 @@ class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
     final spacing = ref.watch(spacingProvider);
     final color = ref.watch(appThemeProvider);
     final fonts = ref.watch(fontsProvider);
-    final hasValue = widget.data.value != null;
+    final hasValue = widget.data.child != null;
 
     final theme =
         hasValue ? color.textDetailOverviewTileHasValue : color.textDetailOverviewTileNoValue;
@@ -204,7 +206,7 @@ class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
                 margin: EdgeInsets.only(left: spacing.sm),
                 alignment: Alignment.centerLeft,
                 child: hasValue
-                    ? widget.data.value
+                    ? widget.data.child
                     : _placeholderWidget(
                         fonts: fonts,
                         color: theme,
@@ -212,13 +214,8 @@ class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
                       ),
               ),
             ),
-            if (widget.data.value != null && widget.data.isRemovable)
-              AppIconButton(
-                icon: AppIcons.xmark,
-                size: 20,
-                color: color.textTokens.tertiary,
-                onClick: widget.data.onRemove,
-              ),
+            if (widget.data.child != null && widget.data.actionBuilder != null)
+              widget.data.actionBuilder!,
           ],
         ),
       ),
@@ -254,7 +251,7 @@ class _PropertyTileLabel extends ConsumerWidget {
   const _PropertyTileLabel({
     required this.data,
   });
-  final PropertyData data;
+  final PropertyTileData data;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -262,7 +259,7 @@ class _PropertyTileLabel extends ConsumerWidget {
     final colors = ref.watch(appThemeProvider);
     final fonts = ref.watch(fontsProvider);
 
-    final theme = data.value != null
+    final theme = data.child != null
         ? colors.textDetailOverviewTileHasValue
         : colors.textDetailOverviewTileNoValue;
 
