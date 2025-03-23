@@ -4,11 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/design_system.dart';
 import '../../../../design_system/icons/app_icons.dart';
-import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart';
+import '../../../../shared/pickers/common_picker.dart';
+import '../../../../shared/pickers/picker_item.dart';
 import '../state/project_picker_provider.dart';
 import '../view_models/project_view_model.dart';
 
-class ProjectPicker extends ConsumerStatefulWidget {
+class ProjectPicker extends ConsumerWidget {
   const ProjectPicker({
     required this.controller,
     required this.data,
@@ -21,93 +22,73 @@ class ProjectPicker extends ConsumerStatefulWidget {
   final ProjectPickerData data;
 
   @override
-  ConsumerState<ProjectPicker> createState() => _ProjectPickerState();
-}
-
-class _ProjectPickerState extends ConsumerState<ProjectPicker> {
-  late final TextEditingController _textController;
-  late final FocusNode _focusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _textController = TextEditingController();
-    _focusNode = FocusNode();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // Sync text controller with the query provider
-      _textController.syncWithProjectPickerQuery(ref);
-      _overlayAndKeyboardVisibilitySync();
-    });
-  }
-
-  /// sync overlay's visibility with keyboard's visibility
-  /// should be shown when keyboard is shown
-  /// should be hidden when keyboard is hidden
-  void _overlayAndKeyboardVisibilitySync() {
-    ref.listenManual(
-      keyboardVisibilityProvider,
-      (_, next) {
-        final nextValue = next.valueOrNull ?? false;
-
-        if (!nextValue) widget.controller.hide();
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = ref.watch(spacingProvider);
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return ProviderScope(
       overrides: [
-        projectPickerDataProvider.overrideWithValue(widget.data),
-        selectedProjectPickerProvider.overrideWith((ref) => widget.data.selectedProject),
+        projectPickerDataProvider.overrideWithValue(data),
+        selectedProjectPickerProvider.overrideWith((ref) => data.selectedProject),
       ],
-      child: Stack(
-        children: [
-          // Invisible overlay to detect taps outside
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => widget.controller.hide(),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
-          ),
-          // Picker UI
-          AnimatedPositioned(
-            duration: defaultAnimationDuration,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Results card
-                const _ProjectResultContainer(),
+      child: Consumer(
+        builder: (context, ref, _) {
+          // Get the current query from the provider
+          final query = ref.watch(projectPickerQueryProvider);
 
-                // Small spacing
-                SizedBox(height: spacing.sm),
+          // Get filtered projects based on the query
+          final filteredProjects = ref.watch(projectPickerResultsProvider(query));
 
-                // Search field at the bottom
-                _PickerTextField(
-                  textController: _textController,
-                  focusNode: _focusNode,
-                ),
-              ],
+          return CommonPicker(
+            controller: controller,
+            title: 'Search projects...',
+            items: filteredProjects,
+            syncTextController: (controller, ref) {
+              controller.syncWithProjectPickerQuery(ref);
+            },
+            emptyStateWidget: const PickerEmptyState(
+              message: 'No projects found',
             ),
-          ),
-        ],
+            itemBuilder: (context, index) {
+              final projectViewModel = filteredProjects[index];
+              return _ProjectPickerItem(
+                project: projectViewModel,
+              );
+            },
+          );
+        },
       ),
+    );
+  }
+}
+
+class _ProjectPickerItem extends ConsumerWidget {
+  const _ProjectPickerItem({
+    required this.project,
+  });
+  final ProjectViewModel project;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSelected = ref.watch(selectedProjectPickerProvider) == project;
+
+    // Find the parent widget to access the controller
+    final pickerAncestor = context.findAncestorWidgetOfExactType<ProjectPicker>();
+
+    return PickerItem(
+      title: project.project.name,
+      icon: AppIcons.hammerOutlined,
+      isSelected: isSelected,
+      onTap: () {
+        ref.read(projectPickerDataProvider).onProjectSelected(project);
+        ref.read(selectedProjectPickerProvider.notifier).state = project;
+
+        // Hide the overlay on item selection
+        pickerAncestor?.controller.hide();
+      },
+      onRemove: isSelected
+          ? () {
+              ref.read(projectPickerDataProvider).onRemove?.call(project);
+              ref.read(selectedProjectPickerProvider.notifier).state = null;
+            }
+          : null,
     );
   }
 }
@@ -264,7 +245,7 @@ class ProjectPickerItem extends ConsumerWidget {
     final isSelected = ref.watch(selectedProjectPickerProvider) == project;
 
     // Find the parent widget to access the controller
-    final projectPickerState = context.findAncestorStateOfType<_ProjectPickerState>();
+    final pickerAncestor = context.findAncestorWidgetOfExactType<ProjectPicker>();
 
     return InkWell(
       onTap: () {
@@ -272,7 +253,7 @@ class ProjectPickerItem extends ConsumerWidget {
         ref.read(selectedProjectPickerProvider.notifier).state = project;
 
         // Hide the overlay on item selection
-        projectPickerState?.widget.controller.hide();
+        pickerAncestor?.controller.hide();
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: spacing.md, vertical: spacing.sm),

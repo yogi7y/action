@@ -12,7 +12,10 @@ import '../../../../design_system/design_system.dart';
 import '../../../../design_system/icons/app_icons.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
+import '../../../context/presentation/state/context_picker_provider.dart';
 import '../../../context/presentation/state/context_provider.dart';
+import '../../../context/presentation/view_models/context_view_model.dart';
+import '../../../context/presentation/widgets/context_picker.dart';
 import '../../../projects/presentation/state/project_picker_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../../projects/presentation/widgets/project_picker.dart';
@@ -85,6 +88,30 @@ class TaskDetailProperties extends ConsumerWidget {
         label: 'Context',
         labelIcon: AppIcons.tagOutlined,
         valuePlaceholder: 'Empty',
+        onValueTap: (position, controller) => controller.toggle(),
+        action: const _ContextTileAction(),
+        overlayChildBuilder: (context, controller) {
+          // Create a ContextViewModel if context exists
+          ContextViewModel? contextViewModel;
+          if (context_ != null) {
+            contextViewModel = ContextViewModel(context: context_);
+          }
+
+          return ContextPicker(
+            controller: controller,
+            data: ContextPickerData(
+              selectedContext: contextViewModel,
+              onRemove: (entity) async {
+                return ref
+                    .read(taskDetailNotifierProvider.notifier)
+                    .updateTask((task) => task.mark(contextIdAsNull: true));
+              },
+              onContextSelected: (contextVM) async => ref
+                  .read(taskDetailNotifierProvider.notifier)
+                  .updateTask((task) => task.copyWith(contextId: contextVM.context.id)),
+            ),
+          );
+        },
         child: context_?.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.tagOutlined,
@@ -243,6 +270,28 @@ class _ProjectTileAction extends ConsumerWidget {
             pathParameters: {'id': projectId!}, // handle the bang operator.
           ),
         );
+      },
+      child: const SizedBox(
+        height: 20,
+        width: 20,
+        child: Placeholder(),
+      ),
+    );
+  }
+}
+
+class _ContextTileAction extends ConsumerWidget {
+  const _ContextTileAction();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        final contextId = ref.read(taskDetailNotifierProvider).contextId;
+        if (contextId != null) {
+          // Handle navigation to context detail if needed
+        }
       },
       child: const SizedBox(
         height: 20,
