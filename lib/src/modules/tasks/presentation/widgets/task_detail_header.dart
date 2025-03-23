@@ -6,7 +6,7 @@ import '../../../../shared/header/detail_header.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/task_detail_provider.dart';
 
-class TaskDetailHeader extends StatelessWidget {
+class TaskDetailHeader extends ConsumerWidget {
   const TaskDetailHeader({
     required this.title,
     required this.scrollController,
@@ -17,13 +17,15 @@ class TaskDetailHeader extends StatelessWidget {
   final ScrollController scrollController;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return DetailHeader(
       data: DetailHeaderData(
         title: title,
         scrollController: scrollController,
         leading: const _Checkbox(),
-        onTextChanged: (value) {},
+        onTextChanged: (value) async => ref.read(taskDetailNotifierProvider.notifier).updateTask(
+              (task) => task.copyWith(name: value),
+            ),
       ),
     );
   }
