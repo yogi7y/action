@@ -18,9 +18,11 @@ class ProjectDetailTitle extends ConsumerWidget {
     final project = ref.watch(projectNotifierProvider);
 
     return DetailHeader(
-      title: project.project.name,
-      scrollController: controller,
-      leading: const _ProjectDetailCheckbox(),
+      data: DetailHeaderData(
+        title: project.project.name,
+        scrollController: controller,
+        leading: const _ProjectDetailCheckbox(),
+      ),
     );
   }
 }

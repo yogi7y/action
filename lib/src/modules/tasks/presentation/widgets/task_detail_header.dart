@@ -19,9 +19,12 @@ class TaskDetailHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DetailHeader(
-      title: title,
-      scrollController: scrollController,
-      leading: const _Checkbox(),
+      data: DetailHeaderData(
+        title: title,
+        scrollController: scrollController,
+        leading: const _Checkbox(),
+        onTextChanged: (value) {},
+      ),
     );
   }
 }

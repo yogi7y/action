@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -5,43 +6,54 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../design_system/design_system.dart';
 
-class DetailHeader extends ConsumerStatefulWidget {
+class DetailHeader extends ConsumerWidget {
   const DetailHeader({
-    required this.title,
-    required this.scrollController,
-    this.leading,
-    this.expandedHeight,
-    this.titleStyle,
-    this.backgroundColor,
-    this.maxLines = 3,
+    required this.data,
     super.key,
   });
 
-  /// The String that is displayed in the header.
-  final String title;
-
-  final ScrollController scrollController;
-  final Widget? leading;
-  final double? expandedHeight;
-  final TextStyle? titleStyle;
-  final Color? backgroundColor;
-  final int maxLines;
+  final DetailHeaderData data;
 
   @override
-  ConsumerState<DetailHeader> createState() => _DetailHeaderState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ProviderScope(
+      overrides: [
+        detailHeaderTitleProvider.overrideWith((ref) => data.title),
+        _detailHeaderDataProvider.overrideWith((ref) => data),
+      ],
+      child: const _DetailHeader(),
+    );
+  }
 }
 
-class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerProviderStateMixin {
+class _DetailHeader extends ConsumerStatefulWidget {
+  const _DetailHeader();
+
+  @override
+  ConsumerState<_DetailHeader> createState() => _DetailHeaderState();
+}
+
+class _DetailHeaderState extends ConsumerState<_DetailHeader> with SingleTickerProviderStateMixin {
   late final _animationController = AnimationController(vsync: this);
   late final Animation<double> _paddingAnimation;
   late final Animation<double> _opacityAnimation;
   late var _calculatedExpandedHeight = kToolbarHeight * 2;
+  late final controller = TextEditingController();
+  Timer? _debounceTimer;
+
+  late final data = ref.read(_detailHeaderDataProvider);
 
   @override
   void initState() {
     super.initState();
-    widget.scrollController.addListener(_updateAnimation);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _calculateExpandedHeight());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final data = ref.read(_detailHeaderDataProvider);
+      data.scrollController.addListener(_updateAnimation);
+
+      _calculateExpandedHeight();
+      syncControllerAndValue();
+    });
 
     _paddingAnimation = CurvedAnimation(
       parent: _animationController,
@@ -54,26 +66,43 @@ class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerPr
     );
   }
 
+  void syncControllerAndValue() {
+    controller
+      ..text = ref.read(detailHeaderTitleProvider)
+      ..addListener(() {
+        final newText = controller.text;
+        ref.read(detailHeaderTitleProvider.notifier).state = newText;
+
+        final onTextChanged = ref.read(_detailHeaderDataProvider).onTextChanged;
+        if (onTextChanged != null) {
+          _debounceTimer?.cancel();
+          _debounceTimer = Timer(const Duration(seconds: 2), () {
+            onTextChanged(newText);
+          });
+        }
+      });
+  }
+
   void _calculateExpandedHeight() {
     if (!mounted) return;
 
-    if (widget.expandedHeight != null) {
-      setState(() => _calculatedExpandedHeight = widget.expandedHeight!);
+    if (data.expandedHeight != null) {
+      setState(() => _calculatedExpandedHeight = data.expandedHeight!);
       return;
     }
 
-    final titleLength = widget.title.length;
+    final titleLength = data.title.length;
     final scale = titleLength > 40 ? 1.3 : 1.0;
 
     final textSpan = TextSpan(
-      text: widget.title,
-      style: (widget.titleStyle ?? ref.read(fontsProvider).text.md.medium)
+      text: data.title,
+      style: (data.titleStyle ?? ref.read(fontsProvider).text.md.medium)
           .copyWith(fontSize: 16 * scale),
     );
 
     final textPainter = TextPainter(
       text: textSpan,
-      maxLines: widget.maxLines,
+      maxLines: data.maxLines,
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: MediaQuery.of(context).size.width - 72);
 
@@ -83,14 +112,15 @@ class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerPr
   }
 
   void _updateAnimation() {
-    final scrollProgress =
-        (widget.scrollController.offset / (kToolbarHeight * 1.2)).clamp(0.0, 1.0);
+    final scrollProgress = (data.scrollController.offset / (kToolbarHeight * 1.2)).clamp(0.0, 1.0);
     _animationController.value = scrollProgress;
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    controller.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -98,7 +128,7 @@ class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerPr
   Widget build(BuildContext context) {
     final colors = ref.watch(appThemeProvider);
     final fonts = ref.watch(fontsProvider);
-    final backgroundColor = widget.backgroundColor ?? colors.surface.backgroundContrast;
+    final backgroundColor = data.backgroundColor ?? colors.surface.backgroundContrast;
 
     return SliverAppBar(
       expandedHeight: _calculatedExpandedHeight,
@@ -112,15 +142,16 @@ class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerPr
         builder: (context, child) => FlexibleSpaceBar(
           expandedTitleScale: 1.3,
           titlePadding: EdgeInsets.only(
-            bottom: 16,
+            bottom: lerpDouble(16, 16, _paddingAnimation.value) ?? 0,
             left: lerpDouble(20, 28, _paddingAnimation.value) ?? 24,
           ),
           title: child,
           background: ColoredBox(color: backgroundColor),
         ),
         child: Row(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.leading != null)
+            if (data.leading != null)
               AnimatedBuilder(
                 animation: _opacityAnimation,
                 builder: (context, child) => Transform.translate(
@@ -130,17 +161,49 @@ class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerPr
                     child: child,
                   ),
                 ),
-                child: widget.leading,
+                child: data.leading,
               ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 18),
-                child: Text(
-                  widget.title,
-                  style: widget.titleStyle ?? fonts.text.md.medium,
-                  maxLines: widget.maxLines,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final isInEditMode = ref.watch(_isInEditModeProvider);
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 18),
+                    child: isInEditMode
+                        ? TextFormField(
+                            controller: controller,
+                            style: (data.titleStyle ?? fonts.text.md.medium)
+                                .copyWith(letterSpacing: 0),
+                            minLines: 1,
+                            maxLines: data.maxLines,
+                            scrollPadding: EdgeInsets.zero,
+                            onTapOutside: (_) =>
+                                ref.read(_isInEditModeProvider.notifier).state = false,
+                            autofocus: true,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                              isDense: true,
+                              border: InputBorder.none,
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () => ref.read(_isInEditModeProvider.notifier).state = true,
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                final title = ref.watch(detailHeaderTitleProvider);
+
+                                return Text(
+                                  title,
+                                  style: data.titleStyle ?? fonts.text.md.medium,
+                                  maxLines: data.maxLines,
+                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                            ),
+                          ),
+                  );
+                },
               ),
             ),
           ],
@@ -148,4 +211,43 @@ class _DetailHeaderState extends ConsumerState<DetailHeader> with SingleTickerPr
       ),
     );
   }
+}
+
+final _detailHeaderDataProvider = Provider<DetailHeaderData>(
+  (ref) => throw UnimplementedError('Ensure to override detailHeaderDataProvider'),
+  name: 'detailHeaderDataProvider',
+);
+final detailHeaderTitleProvider = StateProvider<String>(
+  (ref) => '',
+  name: 'detailHeaderTitleProvider',
+);
+final _isInEditModeProvider = StateProvider<bool>(
+  (ref) => false,
+  name: 'isInEditModeProvider',
+);
+
+@immutable
+class DetailHeaderData {
+  const DetailHeaderData({
+    required this.title,
+    required this.scrollController,
+    this.leading,
+    this.expandedHeight,
+    this.titleStyle,
+    this.backgroundColor,
+    this.maxLines = 3,
+    this.onTextChanged,
+  });
+
+  /// The String that is displayed in the header.
+  final String title;
+  final ScrollController scrollController;
+  final Widget? leading;
+  final double? expandedHeight;
+  final TextStyle? titleStyle;
+  final Color? backgroundColor;
+  final int maxLines;
+
+  /// Callback triggered when text is changed, with debounce of 2 seconds
+  final void Function(String)? onTextChanged;
 }
