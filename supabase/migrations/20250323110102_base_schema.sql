@@ -18,7 +18,7 @@ CREATE TABLE tasks (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL CHECK (length(trim(name)) > 0),
     status task_status NOT NULL DEFAULT 'todo',
-    due_date DATE,
+    due_date TIMESTAMPTZ,
     project_id UUID, -- We'll add the foreign key later if needed
     context_id UUID, -- We'll add the foreign key later if needed
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

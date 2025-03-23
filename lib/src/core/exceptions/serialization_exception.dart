@@ -48,4 +48,7 @@ class InvalidTypeException extends SerializationException {
     required super.stackTrace,
     required super.payload,
   });
+
+  @override
+  String toString() => 'InvalidTypeException: $exception\nPayload: $payload';
 }
