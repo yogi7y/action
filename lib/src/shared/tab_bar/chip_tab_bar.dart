@@ -156,6 +156,7 @@ class TabBarChip extends ConsumerWidget {
               child: AppIconButton(
                 icon: icon!,
                 size: 18,
+                color: textColor,
               ),
             ),
           Text(
