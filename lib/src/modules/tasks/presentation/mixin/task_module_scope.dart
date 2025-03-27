@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../screens/task_module.dart';
@@ -12,5 +13,6 @@ mixin TaskModuleScope {
         taskViewProvider.overrideWithValue(data.taskViews),
         selectedTaskViewProvider.overrideWith(SelectedTaskView.new),
         newTaskProvider.overrideWith(NewTaskTextNotifier.new),
+        tasksPageControllerProvider.overrideWithValue(PageController()),
       ];
 }

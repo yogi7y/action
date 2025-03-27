@@ -35,13 +35,13 @@ class TasksFilters extends ConsumerWidget {
         spacing: spacing.xs,
         children: filterViews
             .mapIndexed((index, filterView) => AppChips(
-                  onClick: () {
+                  onClick: () async {
                     ref.read(selectedTaskViewProvider.notifier).selectByIndex(index);
-                    unawaited(ref.read(tasksPageControllerProvider).animateToPage(
+                    await ref.read(tasksPageControllerProvider).animateToPage(
                           index,
-                          duration: const Duration(milliseconds: 1),
-                          curve: Curves.linear,
-                        ));
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
                   },
                   smallerChips: smallerChips,
                   key: filterView.key,
