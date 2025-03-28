@@ -4,15 +4,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/use_case/project_use_case.dart';
 import '../view_models/project_view_model.dart';
 
-final projectsProvider = FutureProvider<List<ProjectViewModel>>((ref) async {
-  final useCase = ref.watch(projectUseCaseProvider);
-  final result = await useCase.fetchProjectsWithMetadata();
+final projectsProvider =
+    AsyncNotifierProvider<ProjectsNotifier, List<ProjectViewModel>>(ProjectsNotifier.new);
 
-  return result.fold(
-    onSuccess: (projects) => projects,
-    onFailure: (error) => throw error,
-  );
-});
+class ProjectsNotifier extends AsyncNotifier<List<ProjectViewModel>> {
+  @override
+  Future<List<ProjectViewModel>> build() async {
+    final useCase = ref.watch(projectUseCaseProvider);
+    final result = await useCase.fetchProjectsWithMetadata();
+
+    return result.fold(
+      onSuccess: (projects) => projects,
+      onFailure: (error) => throw error,
+    );
+  }
+}
 
 final projectByIdProvider = Provider.family<ProjectViewModel?, String>((ref, projectId) {
   final projectsAsync = ref.watch(projectsProvider);
