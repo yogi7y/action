@@ -31,7 +31,8 @@ enum AppRoute {
   projects(path: '/projects', name: 'projects'),
   projectDetail(path: '/projects/:id', name: 'project_detail'),
   area(path: '/area', name: 'area'),
-  profile(path: '/profile', name: 'profile');
+  profile(path: '/profile', name: 'profile'),
+  inbox(path: '/inbox', name: 'inbox');
 
   const AppRoute({
     required this.path,

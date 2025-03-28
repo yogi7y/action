@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/routes.dart';
 import '../../../../design_system/design_system.dart';
+import '../../../../design_system/icons/app_icons.dart';
 import '../../../../modules/tasks/domain/entity/task_entity.dart';
 import '../../../../modules/tasks/domain/entity/task_status.dart';
+import '../../../../shared/buttons/clickable_svg.dart';
 
 /// Provider for the selected tab index in the Action Center
 final actionCenterSelectedTabProvider = StateProvider<int>((ref) => 0);
@@ -45,43 +51,55 @@ class _ActionCenterState extends ConsumerState<ActionCenter> with SingleTickerPr
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
         padding: EdgeInsets.only(left: spacing.lg, right: spacing.lg),
-        child: Text(
-          'Action Center',
-          style: fonts.headline.md.semibold,
-        ),
-      ),
-      SizedBox(height: spacing.sm),
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: spacing.xxs),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TabBar(
-            padding: EdgeInsets.zero,
-            controller: _tabController,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            dividerColor: colors.overlay.borderStroke,
-            tabs: const [
-              _ActionCenterTab(label: 'In Progress'),
-              _ActionCenterTab(label: 'Do Next'),
-              _ActionCenterTab(label: 'Due Soon'),
-            ],
-            labelColor: colors.textTokens.primary,
-            unselectedLabelColor: colors.textTokens.secondary,
-            indicatorColor: colors.primary,
-            indicatorSize: TabBarIndicatorSize.label,
-          ),
-        ),
-      ),
-      const SizedBox(
-        child: TabBarView(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Placeholder(),
-            Placeholder(),
-            Placeholder(),
+            Text(
+              'Action Center',
+              style: fonts.headline.md.semibold,
+            ),
+            AppIconButton(
+              icon: AppIcons.addTaskOutlined,
+              size: 24,
+              color: colors.textTokens.primary,
+              onClick: () => unawaited(context.pushNamed(AppRoute.inbox.name)),
+            ),
           ],
         ),
       ),
+      SizedBox(height: spacing.sm),
+      // Padding(
+      //   padding: EdgeInsets.symmetric(horizontal: spacing.xxs),
+      //   child: Align(
+      //     alignment: Alignment.centerLeft,
+      //     child: TabBar(
+      //       padding: EdgeInsets.zero,
+      //       controller: _tabController,
+      //       isScrollable: true,
+      //       tabAlignment: TabAlignment.start,
+      //       dividerColor: colors.overlay.borderStroke,
+      //       tabs: const [
+      //         _ActionCenterTab(label: 'In Progress'),
+      //         _ActionCenterTab(label: 'Do Next'),
+      //         _ActionCenterTab(label: 'Due Soon'),
+      //       ],
+      //       labelColor: colors.textTokens.primary,
+      //       unselectedLabelColor: colors.textTokens.secondary,
+      //       indicatorColor: colors.primary,
+      //       indicatorSize: TabBarIndicatorSize.label,
+      //     ),
+      //   ),
+      // ),
+      // SizedBox(
+      //   child: TabBarView(
+      //     controller: _tabController,
+      //     children: const [
+      //       Placeholder(),
+      //       Placeholder(),
+      //       Placeholder(),
+      //     ],
+      //   ),
+      // ),
     ]);
   }
 }
