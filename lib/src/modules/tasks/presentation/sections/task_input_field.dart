@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_textfield/smart_textfield.dart';
 
@@ -94,6 +97,7 @@ class TaskInputField extends ConsumerStatefulWidget {
 class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTriggersMixin {
   late final _controller = ref.watch(newTaskProvider.notifier).controller;
   late final focusNode = ref.watch(newTaskProvider.notifier).focusNode;
+  late final _keyboardListenerFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -167,36 +171,53 @@ class _TaskInputFieldState extends ConsumerState<TaskInputField> with TaskUiTrig
             child: SmartTextField(
               controller: _controller,
               textFormFieldBuilder: (context, controller) {
-                return TextFormField(
-                  focusNode: focusNode,
-                  minLines: 1,
-                  maxLines: 3,
-                  textCapitalization: TextCapitalization.sentences,
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (value) async {
-                    if (value.trim().isEmpty) return;
+                return KeyboardListener(
+                  focusNode: _keyboardListenerFocusNode,
+                  onKeyEvent: (event) {
+                    if (controller.text.isNotEmpty) return;
 
-                    focusNode.requestFocus();
-                    return addTask(ref: ref);
+                    // when backspace is pressed on an empty text field, remove the field.
+                    if (event.logicalKey == LogicalKeyboardKey.backspace) {
+                      if (controller.text.isEmpty) {
+                        _keyboardListenerFocusNode.unfocus();
+                        ref
+                            .read(isTaskTextInputFieldVisibleProvider.notifier)
+                            .update((state) => false);
+                        unawaited(HapticFeedback.lightImpact());
+                      }
+                    }
                   },
-                  style: style,
-                  controller: controller,
-                  cursorColor: colors.textTokens.secondary,
-                  cursorOpacityAnimates: true,
-                  cursorHeight: 22,
-                  decoration: InputDecoration(
-                    hintText: 'Use @ to pick projects, # to pick tags',
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                    border: InputBorder.none,
-                    hintStyle: fonts.text.sm.regular.copyWith(
-                      color: colors.textTokens.secondary,
+                  child: TextFormField(
+                    focusNode: focusNode,
+                    minLines: 1,
+                    maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (value) async {
+                      if (value.trim().isEmpty) return;
+
+                      focusNode.requestFocus();
+                      return addTask(ref: ref);
+                    },
+                    style: style,
+                    controller: controller,
+                    cursorColor: colors.textTokens.secondary,
+                    cursorOpacityAnimates: true,
+                    cursorHeight: 22,
+                    decoration: InputDecoration(
+                      hintText: 'Use @ to pick projects, # to pick tags',
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      border: InputBorder.none,
+                      hintStyle: fonts.text.sm.regular.copyWith(
+                        color: colors.textTokens.secondary,
+                      ),
+                      suffixIconConstraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                      suffixIcon: const _TaskSendIcon(),
                     ),
-                    suffixIconConstraints: const BoxConstraints(
-                      minWidth: 24,
-                      minHeight: 24,
-                    ),
-                    suffixIcon: const _TaskSendIcon(),
                   ),
                 );
               },

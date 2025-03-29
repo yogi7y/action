@@ -10,10 +10,10 @@ class ProfileScreen extends ConsumerWidget with AuthMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _colors = ref.watch(appThemeProvider);
+    final colors = ref.watch(appThemeProvider);
 
     return Scaffold(
-      backgroundColor: _colors.surface.background,
+      backgroundColor: colors.surface.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

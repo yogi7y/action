@@ -12,7 +12,7 @@ class PropertyList extends ConsumerWidget {
     super.key,
   });
 
-  final List<PropertyData> properties;
+  final List<PropertyTileData> properties;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +30,7 @@ class PropertyList extends ConsumerWidget {
                 properties.length,
                 (index) {
                   final property = properties[index];
-                  final componentTheme = property.value != null
+                  final componentTheme = property.child != null
                       ? colors.textDetailOverviewTileHasValue
                       : colors.textDetailOverviewTileNoValue;
 
@@ -57,24 +57,38 @@ class PropertyList extends ConsumerWidget {
   }
 }
 
-class PropertyData {
-  const PropertyData({
+class PropertyTileData {
+  const PropertyTileData({
     required this.label,
     required this.labelIcon,
     required this.valuePlaceholder,
-    this.isRemovable = false,
-    this.onRemove,
-    this.value,
-    this.onTap,
+    this.action,
+    this.child,
+    this.onValueTap,
+    this.overlayChildBuilder,
   });
 
   final String label;
   final IconData labelIcon;
-  final Widget? value;
+
+  final Widget? child;
+
+  /// The widget to the rightmost side when value is present.
+  final Widget? action;
+
   final String valuePlaceholder;
-  final bool isRemovable;
-  final VoidCallback? onRemove;
-  final VoidCallback? onTap;
+
+  /// Called when the value section of the tile is clicked.
+  /// The [position] parameter contains the global offset of the tile from the top-left corner.
+  /// The [controller] parameter contains the controller of the overlay portal.
+  /// Either of one should be used.
+  final void Function(Offset position, OverlayPortalController controller)? onValueTap;
+
+  /// Optional builder for overlay child content.
+  /// Use this to build custom overlay content when the tile is tapped.
+  /// The controller parameter gives access to the OverlayPortalController.
+  final Widget Function(BuildContext context, OverlayPortalController controller)?
+      overlayChildBuilder;
 }
 
 class SelectedValueWidget extends ConsumerWidget {
@@ -120,70 +134,90 @@ class _PropertyTile extends ConsumerWidget {
     required this.data,
   });
 
-  final PropertyData data;
+  final PropertyTileData data;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: data.onTap,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: _PropertyTileLabel(
-              data: data,
-            ),
-          ),
-          Expanded(
-            flex: 8,
-            child: _PropertyTileValue(data: data),
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: _PropertyTileLabel(data: data),
+        ),
+        Expanded(
+          flex: 8,
+          child: _PropertyTileValue(data: data),
+        ),
+      ],
     );
   }
 }
 
-class _PropertyTileValue extends ConsumerWidget {
+class _PropertyTileValue extends ConsumerStatefulWidget {
   const _PropertyTileValue({
     required this.data,
   });
 
-  final PropertyData data;
+  final PropertyTileData data;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PropertyTileValue> createState() => _PropertyTileValueState();
+}
+
+class _PropertyTileValueState extends ConsumerState<_PropertyTileValue> {
+  final _key = GlobalKey();
+  late final _controller = OverlayPortalController();
+
+  void _handleTap() {
+    final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final position = renderBox.localToGlobal(Offset.zero);
+      widget.data.onValueTap?.call(position, _controller);
+    } else {
+      widget.data.onValueTap?.call(Offset.zero, _controller);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final spacing = ref.watch(spacingProvider);
     final color = ref.watch(appThemeProvider);
     final fonts = ref.watch(fontsProvider);
-    final hasValue = data.value != null;
+    final hasValue = widget.data.child != null;
 
     final theme =
         hasValue ? color.textDetailOverviewTileHasValue : color.textDetailOverviewTileNoValue;
 
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            margin: EdgeInsets.only(left: spacing.sm),
-            alignment: Alignment.centerLeft,
-            child: hasValue
-                ? data.value
-                : _placeholderWidget(
-                    fonts: fonts,
-                    color: theme,
-                    ref: ref,
-                  ),
-          ),
+    return GestureDetector(
+      key: _key,
+      behavior: HitTestBehavior.opaque,
+      onTap: _handleTap,
+      child: OverlayPortal(
+        controller: _controller,
+        overlayChildBuilder: (context) {
+          return widget.data.overlayChildBuilder != null
+              ? widget.data.overlayChildBuilder!(context, _controller)
+              : const SizedBox.shrink();
+        },
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.only(left: spacing.sm),
+                alignment: Alignment.centerLeft,
+                child: hasValue
+                    ? widget.data.child
+                    : _placeholderWidget(
+                        fonts: fonts,
+                        color: theme,
+                        ref: ref,
+                      ),
+              ),
+            ),
+            if (widget.data.child != null && widget.data.action != null) widget.data.action!,
+          ],
         ),
-        if (data.value != null && data.isRemovable)
-          AppIconButton(
-            icon: AppIcons.xmark,
-            size: 20,
-            color: color.textTokens.tertiary,
-            onClick: data.onRemove,
-          ),
-      ],
+      ),
     );
   }
 
@@ -197,7 +231,7 @@ class _PropertyTileValue extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          data.valuePlaceholder,
+          widget.data.valuePlaceholder,
           style: fonts.text.sm.regular.copyWith(
             color: color.valueForeground,
           ),
@@ -216,7 +250,7 @@ class _PropertyTileLabel extends ConsumerWidget {
   const _PropertyTileLabel({
     required this.data,
   });
-  final PropertyData data;
+  final PropertyTileData data;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -224,7 +258,7 @@ class _PropertyTileLabel extends ConsumerWidget {
     final colors = ref.watch(appThemeProvider);
     final fonts = ref.watch(fontsProvider);
 
-    final theme = data.value != null
+    final theme = data.child != null
         ? colors.textDetailOverviewTileHasValue
         : colors.textDetailOverviewTileNoValue;
 

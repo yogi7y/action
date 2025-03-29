@@ -80,9 +80,9 @@ class TaskEntity implements Comparable<TaskEntity> {
         if (id != null) 'id': id,
         'name': name,
         'status': status.value,
-        if (dueDate != null) 'due_date': dueDate?.toIso8601String(),
-        if (projectId != null) 'project_id': projectId,
-        if (contextId != null) 'context_id': contextId,
+        'due_date': dueDate?.toIso8601String(),
+        'project_id': projectId,
+        'context_id': contextId,
       };
 
   void validate() {

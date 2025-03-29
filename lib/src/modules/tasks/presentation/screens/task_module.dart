@@ -25,7 +25,7 @@ class TaskModule extends ConsumerStatefulWidget {
 }
 
 class _TaskModuleState extends ConsumerState<TaskModule> {
-  late final pageController = PageController();
+  late final pageController = ref.watch(tasksPageControllerProvider);
 
   @override
   void dispose() {
@@ -35,12 +35,7 @@ class _TaskModuleState extends ConsumerState<TaskModule> {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [
-        tasksPageControllerProvider.overrideWithValue(pageController),
-      ],
-      child: _TaskModuleData(key: widget.key),
-    );
+    return _TaskModuleData(key: widget.key);
   }
 }
 

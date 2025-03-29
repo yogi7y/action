@@ -114,7 +114,7 @@ final stickyTextFieldSourcesProvider = Provider<List<SearchSource>>((ref) {
   final isContextTextFieldVisible = currentStickyTextFieldType == StickyTextFieldType.context;
 
   if (isProjectTextFieldVisible) {
-    sources.add(ref.watch(projectPickerSearchSourceProvider));
+    // sources.add(ref.watch(projectPickerSearchSourceProvider));
   } else if (isContextTextFieldVisible) {
     sources.add(ref.watch(contextPickerSearchSourceProvider));
   }

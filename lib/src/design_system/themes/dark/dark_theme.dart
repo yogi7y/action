@@ -7,6 +7,7 @@ import '../base/semantics/button.dart';
 import '../base/semantics/checkbox.dart';
 import '../base/semantics/chips.dart';
 import '../base/semantics/l2_screen_header_tokens.dart';
+import '../base/semantics/overlay_tokens.dart';
 import '../base/semantics/project_card_tokens.dart';
 import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
@@ -19,6 +20,7 @@ import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/l2_screen_header_tokens.dart';
+import 'semantics/overlay_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
@@ -85,7 +87,8 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
         textDetailOverviewTileNoValue =
             DarkTextDetailOverviewTileNoValueTokens(primitiveTokens: primitiveTokens),
         l2Screen = DarkL2ScreenHeaderTokens(primitiveTokens: primitiveTokens),
-        tabBar = DarkTabBarTokens(primitiveTokens: primitiveTokens);
+        tabBar = DarkTabBarTokens(primitiveTokens: primitiveTokens),
+        overlay = DarkOverlayTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -143,4 +146,7 @@ class DarkTheme extends DarkBaseTheme implements AppTheme {
 
   @override
   final TabBarTokens tabBar;
+
+  @override
+  final OverlayTokens overlay;
 }

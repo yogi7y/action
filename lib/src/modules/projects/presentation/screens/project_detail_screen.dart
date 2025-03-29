@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -278,21 +276,20 @@ class _ProjectDetailProperties extends ConsumerWidget {
 
     return PropertyList(
       properties: [
-        PropertyData(
+        PropertyTileData(
           label: 'Status',
           labelIcon: AppIcons.loaderOutlined,
           valuePlaceholder: 'Status is not set',
-          value: StatusWidget(
+          child: StatusWidget(
             state: project.status.toAppCheckboxState(),
             label: project.status.displayStatus,
           ),
         ),
-        PropertyData(
+        PropertyTileData(
           label: 'Due',
           labelIcon: AppIcons.calendarOutlined,
           valuePlaceholder: 'Empty',
-          isRemovable: true,
-          value: project.dueDate != null
+          child: project.dueDate != null
               ? SelectedValueWidget(
                   label: project.dueDate?.relativeDate ?? '',
                 )

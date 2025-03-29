@@ -18,7 +18,7 @@ class ProjectRelationMetadataModel extends ProjectRelationMetadata {
     final projectId = validator.isOfType<String>('project_id');
     final totalTasks = validator.isOfType<int>('total_tasks');
     final completedTasks = validator.isOfType<int>('completed_tasks');
-    final totalPages = validator.isOfType<int>('total_pages');
+    final totalPages = validator.isOfType<int>('total_pages', fallback: 0);
 
     return ProjectRelationMetadataModel(
       projectId: projectId,

@@ -7,6 +7,8 @@ import '../base/semantics/button.dart';
 import '../base/semantics/checkbox.dart';
 import '../base/semantics/chips.dart';
 import '../base/semantics/l2_screen_header_tokens.dart';
+import '../base/semantics/overlay.dart';
+import '../base/semantics/overlay_tokens.dart';
 import '../base/semantics/project_card_tokens.dart';
 import '../base/semantics/status_tokens.dart';
 import '../base/semantics/surface.dart';
@@ -19,6 +21,7 @@ import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/l2_screen_header_tokens.dart';
+import 'semantics/overlay_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';
 import 'semantics/surface.dart';
@@ -86,7 +89,8 @@ class LightTheme extends LightBaseTheme implements AppTheme {
         textDetailOverviewTileNoValue =
             LightTextDetailOverviewTileNoValueTokens(primitiveTokens: primitiveTokens),
         l2Screen = LightL2ScreenHeaderTokens(primitiveTokens: primitiveTokens),
-        tabBar = LightTabBarTokens(primitiveTokens: primitiveTokens);
+        tabBar = LightTabBarTokens(primitiveTokens: primitiveTokens),
+        overlay = LightOverlayTokens(primitiveTokens: primitiveTokens);
 
   @override
   final BottomNavigationBarTokens selectedBottomNavigationItem;
@@ -144,4 +148,7 @@ class LightTheme extends LightBaseTheme implements AppTheme {
 
   @override
   final TabBarTokens tabBar;
+
+  @override
+  final OverlayTokens overlay;
 }

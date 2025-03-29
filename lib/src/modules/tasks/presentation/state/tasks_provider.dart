@@ -91,7 +91,12 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskView> {
     /// The previous state of the tasks.
     final previousState = previousStateArg ?? state.valueOrNull;
     final now = DateTime.now();
-    final projectId = ref.read(projectNotifierProvider).project.id;
+    String? projectId;
+    try {
+      projectId = ref.read(projectNotifierProvider).project.id;
+    } catch (e) {
+      projectId = null;
+    }
 
     /// Temp optimistic task to render on the UI.
     final tempOptimisticTask = task.copyWith(

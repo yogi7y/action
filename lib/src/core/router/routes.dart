@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../modules/area/presentation/screens/area_screen.dart';
@@ -8,13 +9,18 @@ import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/task_screen.dart';
 import '../../modules/tasks/presentation/state/task_detail_provider.dart';
+import '../../modules/tasks/presentation/state/task_view_provider.dart';
 import 'handlers/project_detail_route_handler.dart';
 import 'route_adapter.dart';
 
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
-typedef TaskDetailRouteData = ({TaskDataOrId? value, int? index});
+typedef TaskDetailRouteData = ({
+  TaskDataOrId? value,
+  int? index,
+  ProviderContainer? container,
+});
 
 enum AppRoute {
   auth(path: '/auth', name: 'auth'),
@@ -71,10 +77,17 @@ final shellBranches = [
                 final task = state.extra as TaskDetailRouteData?;
 
                 if (task == null) throw Exception('TaskDetailRouteData is required');
+                if (task.container == null) throw Exception('ProviderContainer is required');
 
-                return TaskDetailScreen(
-                  taskDataOrId: task.value!,
-                  index: task.index,
+                final selectedTaskView = task.container!.read(selectedTaskViewProvider);
+                print('selectedTaskView: $selectedTaskView');
+
+                return UncontrolledProviderScope(
+                  container: task.container!,
+                  child: TaskDetailScreen(
+                    taskDataOrId: task.value!,
+                    index: task.index,
+                  ),
                 );
               },
             ),

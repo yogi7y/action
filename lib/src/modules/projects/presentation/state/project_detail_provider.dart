@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/project.dart';
 import '../../domain/use_case/project_use_case.dart';
 import '../view_models/project_view_model.dart';
+import 'projects_provider.dart';
 
 typedef ProjectOrId = ({String? id, ProjectViewModel? value});
 typedef UpdateProjectCallback = ProjectEntity Function(ProjectEntity project);
@@ -12,8 +13,15 @@ final projectDetailProvider =
   // If we have data, return it directly
   if (dataOrId.value != null) return dataOrId.value!;
 
+  final id = dataOrId.id;
+
   // Otherwise fetch using ID
-  if (dataOrId.id != null) {
+  if (id != null) {
+    // check if project exists in the in memory projects list.
+    final project = ref.read(projectByIdProvider(id));
+
+    if (project != null) return project;
+
     final useCase = ref.watch(projectUseCaseProvider);
     final result = await useCase.getProjectById(dataOrId.id!);
 

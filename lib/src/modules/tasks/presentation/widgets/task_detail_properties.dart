@@ -1,15 +1,25 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
+
+import 'package:figma_squircle_updated/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/router/routes.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../design_system/icons/app_icons.dart';
-import '../../../../shared/buttons/clickable_svg.dart';
 import '../../../../shared/property_list/property_list.dart';
 import '../../../../shared/status/status.dart';
+import '../../../context/presentation/state/context_picker_provider.dart';
 import '../../../context/presentation/state/context_provider.dart';
+import '../../../context/presentation/view_models/context_view_model.dart';
+import '../../../context/presentation/widgets/context_picker.dart';
+import '../../../projects/presentation/state/project_picker_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
+import '../../../projects/presentation/widgets/project_picker.dart';
+import '../../domain/entity/task_status.dart';
 import '../state/task_detail_provider.dart';
 
 class TaskDetailProperties extends ConsumerWidget {
@@ -19,147 +29,300 @@ class TaskDetailProperties extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = ref.watch(appThemeProvider);
-    final fonts = ref.watch(fontsProvider);
     final task = ref.watch(taskDetailNotifierProvider);
 
     final projectViewModel = ref.watch(projectByIdProvider(task.projectId ?? ''));
-    final context = ref.watch(contextByIdProvider(task.contextId ?? ''));
-    final project = projectViewModel?.project;
+    final context_ = ref.watch(contextByIdProvider(task.contextId ?? ''));
 
-    final properties = <PropertyData>[
-      PropertyData(
+    final properties = <PropertyTileData>[
+      PropertyTileData(
         label: 'Status',
         labelIcon: AppIcons.loaderOutlined,
         valuePlaceholder: 'Status is not set',
-        value: StatusWidget(
+        child: StatusWidget(
           state: task.status.toAppCheckboxState(),
           label: task.status.displayStatus,
         ),
+        onValueTap: (position, _) async => _onStatusTap(context, ref, position),
       ),
-      PropertyData(
+      PropertyTileData(
         label: 'Due',
         labelIcon: AppIcons.calendarOutlined,
-        valuePlaceholder: 'Empty',
-        isRemovable: true,
-        value: task.dueDate != null
+        valuePlaceholder: 'Set due date',
+        onValueTap: (position, _) async => _onDueDateTap(context, ref),
+        action: task.dueDate != null ? const _DueDateTileAction() : null,
+        child: task.dueDate != null
             ? SelectedValueWidget(
                 label: task.dueDate?.relativeDate ?? '',
               )
             : null,
       ),
-      PropertyData(
+      PropertyTileData(
         label: 'Project',
         labelIcon: AppIcons.hammerOutlined,
         valuePlaceholder: 'Empty',
-        isRemovable: true,
-        value: project?.name != null
+        onValueTap: (position, controller) => controller.toggle(),
+        action: const _ProjectTileAction(),
+        overlayChildBuilder: (context, controller) => ProjectPicker(
+          controller: controller,
+          data: ProjectPickerData(
+            selectedProject: projectViewModel,
+            onRemove: (entity) async {
+              return ref
+                  .read(taskDetailNotifierProvider.notifier)
+                  .updateTask((task) => task.mark(projectIdAsNull: true));
+            },
+            onProjectSelected: (project) async => ref
+                .read(taskDetailNotifierProvider.notifier)
+                .updateTask((task) => task.copyWith(projectId: project.project.id)),
+          ),
+        ),
+        child: projectViewModel?.project.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.hammerOutlined,
-                label: project?.name ?? '',
+                label: projectViewModel?.project.name ?? '',
               )
             : null,
       ),
-      PropertyData(
+      PropertyTileData(
         label: 'Context',
         labelIcon: AppIcons.tagOutlined,
         valuePlaceholder: 'Empty',
-        isRemovable: true,
-        value: context?.name != null
+        onValueTap: (position, controller) => controller.toggle(),
+        action: const _ContextTileAction(),
+        overlayChildBuilder: (context, controller) {
+          // Create a ContextViewModel if context exists
+          ContextViewModel? contextViewModel;
+          if (context_ != null) {
+            contextViewModel = ContextViewModel(context: context_);
+          }
+
+          return ContextPicker(
+            controller: controller,
+            data: ContextPickerData(
+              selectedContext: contextViewModel,
+              onRemove: (entity) async {
+                return ref
+                    .read(taskDetailNotifierProvider.notifier)
+                    .updateTask((task) => task.mark(contextIdAsNull: true));
+              },
+              onContextSelected: (contextVM) async => ref
+                  .read(taskDetailNotifierProvider.notifier)
+                  .updateTask((task) => task.copyWith(contextId: contextVM.context.id)),
+            ),
+          );
+        },
+        child: context_?.name != null
             ? SelectedValueWidget(
                 icon: AppIcons.tagOutlined,
-                label: context?.name ?? '',
+                label: context_?.name ?? '',
               )
             : null,
       ),
     ];
 
-    final footer = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Row(
-          spacing: 2,
-          children: [
-            AppIconButton(
-              icon: AppIcons.clockOutlined,
-              size: 12,
-              color: colors.textTokens.tertiary,
+    return PropertyList(properties: properties);
+  }
+
+  Future<void> _onStatusTap(BuildContext context, WidgetRef ref, Offset position) async {
+    final colors = ref.watch(appThemeProvider);
+
+    final x = position.dx + 20;
+    final y = position.dy + 40;
+
+    final menuPosition = RelativeRect.fromLTRB(x, y, x, y);
+
+    await showMenu(
+      context: context,
+      position: menuPosition,
+      color: colors.overlay.background,
+      shape: SmoothRectangleBorder(
+        borderRadius: SmoothBorderRadius(cornerRadius: 12, cornerSmoothing: 1),
+        side: BorderSide(color: colors.overlay.borderStroke),
+      ),
+      items: [
+        for (final status in TaskStatus.values)
+          PopupMenuItem<TaskStatus>(
+            value: status,
+            height: 20,
+            onTap: () async => ref
+                .read(taskDetailNotifierProvider.notifier)
+                .updateTask((task) => task.copyWith(status: status)),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 6,
             ),
-            Text(
-              task.createdAt?.relativeDate ?? '',
-              style: fonts.text.xs.regular.copyWith(
-                color: colors.textTokens.tertiary,
-                decoration: TextDecoration.underline,
-                decorationStyle: TextDecorationStyle.dashed,
-                decorationColor: colors.textTokens.tertiary.withValues(alpha: .6),
-              ),
+            child: StatusWidget(
+              state: status.toAppCheckboxState(),
+              label: status.displayStatus,
             ),
-          ],
-        )
+          ),
       ],
     );
 
-    return PropertyList(
-      properties: properties,
-      // footer: footer,
+    return;
+  }
+
+  Future<void> _onDueDateTap(BuildContext context, WidgetRef ref) async {
+    final colors = ref.watch(appThemeProvider);
+    final fonts = ref.watch(fontsProvider);
+    final task = ref.read(taskDetailNotifierProvider);
+
+    final initialDate = task.dueDate ?? DateTime.now();
+    final firstDate = DateTime.now();
+    final lastDate = DateTime.now().add(const Duration(days: 365 * 2));
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: colors.primary,
+              onPrimary: colors.textTokens.primary,
+              surface: colors.surface.modals,
+              onSurface: colors.textTokens.primary,
+            ),
+            dialogBackgroundColor: colors.surface.modals,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: colors.textTokens.secondary,
+                textStyle: fonts.text.sm.medium,
+              ),
+            ),
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: colors.surface.modals,
+              dayStyle: fonts.text.sm.medium,
+              yearStyle: fonts.text.sm.medium,
+              headerHelpStyle: fonts.text.sm.medium,
+              headerHeadlineStyle: fonts.text.lg.medium.copyWith(
+                color: colors.textTokens.primary,
+              ),
+              weekdayStyle: fonts.text.xs.medium.copyWith(
+                color: colors.textTokens.secondary,
+              ),
+              dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return colors.primary;
+                }
+                if (states.contains(WidgetState.disabled)) {
+                  return Colors.transparent;
+                }
+                return Colors.transparent;
+              }),
+              dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return colors.textTokens.tertiary.withValues(alpha: .5);
+                }
+                if (states.contains(WidgetState.selected)) {
+                  return colors.textTokens.primary;
+                }
+                return colors.textTokens.primary;
+              }),
+              dividerColor: Colors.transparent,
+              shape: SmoothRectangleBorder(
+                borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1),
+              ),
+              surfaceTintColor: Colors.transparent,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      // Combine the picked date with the current time
+      final now = DateTime.now();
+      final combinedDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        now.hour,
+        now.minute,
+      );
+
+      await ref
+          .read(taskDetailNotifierProvider.notifier)
+          .updateTask((task) => task.copyWith(dueDate: combinedDateTime));
+    }
+
+    return;
+  }
+}
+
+class _ProjectTileAction extends ConsumerWidget {
+  const _ProjectTileAction();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        final projectId = ref.read(taskDetailNotifierProvider).projectId;
+
+        unawaited(
+          context.pushNamed(
+            AppRoute.projectDetail.name,
+            pathParameters: {'id': projectId!}, // handle the bang operator.
+          ),
+        );
+      },
+      child: const SizedBox(
+        height: 20,
+        width: 20,
+        child: Placeholder(),
+      ),
     );
   }
 }
 
-// class _SelectedValueWidget extends ConsumerWidget {
-//   const _SelectedValueWidget({
-//     required this.label,
-//     this.iconPath,
-//   });
+class _ContextTileAction extends ConsumerWidget {
+  const _ContextTileAction();
 
-//   final String? iconPath;
-//   final String label;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        final contextId = ref.read(taskDetailNotifierProvider).contextId;
+        if (contextId != null) {
+          // Handle navigation to context detail if needed
+        }
+      },
+      child: const SizedBox(
+        height: 20,
+        width: 20,
+        child: Placeholder(),
+      ),
+    );
+  }
+}
 
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final _spacing = ref.watch(spacingProvider);
-//     final _colors = ref.watch(appThemeProvider);
-//     final _fonts = ref.watch(fontsProvider);
+class _DueDateTileAction extends ConsumerWidget {
+  const _DueDateTileAction();
 
-//     final _componentTheme = _colors.textDetailOverviewTileHasValue;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = ref.watch(appThemeProvider);
 
-//     return Row(
-//       spacing: _spacing.xxs,
-//       children: [
-//         if (iconPath != null)
-//           AppIconButton(
-//             svgIconPath: iconPath!,
-//             size: 16,
-//             color: _componentTheme.valueForeground,
-//           ),
-//         Text(
-//           label,
-//           style: _fonts.text.sm.medium.copyWith(
-//             color: _componentTheme.valueForeground,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-// @immutable
-// class PropertyData {
-//   const PropertyData({
-//     required this.label,
-//     required this.labelIcon,
-//     required this.valuePlaceholder,
-//     this.isRemovable = false,
-//     this.onRemove,
-//     this.value,
-//   });
-
-//   final String label;
-//   final String labelIcon;
-//   final Widget? value;
-//   final String valuePlaceholder;
-
-//   /// To decide whether to show the remove button or not
-//   final bool isRemovable;
-//   final VoidCallback? onRemove;
-// }
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () async => ref
+          .read(taskDetailNotifierProvider.notifier)
+          .updateTask((task) => task.mark(dueDateAsNull: true)),
+      child: SizedBox(
+        height: 20,
+        width: 20,
+        child: Icon(
+          AppIcons.xmark,
+          size: 20,
+          color: colors.textTokens.tertiary,
+        ),
+      ),
+    );
+  }
+}
