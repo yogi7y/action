@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/strings.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/sliver_sized_box.dart';
+import '../../../tasks/presentation/models/task_view_variants.dart';
+import '../../../tasks/presentation/sections/tasks_list.dart';
 import '../../../tasks/presentation/state/scoped_task_provider.dart';
 import '../../../tasks/presentation/widgets/task_loading_tile.dart';
 import '../../../tasks/presentation/widgets/task_tile.dart';
@@ -100,43 +102,47 @@ class _UnorganisedTasks extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(unorganisedTasksProvider);
-    final fonts = ref.watch(fontsProvider);
-    return tasks.when(
-      data: (tasks) {
-        if (tasks.isEmpty) {
-          return SliverToBoxAdapter(
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: Center(
-                child: Text(
-                  'No unorganised items',
-                  style: fonts.text.lg.medium,
-                ),
-              ),
-            ),
-          );
-        }
-        return SliverList.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            final task = tasks[index];
-            return ProviderScope(
-              overrides: [scopedTaskProvider.overrideWithValue((index: index, task: task))],
-              child: const TaskTile(),
-            );
-          },
-        );
-      },
-      loading: () => SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) => const TasksLoadingTile(),
-          childCount: 8,
-        ),
-      ),
-      error: (error, stackTrace) => SliverToBoxAdapter(
-        child: ErrorWidget(error.toString()),
-      ),
-    );
+    return const SizedBox.shrink();
+    // return TasksListView(
+    //   taskView: UnorganizedTaskView(ui: ui, id: id),
+    // );
+    // final tasks = ref.watch(unorganisedTasksProvider);
+    // final fonts = ref.watch(fontsProvider);
+    // return tasks.when(
+    //   data: (tasks) {
+    //     if (tasks.isEmpty) {
+    //       return SliverToBoxAdapter(
+    //         child: Container(
+    //           constraints: const BoxConstraints(maxHeight: 200),
+    //           child: Center(
+    //             child: Text(
+    //               'No unorganised items',
+    //               style: fonts.text.lg.medium,
+    //             ),
+    //           ),
+    //         ),
+    //       );
+    //     }
+    //     return SliverList.builder(
+    //       itemCount: tasks.length,
+    //       itemBuilder: (context, index) {
+    //         final task = tasks[index];
+    //         return ProviderScope(
+    //           overrides: [scopedTaskProvider.overrideWithValue((index: index, task: task))],
+    //           child: const TaskTile(),
+    //         );
+    //       },
+    //     );
+    //   },
+    //   loading: () => SliverList(
+    //     delegate: SliverChildBuilderDelegate(
+    //       (context, index) => const TasksLoadingTile(),
+    //       childCount: 8,
+    //     ),
+    //   ),
+    //   error: (error, stackTrace) => SliverToBoxAdapter(
+    //     child: ErrorWidget(error.toString()),
+    //   ),
+    // );
   }
 }
