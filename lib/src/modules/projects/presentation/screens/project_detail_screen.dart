@@ -50,9 +50,7 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
               projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
               ...createTaskModuleScope(
                 TaskModuleData(
-                  taskViews: projectTaskViews(
-                    project.project.id!,
-                  ),
+                  taskViews: projectTaskViews(project.project.id!),
                   smallerChips: true,
                   showFilters: false,
                   onRefresh: () async {

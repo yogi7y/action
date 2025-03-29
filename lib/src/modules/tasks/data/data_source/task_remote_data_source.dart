@@ -26,6 +26,12 @@ abstract class TaskRemoteDataSource {
   Future<TaskEntity> upsertTask({
     required TaskEntity task,
   });
+
+  /// Fetches unorganised tasks from the remote data source.
+  ///
+  /// If [fetchInbox] is true, it will fetch inbox tasks (unorganised tasks created in the last 24 hours).
+  /// Otherwise, it will fetch all unorganised tasks.
+  Future<List<TaskEntity>> fetchUnorganisedTasks({bool fetchInbox = false});
 }
 
 final taskRemoteDataSourceProvider = Provider<TaskRemoteDataSource>((ref) {

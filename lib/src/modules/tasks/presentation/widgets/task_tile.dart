@@ -35,8 +35,6 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
 
     final topPadding = spacing.xs;
     final bottomPadding = spacing.sm;
-    final selectedTaskView = ref.watch(selectedTaskViewProvider);
-    final tasks = ref.watch(tasksNotifierProvider(selectedTaskView)).valueOrNull ?? [];
 
     return Column(
       children: [
@@ -111,7 +109,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           ],
         ),
         Visibility(
-          visible: index == tasks.length - 1,
+          visible: false,
           child: Padding(
             padding: const EdgeInsets.only(top: 12),
             child: Center(

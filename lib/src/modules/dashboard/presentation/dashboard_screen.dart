@@ -4,12 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/bottom_nav/bottom_nav_bar.dart';
 import '../../../shared/bottom_nav/bottom_nav_items_provider.dart';
-import '../../../shared/sticky_component_over_keyboard/sticky_component_over_keyboard.dart';
 import '../../context/presentation/state/context_provider.dart';
 import '../../projects/presentation/state/projects_provider.dart';
 import '../../tasks/presentation/state/new_checklist_provider.dart';
 import '../../tasks/presentation/state/new_task_provider.dart';
-import '../../tasks/presentation/state/task_view_provider.dart';
 import 'state/keyboard_visibility_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {

@@ -51,3 +51,7 @@ Quick capture should be frictionless. Act like a global inbox for all things in 
 
 1. Recently added.
 2. Last 24 hours.
+
+## Tech
+
+Last 24 hour

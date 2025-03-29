@@ -13,4 +13,9 @@ abstract class TaskRepository {
   AsyncTaskResult getTaskById(TaskId id);
 
   AsyncTaskResult upsertTask(TaskEntity task);
+
+  /// Fetches unorganised tasks.
+  /// If [fetchInbox] is true, it will fetch inbox tasks (unorganised tasks created in the last 24 hours).
+  /// Otherwise, it will fetch all unorganised tasks.
+  Future<Result<List<TaskEntity>, AppException>> fetchUnorganisedTasks({bool fetchInbox = false});
 }

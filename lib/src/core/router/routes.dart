@@ -9,7 +9,6 @@ import '../../modules/projects/presentation/screens/projects_screen.dart';
 import '../../modules/tasks/presentation/screens/task_detail_screen.dart';
 import '../../modules/tasks/presentation/screens/task_screen.dart';
 import '../../modules/tasks/presentation/state/task_detail_provider.dart';
-import '../../modules/tasks/presentation/state/task_view_provider.dart';
 import 'handlers/project_detail_route_handler.dart';
 import 'route_adapter.dart';
 
@@ -79,9 +78,6 @@ final shellBranches = [
 
                 if (task == null) throw Exception('TaskDetailRouteData is required');
                 if (task.container == null) throw Exception('ProviderContainer is required');
-
-                final selectedTaskView = task.container!.read(selectedTaskViewProvider);
-                print('selectedTaskView: $selectedTaskView');
 
                 return UncontrolledProviderScope(
                   container: task.container!,

@@ -43,6 +43,19 @@ class SupabaseTaskRepository implements TaskRepository {
       return Failure(AppException(exception: e, stackTrace: stackTrace));
     }
   }
+
+  @override
+  Future<Result<List<TaskEntity>, AppException>> fetchUnorganisedTasks({
+    bool fetchInbox = false,
+  }) async {
+    try {
+      final response = await remoteDataSource.fetchUnorganisedTasks(fetchInbox: fetchInbox);
+
+      return Success(response);
+    } catch (e, stackTrace) {
+      return Failure(AppException(exception: e, stackTrace: stackTrace));
+    }
+  }
 }
 
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {

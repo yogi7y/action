@@ -20,6 +20,8 @@ abstract class Spacing {
   double get xl;
 
   double get xxl;
+
+  double get horizontalScreenPadding => lg;
 }
 
 final spacingProvider = Provider<Spacing>((ref) => const MobileSpacing());

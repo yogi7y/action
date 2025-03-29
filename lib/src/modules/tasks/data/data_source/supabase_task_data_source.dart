@@ -54,4 +54,18 @@ class SupabaseRemoteTaskDataSource with TaskModelMixin implements TaskRemoteData
 
     return fromMapToTaskEntity(first);
   }
+
+  @override
+  Future<List<TaskEntity>> fetchUnorganisedTasks({bool fetchInbox = false}) async {
+    var query = client.from(DatabaseConstants.tasksTable).select().eq('is_organized', false);
+
+    if (fetchInbox) {
+      query = query.gte('created_at', DateTime.now().subtract(const Duration(days: 1)));
+    }
+
+    final response = await query;
+    final tasks = response.map(fromMapToTaskEntity).toList();
+
+    return tasks;
+  }
 }
