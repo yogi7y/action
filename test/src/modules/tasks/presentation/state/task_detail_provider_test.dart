@@ -10,7 +10,7 @@ import 'package:action/src/modules/tasks/domain/use_case/task_use_case.dart';
 import 'package:action/src/modules/tasks/presentation/screens/task_screen.dart';
 import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/task_detail_provider.dart';
-import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
+import 'package:action/src/modules/tasks/presentation/state/task_view_provider.old.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter/widgets.dart';
@@ -72,7 +72,7 @@ void main() {
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
           newTaskProvider.overrideWith(NewTaskTextNotifier.new),
           selectedTaskViewProvider.overrideWith(SelectedTaskView.new),
-          taskViewProvider.overrideWithValue(taskViews),
+          // taskViewProvider.overrideWithValue(taskViews),
         ]);
 
         final notifier = container.read(taskDetailNotifierProvider.notifier);
@@ -321,20 +321,19 @@ void main() {
       await result;
 
       // verify unorganized state is reverted back
-      final unorganizedTasks =
-          container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+      final unorganizedTasks = container.read(tasksProvider(unorganizedTaskView)).requireValue;
       expect(unorganizedTasks.length, 5);
       expect(unorganizedTasks.any((task) => task.id == unorganizedTask3.id), isTrue);
 
       // verify all state is reverted back
-      final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+      final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
       expect(allTasks.length, 5);
       expect(allTasks.any((task) => task.id == unorganizedTask3.id), isTrue);
       final updatedTask = allTasks.firstWhere((task) => task.id == unorganizedTask3.id);
       expect(updatedTask.status, TaskStatus.todo);
 
       // verify done state is reverted back
-      final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+      final doneTasks = container.read(tasksProvider(doneTaskView)).requireValue;
       expect(doneTasks.length, 0);
     }, skip: 'brainstorm on how to handle the revert state for all the list views.');
   });
@@ -342,19 +341,19 @@ void main() {
 
 void _verifyOptimisticUpdate(ProviderContainer container, TaskEntity unorganizedTask3) {
   // verify that the task was removed from the unorganized task view as it's not longer unorganized.
-  final unorganizedTasks = container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+  final unorganizedTasks = container.read(tasksProvider(unorganizedTaskView)).requireValue;
   expect(unorganizedTasks.length, 4);
   expect(unorganizedTasks.any((task) => task.id == unorganizedTask3.id), isFalse);
 
   // verify that the task state was updated in all task view.
-  final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+  final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
   expect(allTasks.length, 5);
   expect(allTasks.any((task) => task.id == unorganizedTask3.id), isTrue);
   final updatedTask = allTasks.firstWhere((task) => task.id == unorganizedTask3.id);
   expect(updatedTask.status, TaskStatus.done);
 
   // verify that the task was added in done task view.
-  final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+  final doneTasks = container.read(tasksProvider(doneTaskView)).requireValue;
   expect(doneTasks.length, 1);
   expect(doneTasks.any((task) => task.id == unorganizedTask3.id), isTrue);
   final doneTask = doneTasks.firstWhere((task) => task.id == unorganizedTask3.id);
@@ -364,9 +363,9 @@ void _verifyOptimisticUpdate(ProviderContainer container, TaskEntity unorganized
 /// Builds all providers for the given container.
 Future<void> _buildAllProviders(ProviderContainer container) async {
   await Future.wait([
-    container.read(tasksNotifierProvider(unorganizedTaskView).future),
-    container.read(tasksNotifierProvider(allTaskView).future),
-    container.read(tasksNotifierProvider(doneTaskView).future),
+    container.read(tasksProvider(unorganizedTaskView).future),
+    container.read(tasksProvider(allTaskView).future),
+    container.read(tasksProvider(doneTaskView).future),
   ]);
 }
 
@@ -377,8 +376,8 @@ void _setAnimatedListKeys(
     GlobalKey<AnimatedListState> allTaskViewKey,
     GlobalKey<AnimatedListState> doneTaskViewKey) {
   container
-      .read(tasksNotifierProvider(unorganizedTaskView).notifier)
+      .read(tasksProvider(unorganizedTaskView).notifier)
       .setAnimatedListKey(unorganizedTaskViewKey);
-  container.read(tasksNotifierProvider(allTaskView).notifier).setAnimatedListKey(allTaskViewKey);
-  container.read(tasksNotifierProvider(doneTaskView).notifier).setAnimatedListKey(doneTaskViewKey);
+  container.read(tasksProvider(allTaskView).notifier).setAnimatedListKey(allTaskViewKey);
+  container.read(tasksProvider(doneTaskView).notifier).setAnimatedListKey(doneTaskViewKey);
 }

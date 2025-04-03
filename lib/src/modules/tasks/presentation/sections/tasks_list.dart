@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/typography/typography.dart';
 import '../../../../shared/placeholder_widget.dart';
+import '../models/task_list_view_data.dart';
 import '../models/task_view.dart';
 import '../state/scoped_task_provider.dart';
 import '../state/tasks_provider.dart';
@@ -11,8 +12,24 @@ import '../widgets/task_loading_tile.dart';
 import '../widgets/task_tile.dart';
 
 @immutable
-class TasksListView extends ConsumerWidget {
-  const TasksListView({
+class TaskListView extends ConsumerWidget {
+  const TaskListView({
+    required this.taskListViewData,
+    super.key,
+  });
+
+  final TaskListViewData taskListViewData;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return const Placeholder();
+  }
+}
+
+@immutable
+@Deprecated('')
+class TasksListViewOld extends ConsumerWidget {
+  const TasksListViewOld({
     required this.taskView,
     super.key,
   });
@@ -24,7 +41,7 @@ class TasksListView extends ConsumerWidget {
         overrides: [
           scopedTaskViewProvider.overrideWithValue(taskView),
         ],
-        child: ref.watch(tasksNotifierProvider(taskView)).when(
+        child: ref.watch(tasksProvider(taskView)).when(
               error: (error, _) => PlaceholderWidget(text: error.toString()),
               loading: _TaskListLoadingState.new,
               data: (tasks) => const _TaskListViewDataState(),
@@ -50,7 +67,7 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final taskView = ref.read(scopedTaskViewProvider);
-      ref.read(tasksNotifierProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
+      ref.read(tasksProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
     });
   }
 
@@ -59,7 +76,7 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
     super.build(context);
     final taskView = ref.read(scopedTaskViewProvider);
 
-    final tasks = ref.watch(tasksNotifierProvider(taskView)).valueOrNull ?? [];
+    final tasks = ref.watch(tasksProvider(taskView)).valueOrNull ?? [];
 
     if (tasks.isEmpty) return const _EmptyState();
 

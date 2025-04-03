@@ -28,7 +28,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
         headerSliverBuilder: (context, innerBoxScrolled) {
           return [
             AppHeader(
-              title: AppStrings.inboxTitle,
+              title: AppStrings.inbox,
               isSliver: true,
               titleSpacing: spacing.lg,
             ),
@@ -38,13 +38,13 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                 child: Row(
                   children: [
                     AppChips(
-                      label: AppStrings.tasksTitle,
+                      label: AppStrings.tasks,
                       isSelected: selectedTab == InboxTab.tasks,
                       onClick: () => ref.read(inboxTabProvider.notifier).state = InboxTab.tasks,
                     ),
                     SizedBox(width: spacing.sm),
                     AppChips(
-                      label: AppStrings.pagesTitle,
+                      label: AppStrings.pages,
                       isSelected: selectedTab == InboxTab.pages,
                       onClick: () => ref.read(inboxTabProvider.notifier).state = InboxTab.pages,
                     ),

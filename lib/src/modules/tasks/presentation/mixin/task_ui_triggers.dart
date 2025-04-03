@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/new_task_provider.dart';
-import '../state/task_view_provider.dart';
+import '../state/task_view_provider.old.dart';
 import '../state/tasks_provider.dart';
 
 mixin TaskUiTriggersMixin {
@@ -13,6 +13,6 @@ mixin TaskUiTriggersMixin {
     final currentTaskView = ref.read(selectedTaskViewProvider);
     final task = ref.read(newTaskProvider);
 
-    await ref.read(tasksNotifierProvider(currentTaskView).notifier).upsertTask(task);
+    await ref.read(tasksProvider(currentTaskView).notifier).upsertTask(task);
   }
 }

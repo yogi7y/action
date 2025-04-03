@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_implementing_value_types
 
 import 'package:action/src/modules/tasks/presentation/models/task_view.dart';
-import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
+import 'package:action/src/modules/tasks/presentation/state/task_view_provider.old.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

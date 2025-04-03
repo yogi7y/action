@@ -13,9 +13,9 @@ abstract class AppStrings {
   static const done = 'Done';
   static const all = 'All';
 
-  static const tasksTitle = 'Tasks';
-  static const pagesTitle = 'Pages';
-  static const inboxTitle = 'Inbox';
-  static const last24HoursTitle = 'Last 24 hours';
-  static const unorganisedTitle = 'Unorganised';
+  static const tasks = 'Tasks';
+  static const pages = 'Pages';
+  static const inbox = 'Inbox';
+  static const last24Hour = 'Last 24 hours';
+  static const unorganised = 'Unorganised';
 }

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_entity.dart';
-import 'task_view_provider.dart';
+import 'task_view_provider.old.dart';
 
 mixin InMemoryTaskMixin {
   /// Manages the task in memory. This means it decides if the task should be added or removed or updated

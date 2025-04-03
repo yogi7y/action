@@ -21,10 +21,10 @@ class RefreshTasksWidget extends ConsumerWidget {
       onRefresh: () async {
         final taskView = ref.read(scopedTaskViewProvider);
 
-        ref.invalidate(tasksNotifierProvider(taskView));
+        ref.invalidate(tasksProvider(taskView));
 
         await Future.wait([
-          ref.read(tasksNotifierProvider(taskView).future),
+          ref.read(tasksProvider(taskView).future),
           if (moduleData.onRefresh != null) moduleData.onRefresh!(),
         ]);
       },

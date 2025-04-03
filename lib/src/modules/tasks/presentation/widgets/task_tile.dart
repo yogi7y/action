@@ -16,7 +16,7 @@ import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/scoped_task_provider.dart';
-import '../state/task_view_provider.dart';
+import '../state/task_view_provider.old.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
@@ -69,7 +69,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                         final taskView = ref.read(scopedTaskViewProvider);
                         unawaited(
                           ref
-                              .read(tasksNotifierProvider(taskView).notifier)
+                              .read(tasksProvider(taskView).notifier)
                               .toggleCheckbox(index, TaskStatus.fromAppCheckboxState(state)),
                         );
                       },

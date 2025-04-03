@@ -8,7 +8,7 @@ import '../../../dashboard/presentation/state/keyboard_visibility_provider.dart'
 import '../state/checklist_provider.dart';
 import '../state/new_checklist_provider.dart';
 import '../state/task_detail_provider.dart';
-import '../state/task_view_provider.dart';
+import '../state/task_view_provider.old.dart';
 import '../widgets/add_remove_floating_action_button.dart';
 import '../widgets/checklist_input_field.dart';
 import '../widgets/checklist_item.dart';

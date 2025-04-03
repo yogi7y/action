@@ -18,7 +18,7 @@ class InboxPages extends ConsumerWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Text(
-              AppStrings.last24HoursTitle,
+              AppStrings.last24Hour,
               style: fonts.headline.sm.semibold,
             ),
           ),
@@ -30,7 +30,7 @@ class InboxPages extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: Text(
-              AppStrings.unorganisedTitle,
+              AppStrings.unorganised,
               style: fonts.headline.sm.semibold,
             ),
           ),

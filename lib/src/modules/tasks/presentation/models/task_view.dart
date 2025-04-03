@@ -7,6 +7,8 @@ import '../../domain/entity/task_entity.dart';
 
 /// Combination of things like [Filter] and [TaskViewUI], etc. combining which
 /// a task view will be eventually shown.
+@Deprecated(
+    'Not sure of the actual use case and seems to be making things more complicated. Directly try using Filters for now and see how it scales.')
 @immutable
 class TaskView {
   const TaskView({

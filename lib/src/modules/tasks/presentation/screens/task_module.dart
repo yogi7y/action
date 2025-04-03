@@ -12,7 +12,7 @@ import '../sections/tasks_filters.dart';
 import '../sections/tasks_list.dart';
 import '../state/filter_keys_provider.dart';
 import '../state/new_task_provider.dart';
-import '../state/task_view_provider.dart';
+import '../state/task_view_provider.old.dart';
 import '../widgets/add_remove_floating_action_button.dart';
 
 class TaskModule extends ConsumerStatefulWidget {
@@ -116,7 +116,7 @@ class _TaskModuleDataState extends ConsumerState<_TaskModuleData> {
           ref.read(isTaskTextInputFieldVisibleProvider.notifier).update((value) => !value),
     );
 
-    final taskFilters = TasksFilters(
+    final taskFilters = TasksFiltersOld(
       filterViews: ref.read(filterKeysProvider.notifier).getFilterViews(),
       smallerChips: taskModuleData.smallerChips,
     );
@@ -135,7 +135,7 @@ class _TaskModuleDataState extends ConsumerState<_TaskModuleData> {
           },
           body: PageView(
             controller: _pageController,
-            children: filters.map((filter) => TasksListView(taskView: filter)).toList(),
+            children: filters.map((filter) => TasksListViewOld(taskView: filter)).toList(),
             onPageChanged: (value) =>
                 ref.read(selectedTaskViewProvider.notifier).selectByIndex(value),
           ),
@@ -155,7 +155,7 @@ class _TaskModuleDataState extends ConsumerState<_TaskModuleData> {
           Expanded(
             child: PageView(
               controller: _pageController,
-              children: filters.map((filter) => TasksListView(taskView: filter)).toList(),
+              children: filters.map((filter) => TasksListViewOld(taskView: filter)).toList(),
               onPageChanged: (value) =>
                   ref.read(selectedTaskViewProvider.notifier).selectByIndex(value),
             ),

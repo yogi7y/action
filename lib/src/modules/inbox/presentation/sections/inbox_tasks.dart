@@ -26,9 +26,9 @@ class InboxTasks extends ConsumerWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: spacing.horizontalScreenPadding),
+              padding: EdgeInsets.symmetric(horizontal: spacing.horizontalScreenMargin),
               child: Text(
-                AppStrings.last24HoursTitle,
+                AppStrings.last24Hour,
                 style: fonts.headline.sm.semibold,
               ),
             ),
@@ -38,9 +38,9 @@ class InboxTasks extends ConsumerWidget {
           SliverSizedBox(height: spacing.lg),
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: spacing.horizontalScreenPadding),
+              padding: EdgeInsets.symmetric(horizontal: spacing.horizontalScreenMargin),
               child: Text(
-                AppStrings.unorganisedTitle,
+                AppStrings.unorganised,
                 style: fonts.headline.sm.semibold,
               ),
             ),

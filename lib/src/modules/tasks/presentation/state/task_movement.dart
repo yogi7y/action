@@ -6,7 +6,7 @@ import '../../domain/entity/task_entity.dart';
 import '../models/task_view.dart';
 import '../widgets/task_tile.dart';
 import 'scoped_task_provider.dart';
-import 'task_view_provider.dart';
+import 'task_view_provider.old.dart';
 
 class TaskMovementController {
   TaskMovementController({

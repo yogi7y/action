@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_entity.dart';
 import '../../domain/use_case/task_use_case.dart';
-import 'task_view_provider.dart';
+import 'task_view_provider.old.dart';
 import 'tasks_provider.dart';
 
 typedef TaskDataOrId = ({String? id, TaskEntity? data});
@@ -88,7 +88,7 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
     final selectedTaskView = ref.read(selectedTaskViewProvider);
 
     // Get the tasks notifier for the selected view and call handleInMemoryTask
-    ref.read(tasksNotifierProvider(selectedTaskView).notifier).handleInMemoryTask(task);
+    ref.read(tasksProvider(selectedTaskView).notifier).handleInMemoryTask(task);
   }
 }
 

@@ -15,7 +15,7 @@ import 'package:action/src/modules/tasks/presentation/models/task_view_variants.
 import 'package:action/src/modules/tasks/presentation/screens/task_screen.dart';
 import 'package:action/src/modules/tasks/presentation/state/filter_keys_provider.dart';
 import 'package:action/src/modules/tasks/presentation/state/new_task_provider.dart';
-import 'package:action/src/modules/tasks/presentation/state/task_view_provider.dart';
+import 'package:action/src/modules/tasks/presentation/state/task_view_provider.old.dart';
 import 'package:action/src/modules/tasks/presentation/state/tasks_provider.dart';
 import 'package:core_y/core_y.dart';
 import 'package:flutter/widgets.dart';
@@ -120,7 +120,7 @@ void main() {
       );
 
       // Read the provider to trigger the build method
-      final asyncValue = await container.read(tasksNotifierProvider(testTaskView).future);
+      final asyncValue = await container.read(tasksProvider(testTaskView).future);
 
       // Verify that fetchTasks was called with the correct filter
       verify(() => mockTaskUseCase.fetchTasks(mockFilter)).called(1);
@@ -147,7 +147,7 @@ void main() {
       );
 
       // Read the provider to trigger the build method
-      final asyncValue = await container.read(tasksNotifierProvider(testTaskView).future);
+      final asyncValue = await container.read(tasksProvider(testTaskView).future);
 
       // Verify that fetchTasks was called with the correct filter
       verify(() => mockTaskUseCase.fetchTasks(mockFilter)).called(1);
@@ -203,20 +203,14 @@ void main() {
 
       // set animated list view keys
       container
-          .read(tasksNotifierProvider(unorganizedTaskView).notifier)
+          .read(tasksProvider(unorganizedTaskView).notifier)
           .setAnimatedListKey(unorganizedTaskViewKey);
+      container.read(tasksProvider(allTaskView).notifier).setAnimatedListKey(allTaskViewKey);
       container
-          .read(tasksNotifierProvider(allTaskView).notifier)
-          .setAnimatedListKey(allTaskViewKey);
-      container
-          .read(tasksNotifierProvider(inProgressTaskView).notifier)
+          .read(tasksProvider(inProgressTaskView).notifier)
           .setAnimatedListKey(inProgressTaskViewKey);
-      container
-          .read(tasksNotifierProvider(todoTaskView).notifier)
-          .setAnimatedListKey(todoTaskViewKey);
-      container
-          .read(tasksNotifierProvider(doneTaskView).notifier)
-          .setAnimatedListKey(doneTaskViewKey);
+      container.read(tasksProvider(todoTaskView).notifier).setAnimatedListKey(todoTaskViewKey);
+      container.read(tasksProvider(doneTaskView).notifier).setAnimatedListKey(doneTaskViewKey);
 
       await _buildAllProviders(container);
     });
@@ -232,13 +226,13 @@ void main() {
         when(() => mockTaskUseCase.upsertTask(any()))
             .thenAnswer((_) async => Success(expectedTask));
 
-        final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+        final notifier = container.read(tasksProvider(taskView).notifier);
 
         // call the upsert method to create/update the task.
         final result = notifier.upsertTask(task);
 
         // verify the task was optimistically added to the list.
-        final tasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        final tasks = container.read(tasksProvider(taskView)).requireValue;
         expect(tasks.length, 1);
         expect(tasks.first, expectedTask.mark(idAsNull: true));
         expect(tasks.first.id, null); // task does not have an id yet as it's created on backend.
@@ -250,7 +244,7 @@ void main() {
         await result;
 
         // verify the task was updated in the list.
-        final updatedTasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        final updatedTasks = container.read(tasksProvider(taskView)).requireValue;
         expect(updatedTasks.length, 1);
         expect(updatedTasks.first, expectedTask);
         expect(updatedTasks.first.id, '1');
@@ -269,13 +263,13 @@ void main() {
         final task = MockTaskEntity(name: 'Task 1');
 
         // get access to notifier
-        final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+        final notifier = container.read(tasksProvider(taskView).notifier);
 
         // call the upsert method to create/update the task.
         final result = notifier.upsertTask(task);
 
         // verify the task was optimistically added to the list.
-        final tasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        final tasks = container.read(tasksProvider(taskView)).requireValue;
         expect(tasks.length, 1);
         expect(tasks.first, task.mark(idAsNull: true));
         expect(tasks.first.id, null); // task does not have an id yet as it's created on backend.
@@ -287,7 +281,7 @@ void main() {
         await result;
 
         // verify that we fallback to the previous state as API returns a failure.
-        final updatedTasks = container.read(tasksNotifierProvider(taskView)).requireValue;
+        final updatedTasks = container.read(tasksProvider(taskView)).requireValue;
         expect(updatedTasks.length, 0);
       },
     );
@@ -302,7 +296,7 @@ void main() {
       final task = MockTaskEntity(name: 'Task 1');
 
       // get notifier
-      final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+      final notifier = container.read(tasksProvider(taskView).notifier);
 
       // call the upsert method to create/update the task.
       await notifier.upsertTask(task);
@@ -326,7 +320,7 @@ void main() {
           )));
 
       // get notifier
-      final notifier = container.read(tasksNotifierProvider(taskView).notifier);
+      final notifier = container.read(tasksProvider(taskView).notifier);
 
       // call the upsert method to create/update the task.
       await notifier.upsertTask(task);
@@ -507,7 +501,7 @@ void main() {
 
       test('verify all the task belong to their specific views', () {
         // All task view will hold all the tasks
-        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(allTasks.length, 13);
         expect(allTasks.any((task) => task.id == organizedInProgressTask.id), isTrue);
         expect(allTasks.any((task) => task.id == organizedInProgressTaskTwo.id), isTrue);
@@ -524,30 +518,28 @@ void main() {
         expect(allTasks.any((task) => task.id == unorganizedTaskFour.id), isTrue);
 
         // In progress task view will only hold the in progress tasks
-        final inProgressTasks =
-            container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+        final inProgressTasks = container.read(tasksProvider(inProgressTaskView)).requireValue;
         expect(inProgressTasks.length, 3);
         expect(inProgressTasks.contains(organizedInProgressTask), isTrue);
         expect(inProgressTasks.contains(organizedInProgressTaskTwo), isTrue);
         expect(inProgressTasks.contains(organizedInProgressTaskThree), isTrue);
 
         // task view will only hold the todo tasks
-        final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+        final todoTasks = container.read(tasksProvider(todoTaskView)).requireValue;
         expect(todoTasks.length, 3);
         expect(todoTasks.contains(organizedTodoTask), isTrue);
         expect(todoTasks.contains(organizedTodoTaskTwo), isTrue);
         expect(todoTasks.contains(organizedTodoTaskThree), isTrue);
 
         // Done task view will only hold the done tasks
-        final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+        final doneTasks = container.read(tasksProvider(doneTaskView)).requireValue;
         expect(doneTasks.length, 3);
         expect(doneTasks.contains(organizedDoneTask), isTrue);
         expect(doneTasks.contains(organizedDoneTaskTwo), isTrue);
         expect(doneTasks.contains(organizedDoneTaskThree), isTrue);
 
         // Unorganized task view will only hold the unorganized tasks
-        final unorganizedTasks =
-            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+        final unorganizedTasks = container.read(tasksProvider(unorganizedTaskView)).requireValue;
         expect(unorganizedTasks.length, 4);
         expect(unorganizedTasks.contains(unorganizedTask), isTrue);
         expect(unorganizedTasks.contains(unorganizedTaskTwo), isTrue);
@@ -560,36 +552,34 @@ void main() {
         final updatedState = unorganizedTask.copyWith(status: TaskStatus.inProgress);
 
         // update the status of the task
-        final notifier = container.read(tasksNotifierProvider(unorganizedTaskView).notifier);
+        final notifier = container.read(tasksProvider(unorganizedTaskView).notifier);
         await notifier.upsertTask(updatedState);
 
         // it should show as in progress in unorganized task view.
-        final unorganizedTasks =
-            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+        final unorganizedTasks = container.read(tasksProvider(unorganizedTaskView)).requireValue;
         expect(unorganizedTasks.length, 4);
         // get the updated task
         final updatedTask = unorganizedTasks.firstWhere((task) => task.id == updatedState.id);
         expect(updatedTask.status, TaskStatus.inProgress);
 
         // it should also update in all task view.
-        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(allTasks.length, 13);
         expect(allTasks.any((task) => task.id == updatedState.id), isTrue);
         final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
         expect(updatedAllTask.status, TaskStatus.inProgress);
 
         // it should not update in in progress task view it's not organized hence cannot be in in progress task view.
-        final inProgressTasks =
-            container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+        final inProgressTasks = container.read(tasksProvider(inProgressTaskView)).requireValue;
         expect(inProgressTasks.length, 3);
         expect(inProgressTasks.any((task) => task.id == updatedState.id), isFalse);
 
         // should not update in todo and done view as well.
-        final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+        final todoTasks = container.read(tasksProvider(todoTaskView)).requireValue;
         expect(todoTasks.length, 3);
         expect(todoTasks.any((task) => task.id == updatedState.id), isFalse);
 
-        final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+        final doneTasks = container.read(tasksProvider(doneTaskView)).requireValue;
         expect(doneTasks.length, 3);
         expect(doneTasks.any((task) => task.id == updatedState.id), isFalse);
       });
@@ -599,34 +589,32 @@ void main() {
         final updatedState = unorganizedTask.copyWith(status: TaskStatus.done);
 
         // update the status of the task
-        final notifier = container.read(tasksNotifierProvider(unorganizedTaskView).notifier);
+        final notifier = container.read(tasksProvider(unorganizedTaskView).notifier);
         await notifier.upsertTask(updatedState);
 
         // it should be removed from unorganized task view as it's organized now.
-        final unorganizedTasks =
-            container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+        final unorganizedTasks = container.read(tasksProvider(unorganizedTaskView)).requireValue;
         expect(unorganizedTasks.length, 3);
         expect(unorganizedTasks.any((task) => task.id == updatedState.id), isFalse);
 
         // should update its state in all task view.
-        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(allTasks.length, 13);
         expect(allTasks.any((task) => task.id == updatedState.id), isTrue);
         final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
         expect(updatedAllTask.status, TaskStatus.done);
 
         // should be added to done task view. also verify that the id exists as it's optimistically added.
-        final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+        final doneTasks = container.read(tasksProvider(doneTaskView)).requireValue;
         expect(doneTasks.length, 4);
         expect(doneTasks.any((task) => task.id == updatedState.id), isTrue);
 
         // nothing should happen to todo and in progress views.
-        final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+        final todoTasks = container.read(tasksProvider(todoTaskView)).requireValue;
         expect(todoTasks.length, 3);
         expect(todoTasks.any((task) => task.id == updatedState.id), isFalse);
 
-        final inProgressTasks =
-            container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+        final inProgressTasks = container.read(tasksProvider(inProgressTaskView)).requireValue;
         expect(inProgressTasks.length, 3);
         expect(inProgressTasks.any((task) => task.id == updatedState.id), isFalse);
       });
@@ -638,34 +626,32 @@ void main() {
           final updatedState = organizedTodoTask.mark(projectIdAsNull: true);
 
           // update the status of the task
-          final notifier = container.read(tasksNotifierProvider(todoTaskView).notifier);
+          final notifier = container.read(tasksProvider(todoTaskView).notifier);
           await notifier.upsertTask(updatedState);
 
           // it should be removed from todo task view as it's no longer organized.
-          final todoTasks = container.read(tasksNotifierProvider(todoTaskView)).requireValue;
+          final todoTasks = container.read(tasksProvider(todoTaskView)).requireValue;
           expect(todoTasks.length, 2);
           expect(todoTasks.any((task) => task.id == updatedState.id), isFalse);
 
           // it should be added to unorganized task view.
-          final unorganizedTasks =
-              container.read(tasksNotifierProvider(unorganizedTaskView)).requireValue;
+          final unorganizedTasks = container.read(tasksProvider(unorganizedTaskView)).requireValue;
           expect(unorganizedTasks.length, 5);
           expect(unorganizedTasks.any((task) => task.id == updatedState.id), isTrue);
 
           // should update its state in all task view.
-          final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+          final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
           expect(allTasks.length, 13);
           expect(allTasks.any((task) => task.id == updatedState.id), isTrue);
           final updatedAllTask = allTasks.firstWhere((task) => task.id == updatedState.id);
           expect(updatedAllTask.status, TaskStatus.todo);
 
           // should not update in in progress and done task view as it's not organized.
-          final inProgressTasks =
-              container.read(tasksNotifierProvider(inProgressTaskView)).requireValue;
+          final inProgressTasks = container.read(tasksProvider(inProgressTaskView)).requireValue;
           expect(inProgressTasks.length, 3);
           expect(inProgressTasks.any((task) => task.id == updatedState.id), isFalse);
 
-          final doneTasks = container.read(tasksNotifierProvider(doneTaskView)).requireValue;
+          final doneTasks = container.read(tasksProvider(doneTaskView)).requireValue;
           expect(doneTasks.length, 3);
           expect(doneTasks.any((task) => task.id == updatedState.id), isFalse);
         },
@@ -685,11 +671,11 @@ void main() {
         when(() => mockTaskUseCase.upsertTask(any()))
             .thenAnswer((_) async => Success(newTask.copyWith(id: '100')));
 
-        final notifier = container.read(tasksNotifierProvider(unorganizedTaskView).notifier);
+        final notifier = container.read(tasksProvider(unorganizedTaskView).notifier);
         final result = notifier.upsertTask(newTask);
 
         // it should be added to all task view.
-        final allTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final allTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(allTasks.length, 14);
         // fetch new task by name
         final newTaskFromAllView = allTasks.firstWhere((task) => task.name == newTask.name);
@@ -699,8 +685,7 @@ void main() {
         await result;
 
         // it should be added to all task view.
-        final allTaskAfterServerResponse =
-            container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final allTaskAfterServerResponse = container.read(tasksProvider(allTaskView)).requireValue;
         expect(allTaskAfterServerResponse.length, 14);
         final newTaskFromAllViewAfterServerResponse =
             allTaskAfterServerResponse.firstWhere((task) => task.name == newTask.name);
@@ -744,19 +729,19 @@ void main() {
       ]);
 
       // Setup notifier and animated list key
-      notifier = container.read(tasksNotifierProvider(allTaskView).notifier);
+      notifier = container.read(tasksProvider(allTaskView).notifier);
       allTasksKey = MockGlobalKey();
       notifier.setAnimatedListKey(allTasksKey);
 
       // Load the initial state
-      await container.read(tasksNotifierProvider(allTaskView).future);
+      await container.read(tasksProvider(allTaskView).future);
     });
 
     test(
       'given an index remove the task if it exists and update the state',
       () {
         // verify initial state
-        final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialAllTasks.length, 4);
 
         // remove the task at index 2
@@ -767,7 +752,7 @@ void main() {
         );
 
         // verify the state is updated
-        final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 3);
         expect(updatedAllTasks.any((task) => task.id == '3'), isFalse);
         verify(() =>
@@ -780,7 +765,7 @@ void main() {
       'should find and remove task when index is not provided',
       () {
         // verify initial state
-        final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialAllTasks.length, 4);
 
         // remove the task without providing an index
@@ -790,7 +775,7 @@ void main() {
         );
 
         // verify the state is updated
-        final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 3);
         expect(updatedAllTasks.any((task) => task.id == '3'), isFalse);
         verify(() =>
@@ -806,7 +791,7 @@ void main() {
         final nonExistentTask = MockTaskEntity(id: '999', name: 'Non-existent Task');
 
         // verify initial state
-        final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialAllTasks.length, 4);
 
         // attempt to remove a non-existent task
@@ -816,7 +801,7 @@ void main() {
         );
 
         // verify the state remains unchanged
-        final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 4);
         verifyNever(() => allTasksKey.currentState?.removeItem(any(), any(), duration: any()));
       },
@@ -829,7 +814,7 @@ void main() {
         final taskWithSameName = MockTaskEntity(name: 'Task One');
 
         // verify initial state
-        final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialAllTasks.length, 4);
 
         // Remove task by name
@@ -839,7 +824,7 @@ void main() {
         );
 
         // verify the state is updated
-        final updatedAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedAllTasks.length, 3);
         expect(updatedAllTasks.any((task) => task.name == 'Task One'), isFalse);
         verify(() => allTasksKey.currentState?.removeItem(0, any(), duration: any())).called(1);
@@ -850,7 +835,7 @@ void main() {
       'should not animate removal when animate is set to false',
       () {
         // verify initial state
-        final initialAllTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialAllTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialAllTasks.length, 4);
 
         // Remove task without animation
@@ -903,12 +888,12 @@ void main() {
       ]);
 
       // Setup notifier and animated list key
-      notifier = container.read(tasksNotifierProvider(allTaskView).notifier);
+      notifier = container.read(tasksProvider(allTaskView).notifier);
       allTasksKey = MockGlobalKey();
       notifier.setAnimatedListKey(allTasksKey);
 
       // Load the initial state
-      await container.read(tasksNotifierProvider(allTaskView).future);
+      await container.read(tasksProvider(allTaskView).future);
     });
 
     test(
@@ -922,14 +907,14 @@ void main() {
         );
 
         // Verify initial state
-        final initialTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialTasks.length, 2);
 
         // Add the new task
         notifier.addOrUpdateTask(newTask, taskView: allTaskView);
 
         // Verify the state is updated correctly
-        final updatedTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedTasks.length, 3);
         expect(updatedTasks[0], newTask);
         verify(() => allTasksKey.currentState?.insertItem(0, duration: any())).called(1);
@@ -943,7 +928,7 @@ void main() {
         final updatedTask = taskOne.copyWith(name: 'Updated Task One');
 
         // Verify initial state
-        final initialTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final initialTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(initialTasks.length, 2);
         expect(initialTasks[1].name, 'Task One');
 
@@ -951,7 +936,7 @@ void main() {
         notifier.addOrUpdateTask(updatedTask, taskView: allTaskView);
 
         // Verify the state is updated correctly
-        final updatedTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedTasks.length, 2);
         expect(updatedTasks[1].name, 'Updated Task One');
 
@@ -994,7 +979,7 @@ void main() {
         notifier.addOrUpdateTask(taskWithSameName, taskView: allTaskView);
 
         // Verify the state is updated correctly
-        final updatedTasks = container.read(tasksNotifierProvider(allTaskView)).requireValue;
+        final updatedTasks = container.read(tasksProvider(allTaskView)).requireValue;
         expect(updatedTasks.length, 2);
         expect(updatedTasks[1].name, 'Task One');
         expect(updatedTasks[1].id, null);
@@ -1021,7 +1006,7 @@ void main() {
         ],
       );
 
-      final tasksNotifier = container.read(tasksNotifierProvider(testTaskView).notifier);
+      final tasksNotifier = container.read(tasksProvider(testTaskView).notifier);
 
       unawaited(tasksNotifier.upsertTask(MockTaskEntity()));
 
@@ -1038,7 +1023,7 @@ void main() {
           taskUseCaseProvider.overrideWithValue(mockTaskUseCase),
         ],
       );
-      tasksNotifier = container.read(tasksNotifierProvider(testTaskView).notifier);
+      tasksNotifier = container.read(tasksProvider(testTaskView).notifier);
     });
 
     test('should return correct index for task that should go at the beginning (newest task)', () {
@@ -1197,20 +1182,20 @@ void main() {
 
 void _invalidateAllTaskNotifier(ProviderContainer container) {
   container
-    ..invalidate(tasksNotifierProvider(allTaskView))
-    ..invalidate(tasksNotifierProvider(inProgressTaskView))
-    ..invalidate(tasksNotifierProvider(todoTaskView))
-    ..invalidate(tasksNotifierProvider(doneTaskView))
-    ..invalidate(tasksNotifierProvider(unorganizedTaskView));
+    ..invalidate(tasksProvider(allTaskView))
+    ..invalidate(tasksProvider(inProgressTaskView))
+    ..invalidate(tasksProvider(todoTaskView))
+    ..invalidate(tasksProvider(doneTaskView))
+    ..invalidate(tasksProvider(unorganizedTaskView));
 }
 
 Future<void> _buildAllProviders(ProviderContainer container) async {
   await Future.wait([
-    container.read(tasksNotifierProvider(allTaskView).future),
-    container.read(tasksNotifierProvider(inProgressTaskView).future),
-    container.read(tasksNotifierProvider(todoTaskView).future),
-    container.read(tasksNotifierProvider(doneTaskView).future),
-    container.read(tasksNotifierProvider(unorganizedTaskView).future),
+    container.read(tasksProvider(allTaskView).future),
+    container.read(tasksProvider(inProgressTaskView).future),
+    container.read(tasksProvider(todoTaskView).future),
+    container.read(tasksProvider(doneTaskView).future),
+    container.read(tasksProvider(unorganizedTaskView).future),
   ]);
 }
 
@@ -1309,7 +1294,7 @@ class RemoveIfTaskExistsCall {
 final overrideTasksProvider = [
   newTaskProvider.overrideWith(NewTaskTextNotifier.new),
   selectedTaskViewProvider.overrideWith(SelectedTaskView.new),
-  taskViewProvider.overrideWithValue(taskViews),
+  // taskViewProvider.overrideWithValue(taskViews),
   filterKeysProvider.overrideWith(FilterKeysNotifier.new),
   projectNotifierProvider.overrideWith(() => ProjectNotifier(ProjectViewModel(
         project: FakeProject(),
