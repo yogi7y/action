@@ -27,29 +27,6 @@ class TaskListView extends ConsumerWidget {
 }
 
 @immutable
-@Deprecated('')
-class TasksListViewOld extends ConsumerWidget {
-  const TasksListViewOld({
-    required this.taskView,
-    super.key,
-  });
-
-  final TaskView taskView;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => ProviderScope(
-        overrides: [
-          scopedTaskViewProvider.overrideWithValue(taskView),
-        ],
-        child: ref.watch(tasksProvider(taskView)).when(
-              error: (error, _) => PlaceholderWidget(text: error.toString()),
-              loading: _TaskListLoadingState.new,
-              data: (tasks) => const _TaskListViewDataState(),
-            ),
-      );
-}
-
-@immutable
 class _TaskListViewDataState extends ConsumerStatefulWidget {
   const _TaskListViewDataState();
 
@@ -66,8 +43,8 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final taskView = ref.read(scopedTaskViewProvider);
-      ref.read(tasksProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
+      // final taskView = ref.read(scopedTaskViewProvider);
+      // ref.read(tasksProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
     });
   }
 

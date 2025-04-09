@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import '../task_entity.dart';
 import 'tasks.dart';
 
-class TasksList implements Tasks {
+class TasksList extends Tasks {
   TasksList(List<TaskEntity> tasks) : _tasks = tasks;
 
   final List<TaskEntity> _tasks;
@@ -45,4 +45,17 @@ class TasksList implements Tasks {
   @override
   @visibleForTesting
   Iterable<TaskEntity> get value => _tasks;
+
+  @override
+  Iterator<TaskEntity> get iterator => _tasks.iterator;
+
+  @override
+  Tasks copyWith(Iterable<TaskEntity> Function(Iterable<TaskEntity> currentTasks) callback) {
+    final newTasks = callback(_tasks).toList();
+    return TasksList(newTasks);
+  }
+}
+
+void main(List<String> args) {
+  final tasks = TasksList([]);
 }

@@ -5,13 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
-import '../../../projects/presentation/state/project_detail_provider.dart';
 import '../../domain/entity/task_entity.dart';
 import '../../domain/entity/task_status.dart';
 import '../../domain/use_case/task_use_case.dart';
 import '../models/task_list_view_data.dart';
 import 'loaded_task_view_provider.dart';
-import 'new_task_provider.dart';
 
 final tasksProvider =
     AsyncNotifierProviderFamily<TasksNotifier, List<TaskEntity>, TaskListViewData>(

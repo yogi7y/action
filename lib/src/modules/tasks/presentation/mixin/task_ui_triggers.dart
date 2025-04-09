@@ -13,6 +13,6 @@ mixin TaskUiTriggersMixin {
     final currentTaskView = ref.read(selectedTaskViewProvider);
     final task = ref.read(newTaskProvider);
 
-    await ref.read(tasksProvider(currentTaskView).notifier).upsertTask(task);
+    // await ref.read(tasksProvider(currentTaskView).notifier).upsertTask(task);
   }
 }
