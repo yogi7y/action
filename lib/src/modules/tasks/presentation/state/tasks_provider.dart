@@ -36,7 +36,13 @@ class TasksNotifier extends FamilyAsyncNotifier<List<TaskEntity>, TaskListViewDa
 
   @override
   Future<List<TaskEntity>> build(TaskListViewData arg) async {
-    ref.read(loadedTaskListViewDataProvider.notifier).update((state) => {...state, arg});
+    /// adding the current view to loaded task provider to indicate that it's loaded in memory.
+    /// added a delay to avoid rebuilding the provider during the build.
+    Future<void>.delayed(
+      Duration.zero,
+      () => ref.read(loadedTaskListViewDataProvider.notifier).update((state) => {...state, arg}),
+    );
+
     return _fetchTasks();
   }
 

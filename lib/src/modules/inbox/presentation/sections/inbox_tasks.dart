@@ -78,10 +78,13 @@ class _Last24Hours extends ConsumerWidget {
         }
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => ProviderScope(
-              overrides: [scopedTaskProvider.overrideWithValue((index: index, task: data[index]))],
-              child: const TaskTile(),
-            ),
+            (context, index) {
+              return Placeholder();
+            },
+            // (context, index) => ProviderScope(
+            //   overrides: [scopedTaskProvider.overrideWithValue((index: index, task: data[index]))],
+            //   child: const TaskTile(),
+            // ),
             childCount: data.length,
           ),
         );

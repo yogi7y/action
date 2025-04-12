@@ -76,7 +76,11 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
             initialItemCount: tasks.length,
             itemBuilder: (context, index, animation) => ProviderScope(
               overrides: [
-                scopedTaskProvider.overrideWithValue((index: index, task: tasks[index])),
+                scopedTaskProvider.overrideWithValue((
+                  index: index,
+                  task: tasks[index],
+                  taskListViewData: widget.taskListViewData,
+                )),
               ],
               child: FadeTransition(
                 opacity: CurvedAnimation(
