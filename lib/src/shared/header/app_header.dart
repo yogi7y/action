@@ -6,15 +6,15 @@ import '../../design_system/design_system.dart';
 class AppHeader extends ConsumerWidget {
   const AppHeader({
     required this.title,
-    this.isSliver = false,
     this.titleSpacing = 0.0,
     this.actions = const [],
+    this.padding = const EdgeInsets.symmetric(horizontal: 20),
     super.key,
   });
 
   final String title;
-  final bool isSliver;
   final List<Widget> actions;
+  final EdgeInsets padding;
 
   /// Spacing before the title.
   final double titleSpacing;
@@ -33,26 +33,20 @@ class AppHeader extends ConsumerWidget {
     const automaticallyImplyLeading = false;
     final titleTextStyle = fonts.headline.lg.semibold;
 
-    return isSliver
-        ? SliverAppBar(
-            pinned: true,
-            leadingWidth: leadingWidth,
-            elevation: elevation,
-            titleSpacing: titleSpacing,
-            shadowColor: shadowColor,
-            automaticallyImplyLeading: automaticallyImplyLeading,
-            toolbarHeight: toolbarHeight,
-            backgroundColor: backgroundColor,
-            title: Text(title, style: titleTextStyle),
-            actions: actions,
-          )
-        : AppBar(
-            leadingWidth: leadingWidth,
-            elevation: elevation,
-            titleSpacing: titleSpacing,
-            backgroundColor: backgroundColor,
-            title: Text(title, style: titleTextStyle),
-            actions: actions,
-          );
+    return SliverAppBar(
+      pinned: true,
+      leadingWidth: leadingWidth,
+      elevation: elevation,
+      titleSpacing: titleSpacing,
+      shadowColor: shadowColor,
+      automaticallyImplyLeading: automaticallyImplyLeading,
+      toolbarHeight: toolbarHeight,
+      backgroundColor: backgroundColor,
+      title: Padding(
+        padding: padding,
+        child: Text(title, style: titleTextStyle),
+      ),
+      actions: actions,
+    );
   }
 }

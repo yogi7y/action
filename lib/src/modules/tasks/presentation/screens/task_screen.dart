@@ -6,13 +6,9 @@ import '../../../../design_system/design_system.dart';
 import '../../../../shared/chips/chips.dart';
 import '../../../../shared/header/app_header.dart';
 import '../../../../shared/sliver_sized_box.dart';
-import '../../domain/entity/task_status.dart';
-import '../models/task_view.dart';
-import '../models/task_view_variants.dart';
 import '../sections/tasks_list.dart';
 import '../state/selected_task_filter_provider.dart';
 import '../state/task_list_view_data_provider.dart';
-import 'task_module.dart';
 
 class TaskScreen extends ConsumerWidget {
   const TaskScreen({super.key});
@@ -26,7 +22,6 @@ class TaskScreen extends ConsumerWidget {
         headerSliverBuilder: (context, innerBoxScrolled) => [
           AppHeader(
             title: AppStrings.tasks,
-            isSliver: true,
             titleSpacing: spacing.horizontalScreenMargin,
           ),
           const _TaskScreenFilters(),

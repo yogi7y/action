@@ -10,6 +10,8 @@ import '../../tasks/presentation/state/new_checklist_provider.dart';
 import '../../tasks/presentation/state/new_task_provider.dart';
 import 'state/keyboard_visibility_provider.dart';
 
+/// Root screen of the app.
+/// Provides the outer shell for all top level screens (e.g. tasks, projects, contexts, etc.)
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({required this.navigationShell, super.key});
 
@@ -45,7 +47,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         fit: StackFit.expand,
         children: [
           widget.navigationShell,
-          // const StickyComponentOverKeyboard(),
         ],
       ),
       bottomNavigationBar: ProviderScope(

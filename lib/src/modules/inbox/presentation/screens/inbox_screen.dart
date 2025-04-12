@@ -29,7 +29,6 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
           return [
             AppHeader(
               title: AppStrings.inbox,
-              isSliver: true,
               titleSpacing: spacing.lg,
             ),
             SliverToBoxAdapter(

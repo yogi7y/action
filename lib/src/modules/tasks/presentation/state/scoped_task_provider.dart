@@ -11,5 +11,6 @@ final scopedTaskProvider = Provider<IndexedTask>(
 );
 
 /// Scoped provider for the current task view.
+@Deprecated('')
 final scopedTaskViewProvider =
     Provider<TaskView>((ref) => throw UnimplementedError('Should be overridden with a task view'));

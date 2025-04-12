@@ -84,11 +84,13 @@ class TaskDetailNotifier extends AutoDisposeNotifier<TaskEntity> {
 
   /// Updates the task in all relevant views based on the task's properties
   void _updateTaskInListView(TaskEntity task) {
-    // Get the selected task view
-    final selectedTaskView = ref.read(selectedTaskViewProvider);
+    /// probably pass in the selected view to detail screen rather than having a global provider
+    throw UnimplementedError();
+    // // Get the selected task view
+    // final selectedTaskView = ref.read(selectedTaskViewProvider);
 
-    // Get the tasks notifier for the selected view and call handleInMemoryTask
-    ref.read(tasksProvider(selectedTaskView).notifier).handleInMemoryTask(task);
+    // // Get the tasks notifier for the selected view and call handleInMemoryTask
+    // ref.read(tasksProvider(selectedTaskView).notifier).handleInMemoryTask(task);
   }
 }
 

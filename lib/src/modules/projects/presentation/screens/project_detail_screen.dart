@@ -118,7 +118,8 @@ class _ProjectDetailDataState extends ConsumerWidget {
           child: TabBarView(
             controller: tabController,
             children: const [
-              TaskModule(),
+              // TaskModule(),
+              Placeholder(),
               Center(child: Text('Pages')),
             ],
           ),
@@ -174,7 +175,7 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
               SizedBox(height: spacing.md),
               TasksFiltersOld(
                 filterViews: ref.watch(filterKeysProvider.notifier).getFilterViews(),
-                smallerChips: ref.watch(taskModelDataProvider).smallerChips,
+                // smallerChips: ref.watch(taskModelDataProvider).smallerChips,
               ),
             ],
           ),

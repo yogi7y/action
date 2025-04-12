@@ -13,8 +13,10 @@ class ProjectTaskViewWidget extends ConsumerWidget {
     super.key,
   });
 
+  // @override
+  // Widget build(BuildContext context, WidgetRef ref) => const TaskModule();
   @override
-  Widget build(BuildContext context, WidgetRef ref) => const TaskModule();
+  Widget build(BuildContext context, WidgetRef ref) => const Placeholder();
 }
 
 List<ProjectTaskView> projectTaskViews(String projectId) => <ProjectTaskView>[

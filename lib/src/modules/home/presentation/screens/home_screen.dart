@@ -17,7 +17,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(appThemeProvider);
-    final spacing = ref.watch(spacingProvider);
 
     return Scaffold(
       backgroundColor: colors.surface.background,
@@ -26,7 +25,6 @@ class HomeScreen extends ConsumerWidget {
           slivers: [
             AppHeader(
               title: 'Home',
-              isSliver: true,
               actions: [
                 IconButton(
                   onPressed: () {
