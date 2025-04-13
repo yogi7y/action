@@ -1,10 +1,18 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 
 import '../task_entity.dart';
 import 'tasks.dart';
 
+@immutable
 class TasksList extends DelegatingList<TaskEntity> implements TasksOperations {
-  TasksList(super.base);
+  const TasksList(super.base);
+
+  /// todo: write unit test.
+  factory TasksList.fromList(List<TaskEntity> list) => TasksList(list);
+
+  /// Creates an empty [TasksList].
+  factory TasksList.empty() => const TasksList([]);
 
   @override
   int getInsertIndex(TaskEntity task) {
@@ -39,4 +47,9 @@ class TasksList extends DelegatingList<TaskEntity> implements TasksOperations {
 
   @override
   void insertTaskAtStart(TaskEntity task) => super.insert(0, task);
+}
+
+extension PrimitiveTaskListExtension on List<TaskEntity> {
+  /// todo: write unit test.
+  TasksList toTasksList() => TasksList(this);
 }
