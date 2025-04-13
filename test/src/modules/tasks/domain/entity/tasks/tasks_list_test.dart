@@ -29,42 +29,42 @@ void main() {
 
     test('should be empty by default', () {
       tasksList = TasksList([]);
-      expect(tasksList.value, isEmpty);
+      expect(tasksList, isEmpty);
     });
 
     test('should have values when populated via constructor', () {
       tasksList = TasksList([taskOne, taskTwo]);
-      expect(tasksList.value.length, 2);
-      expect(tasksList.value.first, taskOne);
-      expect(tasksList.value.last, taskTwo);
+      expect(tasksList.length, 2);
+      expect(tasksList.first, taskOne);
+      expect(tasksList.last, taskTwo);
     });
 
     group('insert', () {
       test('should insert task at specified index', () {
-        tasksList = TasksList([taskOne, taskTwo])..insert(1, taskThree);
-        expect(tasksList.value.length, 3);
-        expect(tasksList.value.elementAt(1), taskThree);
+        tasksList = TasksList([taskOne, taskTwo])..insertTask(1, taskThree);
+        expect(tasksList.length, 3);
+        expect(tasksList[1], taskThree);
       });
     });
 
     group('insertAtStart', () {
       test('should insert task at the beginning of the list', () {
-        tasksList = TasksList([taskOne, taskTwo])..insertAtStart(taskThree);
-        expect(tasksList.value.length, 3);
-        expect(tasksList.value.first, taskThree);
+        tasksList = TasksList([taskOne, taskTwo])..insertTaskAtStart(taskThree);
+        expect(tasksList.length, 3);
+        expect(tasksList.first, taskThree);
       });
     });
 
     group('indexOf', () {
       test('should return correct index of task', () {
         tasksList = TasksList([taskOne, taskTwo]);
-        expect(tasksList.indexOf(taskOne), 0);
-        expect(tasksList.indexOf(taskTwo), 1);
+        expect(tasksList.indexOfTask(taskOne), 0);
+        expect(tasksList.indexOfTask(taskTwo), 1);
       });
 
       test('should return -1 when task is not found', () {
         tasksList = TasksList([taskOne, taskTwo]);
-        expect(tasksList.indexOf(taskThree), -1);
+        expect(tasksList.indexOfTask(taskThree), -1);
       });
     });
 
