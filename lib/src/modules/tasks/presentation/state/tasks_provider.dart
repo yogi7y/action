@@ -223,7 +223,7 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksList, TaskListViewData> {
 
   /// Update the state of a task view
   void _updateTaskViewState(TaskListViewData taskListViewData, List<TaskEntity> tasks) {
-    ref.read(tasksProvider(taskListViewData).notifier).updateState(tasks);
+    // ref.read(tasksProvider(taskListViewData).notifier).updateState(tasks);
   }
 
   /// Animate the removal of a task from the list

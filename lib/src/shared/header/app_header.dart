@@ -35,6 +35,7 @@ class AppHeader extends ConsumerWidget {
 
     return SliverAppBar(
       pinned: true,
+      centerTitle: false,
       leadingWidth: leadingWidth,
       elevation: elevation,
       titleSpacing: titleSpacing,
