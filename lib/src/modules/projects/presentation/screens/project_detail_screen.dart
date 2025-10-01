@@ -28,7 +28,7 @@ class ProjectDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
-    with SingleTickerProviderStateMixin, TaskModuleScope {
+    with SingleTickerProviderStateMixin {
   late final ScrollController scrollController = ScrollController();
   late final TabController tabController = TabController(length: 2, vsync: this);
 
@@ -48,19 +48,17 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen>
         AsyncData(value: final project) => ProviderScope(
             overrides: [
               projectNotifierProvider.overrideWith(() => ProjectNotifier(project)),
-              ...createTaskModuleScope(
-                TaskModuleData(
-                  taskViews: projectTaskViews(
-                    project.project.id!,
-                  ),
-                  smallerChips: true,
-                  showFilters: false,
-                  onRefresh: () async {
-                    final projectOrId = (id: project.project.id, value: null);
-                    return ref.refresh(projectDetailProvider(projectOrId));
-                  },
-                ),
-              ),
+              // ...createTaskModuleScope(
+              //   TaskModuleData(
+              //     taskViews: projectTaskViews(project.project.id!),
+              //     smallerChips: true,
+              //     showFilters: false,
+              //     onRefresh: () async {
+              //       final projectOrId = (id: project.project.id, value: null);
+              //       return ref.refresh(projectDetailProvider(projectOrId));
+              //     },
+              //   ),
+              // ),
             ],
             child: _ProjectDetailDataState(
               tabController: tabController,
@@ -120,7 +118,8 @@ class _ProjectDetailDataState extends ConsumerWidget {
           child: TabBarView(
             controller: tabController,
             children: const [
-              TaskModule(),
+              // TaskModule(),
+              Placeholder(),
               Center(child: Text('Pages')),
             ],
           ),
@@ -174,9 +173,9 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
                 ),
               ),
               SizedBox(height: spacing.md),
-              TasksFilters(
+              TasksFiltersOld(
                 filterViews: ref.watch(filterKeysProvider.notifier).getFilterViews(),
-                smallerChips: ref.watch(taskModelDataProvider).smallerChips,
+                // smallerChips: ref.watch(taskModelDataProvider).smallerChips,
               ),
             ],
           ),

@@ -7,15 +7,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../design_system/design_system.dart';
 import '../../../../shared/chips/chips.dart';
 import '../models/task_view.dart';
-import '../state/task_view_provider.dart';
+import '../state/task_view_provider.old.dart';
 
+@Deprecated('')
 typedef TaskFilterView = ({
   TaskView filter,
   GlobalKey key,
 });
 
-class TasksFilters extends ConsumerWidget {
-  const TasksFilters({
+@Deprecated('')
+class TasksFiltersOld extends ConsumerWidget {
+  const TasksFiltersOld({
     required this.filterViews,
     this.smallerChips = false,
     super.key,

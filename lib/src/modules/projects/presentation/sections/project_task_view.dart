@@ -7,17 +7,16 @@ import '../../../tasks/domain/entity/task_status.dart';
 import '../../../tasks/presentation/models/task_view.dart';
 import '../../../tasks/presentation/models/task_view_variants.dart';
 import '../../../tasks/presentation/screens/task_module.dart';
-import '../state/project_detail_provider.dart';
 
 class ProjectTaskViewWidget extends ConsumerWidget {
   const ProjectTaskViewWidget({
     super.key,
   });
 
+  // @override
+  // Widget build(BuildContext context, WidgetRef ref) => const TaskModule();
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return const TaskModule();
-  }
+  Widget build(BuildContext context, WidgetRef ref) => const Placeholder();
 }
 
 List<ProjectTaskView> projectTaskViews(String projectId) => <ProjectTaskView>[

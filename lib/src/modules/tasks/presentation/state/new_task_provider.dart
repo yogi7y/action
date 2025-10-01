@@ -7,7 +7,7 @@ import '../../../filter/domain/entity/filter.dart';
 import '../../domain/entity/filters/task_filter_operations.dart';
 import '../../domain/entity/task_entity.dart';
 import '../../domain/entity/task_status.dart';
-import 'task_view_provider.dart';
+import 'task_view_provider.old.dart';
 
 /// Decides when to show/hide the task input field.
 final isTaskTextInputFieldVisibleProvider = StateProvider<bool>((ref) => false);

@@ -9,7 +9,6 @@ import 'semantics/button.dart';
 import 'semantics/checkbox.dart';
 import 'semantics/chips.dart';
 import 'semantics/l2_screen_header_tokens.dart';
-import 'semantics/overlay.dart';
 import 'semantics/overlay_tokens.dart';
 import 'semantics/project_card_tokens.dart';
 import 'semantics/status_tokens.dart';

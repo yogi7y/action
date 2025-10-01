@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../modules/authentication/presentation/screens/authentication_screen.dart';
 import '../../modules/dashboard/presentation/dashboard_screen.dart';
+import '../../modules/inbox/presentation/screens/inbox_screen.dart';
 import '../../modules/profile/presentation/screens/profile_screen.dart';
 import '../../shared/bottom_nav/bottom_nav_items_provider.dart';
 import 'routes.dart';
@@ -44,6 +45,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.profile.path,
         name: AppRoute.profile.name,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: AppRoute.inbox.path,
+        name: AppRoute.inbox.name,
+        builder: (context, state) => const InboxScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

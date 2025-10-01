@@ -16,7 +16,6 @@ import '../../../context/presentation/state/context_provider.dart';
 import '../../../projects/presentation/state/projects_provider.dart';
 import '../../domain/entity/task_status.dart';
 import '../state/scoped_task_provider.dart';
-import '../state/task_view_provider.dart';
 import '../state/tasks_provider.dart';
 
 @immutable
@@ -35,8 +34,6 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
 
     final topPadding = spacing.xs;
     final bottomPadding = spacing.sm;
-    final selectedTaskView = ref.watch(selectedTaskViewProvider);
-    final tasks = ref.watch(tasksNotifierProvider(selectedTaskView)).valueOrNull ?? [];
 
     return Column(
       children: [
@@ -67,14 +64,9 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
                         bottom: bottomPadding,
                       ),
                       state: AppCheckboxState.fromTaskStatus(status: task.status),
-                      onChanged: (state) async {
-                        final taskView = ref.read(scopedTaskViewProvider);
-                        unawaited(
-                          ref
-                              .read(tasksNotifierProvider(taskView).notifier)
-                              .toggleCheckbox(index, TaskStatus.fromAppCheckboxState(state)),
-                        );
-                      },
+                      onChanged: (state) async => unawaited(ref
+                          .read(tasksProvider(indexedTask.taskListViewData).notifier)
+                          .toggleCheckbox(index, TaskStatus.fromAppCheckboxState(state))),
                     ),
                     Expanded(
                       child: Column(
@@ -111,7 +103,7 @@ class TaskTile extends ConsumerWidget with KeyboardMixin {
           ],
         ),
         Visibility(
-          visible: index == tasks.length - 1,
+          visible: false,
           child: Padding(
             padding: const EdgeInsets.only(top: 12),
             child: Center(

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design_system/typography/typography.dart';
-import '../../../../shared/placeholder_widget.dart';
-import '../models/task_view.dart';
+import '../models/task_list_view_data.dart';
 import '../state/scoped_task_provider.dart';
 import '../state/tasks_provider.dart';
 import '../widgets/refresh_tasks_widget.dart';
@@ -11,30 +10,33 @@ import '../widgets/task_loading_tile.dart';
 import '../widgets/task_tile.dart';
 
 @immutable
-class TasksListView extends ConsumerWidget {
-  const TasksListView({
-    required this.taskView,
+class TaskListView extends ConsumerWidget {
+  const TaskListView({
+    required this.taskListViewData,
     super.key,
   });
 
-  final TaskView taskView;
+  final TaskListViewData taskListViewData;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ProviderScope(
-        overrides: [
-          scopedTaskViewProvider.overrideWithValue(taskView),
-        ],
-        child: ref.watch(tasksNotifierProvider(taskView)).when(
-              error: (error, _) => PlaceholderWidget(text: error.toString()),
-              loading: _TaskListLoadingState.new,
-              data: (tasks) => const _TaskListViewDataState(),
-            ),
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasksAsync = ref.watch(tasksProvider(taskListViewData));
+
+    return tasksAsync.when(
+      data: (_) => _TaskListViewDataState(taskListViewData: taskListViewData),
+      loading: () => const _TaskListLoadingState(),
+      error: (error, stackTrace) => Center(child: Text(error.toString())),
+    );
+  }
 }
 
 @immutable
 class _TaskListViewDataState extends ConsumerStatefulWidget {
-  const _TaskListViewDataState();
+  const _TaskListViewDataState({
+    required this.taskListViewData,
+  });
+
+  final TaskListViewData taskListViewData;
 
   @override
   ConsumerState<_TaskListViewDataState> createState() => _TaskListDataStateState();
@@ -49,17 +51,19 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final taskView = ref.read(scopedTaskViewProvider);
-      ref.read(tasksNotifierProvider(taskView).notifier).setAnimatedListKey(_animatedListKey);
+      _setAnimatedListKey();
     });
+  }
+
+  void _setAnimatedListKey() {
+    ref.read(tasksProvider(widget.taskListViewData).notifier).setAnimatedListKey(_animatedListKey);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final taskView = ref.read(scopedTaskViewProvider);
 
-    final tasks = ref.watch(tasksNotifierProvider(taskView)).valueOrNull ?? [];
+    final tasks = ref.watch(tasksProvider(widget.taskListViewData)).valueOrNull ?? [];
 
     if (tasks.isEmpty) return const _EmptyState();
 
@@ -72,7 +76,11 @@ class _TaskListDataStateState extends ConsumerState<_TaskListViewDataState>
             initialItemCount: tasks.length,
             itemBuilder: (context, index, animation) => ProviderScope(
               overrides: [
-                scopedTaskProvider.overrideWithValue((index: index, task: tasks[index])),
+                scopedTaskProvider.overrideWithValue((
+                  index: index,
+                  task: tasks[index],
+                  taskListViewData: widget.taskListViewData,
+                )),
               ],
               child: FadeTransition(
                 opacity: CurvedAnimation(

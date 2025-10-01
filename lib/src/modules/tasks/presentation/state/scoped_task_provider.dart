@@ -1,15 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entity/task_entity.dart';
-import '../models/task_view.dart';
+import '../models/task_list_view_data.dart';
 
-typedef IndexedTask = ({int index, TaskEntity task});
+typedef IndexedTask = ({
+  /// Index of the task in the list.
+  int index,
+
+  /// Task entity.
+  TaskEntity task,
+
+  /// Task list view data. (Filters, etc.)
+  TaskListViewData taskListViewData,
+});
 
 /// Override when laying out task tile inside of list builder to optimize rebuilds.
 final scopedTaskProvider = Provider<IndexedTask>(
   (ref) => throw UnimplementedError('Should be overridden with a task entity'),
 );
-
-/// Scoped provider for the current task view.
-final scopedTaskViewProvider =
-    Provider<TaskView>((ref) => throw UnimplementedError('Should be overridden with a task view'));

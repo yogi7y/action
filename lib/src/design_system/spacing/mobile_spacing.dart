@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'spacing.dart';
 
 @immutable
-class MobileSpacing implements Spacing {
+class MobileSpacing extends Spacing {
   const MobileSpacing();
 
   @override
